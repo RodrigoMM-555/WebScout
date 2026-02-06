@@ -1,0 +1,206 @@
+
+/* Reset y base */
+html, body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f6f7f3;
+}
+
+body {
+    display: flex;
+    overflow: hidden;
+}
+
+/* Navegación lateral */
+nav {
+    background-color: #8bc6a8;
+    padding: 25px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    min-width: 200px;
+    box-shadow: 4px 0 10px rgba(0,0,0,0.1);
+    height: 100vh;
+    overflow-y: auto;
+}
+
+nav a {
+    background-color: #f0f1e9;
+    color: #2f4f3a;
+    text-decoration: none;
+    padding: 12px 15px;
+    border-radius: 15px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    text-align: center;
+}
+
+nav a:hover {
+    background-color: #6aa98b;
+    color: white;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    transform: translateY(-2px);
+}
+
+/* Área principal */
+main {
+    flex: 4;
+    padding: 25px;
+    height: 100%;
+    overflow-y: auto;
+}
+
+/* Tabla */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.12);
+    background-color: #f0f1e9;
+}
+
+td a.eliminar {
+    text-decoration: none;
+}
+
+th, td {
+    padding: 12px 18px;
+    text-align: left;
+    color: #2f4f3a;
+}
+
+th {
+    background-color: #6aa98b;
+    color: white;
+    font-weight: 600;
+}
+
+tr:nth-child(even) {
+    background-color: #e3eddc;
+}
+
+tr:hover {
+    background-color: #d9e6dc;
+}
+
+/* Botón de insertar */
+.boton_insertar {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background-color: #8bc6a8;
+    color: white;
+    width: 50px;
+    height: 50px;
+    line-height: 50px;
+    border-radius: 50%;
+    text-align: center;
+    font-size: 1.8rem;
+    font-weight: bold;
+    text-decoration: none;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.2);
+    transition: all 0.3s ease;
+}
+
+.boton_insertar:hover {
+    background-color: #6aa98b;
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.25);
+}
+
+/* Formulario general */
+form {
+    max-width: 95%;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    background-color: #f0f1e9;
+    padding: 25px;
+    border-radius: 18px;
+    box-shadow: 0 6px 15px rgba(0,0,0,0.12);
+}
+
+/* Controles del formulario */
+.control_formulario {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+label {
+    font-weight: 500;
+    color: #2f4f3a;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="date"],
+input[type="number"] {
+    padding: 10px 12px;
+    border: 2px solid #8bc6a8;
+    border-radius: 12px;
+    outline: none;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+input:focus {
+    border-color: #6aa98b;
+    box-shadow: 0 0 0 3px rgba(139,198,168,0.3);
+}
+
+/* Botón enviar */
+input[type="submit"] {
+    font-size: medium;
+    padding: 12px 25px;
+    background-color: #8bc6a8;
+    color: white;
+    font-weight: 600;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+    transition: all 0.3s ease;
+}
+
+input[type="submit"]:hover {
+    background-color: #6aa98b;
+    transform: translateY(-2px);
+    box-shadow: 0 10px 18px rgba(0,0,0,0.2);
+}
+
+/* Responsive */
+@media (max-width: 800px) {
+    body {
+        flex-direction: column;
+    }
+    nav {
+        flex-direction: row;
+        overflow-x: auto;
+        width: 100%;
+        height: auto;
+    }
+    main {
+        flex: none;
+        height: auto;
+        padding: 20px;
+    }
+    table {
+        font-size: 0.9rem;
+    }
+}
+
+@media (max-width: 600px) {
+    .control_formulario {
+        flex-direction: column;
+    }
+    input[type="submit"] {
+        width: 100%;
+    }
+}
+
