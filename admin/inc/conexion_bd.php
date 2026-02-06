@@ -1,8 +1,8 @@
 <?php
     $host = "localhost";
-    $user = "Ureserva_pistas";
-    $pass = "Ureserva_pistas2$";
-    $db   = "reserva_pistas";
+    $user = "Uwebscout";
+    $pass = "Uwebscout5$";
+    $db   = "WebScout";
 
     $conexion = new mysqli($host, $user, $pass, $db);
 ?>
