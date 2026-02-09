@@ -70,7 +70,7 @@
 
         form p {
             display: none;
-            color: #d500f9;
+            color: #f90000;
             font-weight: 500;
             margin-top: 0px;
         }
@@ -104,3 +104,16 @@
     </main>
 </body>
 </html>
+
+
+<?php
+if (isset($_GET["error"]) && $_GET["error"] == "invalid") {
+    echo "<script>
+        document.querySelector('form p').style.display = 'block';
+    </script>";
+} else {
+    echo "<script>
+        document.querySelector('form p').style.display = 'none';
+    </script>";
+}
+?>
