@@ -1,0 +1,336 @@
+/* =========================================================
+   ================ VARIABLES Y RESET GLOBAL ================
+   ========================================================= */
+:root {
+    --morado-claro: #b39ddb;
+    --morado-medio: #9575cd;
+    --morado-principal: #7b1fa2;
+    --morado-oscuro: #6a1b9a;
+
+    --gris-claro: #b3b3b3;
+    --azul-fondo: aliceblue;
+
+    --sombra: 0 8px 20px rgba(0,0,0,0.15);
+    --radius: 12px;
+
+    --font: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+/* Reset */
+* {
+    box-sizing: border-box;
+    font-family: var(--font);
+    margin: 0;
+    padding: 0;
+}
+
+/* =========================================================
+   ====================== ESTILOS GLOBALES ==================
+   ========================================================= */
+
+body {
+    background-color: var(--azul-fondo);
+}
+
+main {
+    width: 100%;
+}
+
+/* =========================================================
+   ========================== LOGIN =========================
+   ========================================================= */
+
+body.login {
+    background: linear-gradient(var(--morado-claro), var(--morado-medio));
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.login main {
+    background-color: ghostwhite;
+    padding: 35px 30px;
+    width: 330px;
+    border-radius: 16px;
+    text-align: center;
+    box-shadow: var(--sombra);
+}
+
+.login h2 {
+    margin-bottom: 25px;
+    color: var(--morado-oscuro);
+    font-size: 1.8rem;
+}
+
+.login input[type="text"],
+.login input[type="password"] {
+    width: 100%;
+    padding: 12px 15px;
+    border-radius: 10px;
+    border: 1px solid var(--morado-medio);
+    font-size: 1rem;
+    outline: none;
+    transition: all 0.3s;
+}
+
+.login input[type="text"]:focus,
+.login input[type="password"]:focus {
+    border-color: var(--morado-principal);
+    box-shadow: 0 0 0 2px rgba(123,31,162,0.3);
+}
+
+.login input[type="submit"] {
+    width: 100%;
+    padding: 12px;
+    border: none;
+    border-radius: 20px;
+    background-color: var(--morado-principal);
+    color: white;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-bottom: 10px;
+}
+
+.login input[type="submit"]:hover {
+    background-color: var(--morado-oscuro);
+    transform: translateY(2px);
+    box-shadow: 0 -4px 10px rgba(0,0,0,0.15);
+}
+
+.login form p {
+    display: none;
+    color: red;
+    font-weight: 500;
+}
+
+.login a {
+    color: var(--morado-oscuro);
+    text-decoration: none;
+    transition: 0.3s;
+}
+
+.login a:hover {
+    text-decoration: underline;
+}
+
+.login img{
+    width: 50%;
+    margin-bottom: 20px;
+}
+
+/* =========================================================
+   ========================== HEADER ========================
+   ========================================================= */
+
+header {
+    background-color: var(--morado-principal);
+    width: 100%;
+    padding: 10px;
+    box-shadow: var(--sombra);
+}
+
+header > div {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+/* corregido: menos margen, evita descuadre */
+header img {
+    width: 60px;
+    margin-inline: 15px;
+}
+
+/* asegura alineación de "Inicio" */
+header h2 {
+    margin: 0;
+    line-height: 1;
+    padding-left: 10px;
+}
+
+header a {
+    text-decoration: none;
+    color: black;
+}
+
+header article {
+    display: flex;
+    align-items: center;
+}
+
+/* =========================================================
+   ========================== FOOTER ========================
+   ========================================================= */
+
+footer {
+    background-color: rgb(208,216,223);
+    text-align: center;
+    padding: 10px;
+    font-size: 14px;
+    margin-top: 20px;
+}
+
+/* =========================================================
+   ========================== CARRUSEL ======================
+   ========================================================= */
+
+.carrusel {
+    width: 100%;
+    height: 450px;
+    overflow: hidden;
+    position: relative;
+}
+
+.carrusel section {
+    display: flex;
+    transition: left 1s;
+    position: relative;
+    left: 0;
+}
+
+.carrusel img {
+    width: 100%;
+    height: 450px;
+    object-fit: cover;
+}
+
+.carrusel .overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    pointer-events: none;
+    z-index: 10;
+}
+
+.carrusel .texto-carrusel {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 48px;
+    font-weight: bold;
+    text-shadow: 2px 2px 8px rgba(0,0,0,0.7);
+    z-index: 100;
+}
+
+.carrusel button {
+    border: none;
+    background: rgba(255,255,255,0.6);
+    width: 50px;
+    height: 50px;
+    position: absolute;
+    top: 50%;
+    border-radius: 50%;
+    font-size: 24px;
+    cursor: pointer;
+    z-index: 1000;
+    transition: all 0.3s;
+}
+
+.carrusel button:hover {
+    background: white;
+}
+
+.carrusel button:first-of-type { left: 2%; }
+.carrusel button:last-of-type { right: 2%; }
+
+/* =========================================================
+   ========== PERFILES / HIJOS / DOCS (CORREGIDO) ==========
+   ========================================================= */
+
+/* Aplica estilo al main que contiene izquierda + derecha */
+main:has(section.izquierda, section.derecha) {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: flex-start;
+    gap: 40px;
+    width: 100%;
+    padding: 30px 0;
+}
+
+/* Columnas */
+section.izquierda,
+section.derecha {
+    background: var(--gris-claro);
+    width: 350px;
+    padding: 30px;
+    text-align: center;
+    border-radius: 0 0 var(--radius) var(--radius); /* redondeo solo abajo */
+    box-shadow: var(--sombra);
+}
+
+section.izquierda p,
+section.derecha p {
+    margin: 20px 0;
+    font-size: 18px;
+}
+
+/* Botones hijos */
+.hijo {
+    padding: 15px;
+    margin: 20px 0;
+    font-size: 18px;
+    cursor: pointer;
+    border-radius: 8px;
+    color: black;
+}
+
+/* Documentación */
+.documentacion {
+    padding: 15px;
+    margin: 20px 0;
+    font-size: 18px;
+    cursor: pointer;
+    background: white;
+    border-radius: 8px;
+    box-shadow: var(--sombra);
+}
+
+/* ===== Responsive corregido ===== */
+@media (max-width: 900px) {
+    main:has(section.izquierda, section.derecha) {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    section.izquierda,
+    section.derecha {
+        width: 90%;
+    }
+}
+/* =========================================================
+   ======================== RESPONSIVE ======================
+   ========================================================= */
+
+@media (max-width: 900px) {
+
+    main.perfil,
+    main.hijos,
+    main.documentacion {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    section.izquierda,
+    section.derecha {
+        width: 90%;
+    }
+
+    article.info img {
+        width: 100%;
+    }
+}
+
+@media (max-width: 500px) {
+    .carrusel .texto-carrusel {
+        font-size: 28px;
+    }
+
+    header img {
+        width: 50px;
+        margin-inline: 5px;
+    }
+}
