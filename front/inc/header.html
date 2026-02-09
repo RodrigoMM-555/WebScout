@@ -13,7 +13,7 @@
         header{
             background-color: #7b1fa2;
             width: 100%;
-            padding: 30px;
+            padding: 10px;
         }
         header div {
             display: flex;
@@ -23,7 +23,17 @@
             align-items: center;
         }
         header img{
-            width: 50px;
+            width: 70px;
+            margin-inline: 35px;
+        }
+        header a{
+            text-decoration: none;
+            color: black;
+        }
+        header div article{
+            display: flex;
+            flex-direction: row;
+            align-items: center;
         }
 
     </style>
@@ -31,7 +41,10 @@
 <body>
     <header>
         <div>
-            <img src="http://localhost/WebScout/img/logo.png" alt="Logo">
+            <article>
+                <img src="http://localhost/WebScout/img/logo.png" alt="Logo">
+                <a href="inicio.php"><h2>Inicio</h2></a>
+            </article>
             <article>
                 <a href=""><img src="http://localhost/WebScout/img/exclama.png" alt="Avisos"></a>
                 <a href="perfil.php"><img src="http://localhost/WebScout/img/perfil.png" alt="Perfil e hijos"></a>
