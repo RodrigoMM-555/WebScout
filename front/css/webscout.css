@@ -261,6 +261,12 @@ section.derecha {
     border-radius: 0 0 var(--radius) var(--radius); /* redondeo solo abajo */
     box-shadow: var(--sombra);
 }
+section.izquierda.colonia { background: orange; color: black; }
+section.izquierda.manada { background: yellow; color: black; }
+section.izquierda.tropa { background: blue; color: white; }
+section.izquierda.posta { background: red; color: black; }
+section.izquierda.rutas { background: green; color: black; }
+
 
 section.izquierda p,
 section.derecha p {
@@ -270,11 +276,31 @@ section.derecha p {
 
 /* Botones hijos */
 .hijo {
-    padding: 15px;
-    margin: 20px 0;
+    padding: 10px;
+    margin-top: 7px;
     font-size: 18px;
     cursor: pointer;
     border-radius: 8px;
+}
+
+.colonia{
+    background: orange;
+    color: black;
+}
+.manada{
+    background: yellow;
+    color: black;
+}
+.tropa{
+    background: blue;
+    color: white;
+}
+.posta{
+    background: red;
+    color: black;
+}
+.rutas{
+    background: green;
     color: black;
 }
 
@@ -301,6 +327,24 @@ section.derecha p {
         width: 90%;
     }
 }
+
+button {
+    border-radius: 10px;
+    padding: 8px 16px;
+    background-color: ghostwhite;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    box-shadow: var(--sombra);
+}
+
+button:hover {
+    background-color: #f0f0f0;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
 /* =========================================================
    ======================== RESPONSIVE ======================
    ========================================================= */

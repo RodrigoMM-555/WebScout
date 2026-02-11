@@ -21,7 +21,7 @@ CREATE TABLE educandos (
     seccion VARCHAR(100),
     dni VARCHAR(9),
     id_usuario INT NOT NULL,
-    FOREIGN KEY (id_usuario) REFERENCES usuario(id)
+    FOREIGN KEY (id_usuario) REFERENCES usuarios(id)
         ON DELETE CASCADE
 );
 

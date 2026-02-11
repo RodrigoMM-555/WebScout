@@ -26,7 +26,7 @@ if (!password_verify($contraseña, $stored_password)) {
 
 // Iniciar sesión
 session_start();
-$_SESSION["usuario"] = $nombre;
+$_SESSION["nombre"] = $nombre;
 
 header("Location: ../inicio.php");
 exit;

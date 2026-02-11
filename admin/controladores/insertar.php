@@ -1,3 +1,4 @@
+
 <form action="?operacion=procesainsertar&tabla=<?= $_GET['tabla'] ?>" method="POST">
 <?php
         // CREAMOS UN FORMULARIO DINÁMICO
