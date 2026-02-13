@@ -13,16 +13,43 @@
         if ($fila['Extra'] === 'auto_increment') {
             continue;
         }
-
-        echo "
-            <div class='control_formulario'>
-                <label>$clave</label>
-                <input 
-                    type='text'
-                    name='$clave'
-                    placeholder='$clave'>
-            </div>
-        ";
+        elseif ($fila['Field'] === 'seccion') {
+            echo "
+                <div class='control_formulario'>
+                    <label>$clave</label>
+                    <select name='$clave'>
+                        <option value='colonia'>Colonia</option>
+                        <option value='manada'>Manada</option>
+                        <option value='tropa'>Tropa</option>
+                        <option value='posta'>Posta</option>
+                        <option value='rutas'>Rutas</option>
+                    </select>
+                </div>
+            ";
+        }
+        elseif( $fila["Field"] === "secciones") {
+            echo "
+                <div class='control_formulario secciones-multiples'>
+                    <label>$clave</label><br>
+                    <input type='checkbox' name='secciones[]' value='colonia'> Colonia
+                    <input type='checkbox' name='secciones[]' value='manada'> Manada
+                    <input type='checkbox' name='secciones[]' value='tropa'> Tropa
+                    <input type='checkbox' name='secciones[]' value='posta'> Posta
+                    <input type='checkbox' name='secciones[]' value='rutas'> Rutas
+                </div>
+            ";
+        }
+        else {
+            echo "
+                <div class='control_formulario'>
+                    <label>$clave</label>
+                    <input 
+                        type='text'
+                        name='$clave'
+                        placeholder='$clave'>
+                </div>
+            ";
+        }
     }
 ?>
     <div class="control_formulario">

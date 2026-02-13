@@ -13,6 +13,12 @@ foreach($_POST as $clave=>$valor){
         $valor = password_hash($valor, PASSWORD_DEFAULT);
     }
 
+    // Si es un array (caso de secciones[]), convertir a string
+    if (is_array($valor)) {
+        $valor = implode(",", $valor); // Convertir a "colonia,manada,tropa"
+    }
+
+    // Escapar valor ya seguro
     $valor = $conexion->real_escape_string($valor);
 
     $columnas[] = "`$clave`";
