@@ -30,3 +30,4 @@ CREATE TABLE avisos (
     titulo VARCHAR(255),
     secciones VARCHAR(255)
 );
+
