@@ -1,26 +1,34 @@
 <?php
-    $sql = "INSERT INTO ".$_GET['tabla']." VALUES (";	// Inicio el formateo del SQL
 
-    foreach($_POST as $clave=>$valor){							// Recorro los campos del form
+include('../inc/conexion_bd.php');
+$tabla = $_GET['tabla'];
 
-        if($clave == "id"){										// Si eres un id
-            $sql.= "NULL,";										// Inserta NULL
-        }
-        else{
+// Creamos un array con las columnas y otro con los valores
+$columnas = [];
+$valores = [];
 
-            // Si el campo es contraseña, la hasheamos
-            if($clave == "contraseña"){
-                $valor = password_hash($valor, PASSWORD_DEFAULT);
-            }
+foreach($_POST as $clave=>$valor){
 
-            $sql.= "'".$valor."',";								// Inserta el valor
-        }
+    if($clave == "contraseña"){
+        $valor = password_hash($valor, PASSWORD_DEFAULT);
     }
 
-    $sql = substr($sql, 0, -1); // Le quito la ultima coma
-    $sql .= ");";
+    $valor = $conexion->real_escape_string($valor);
 
-    echo $sql;													// Lo saco por pantalla
-    $resultado = $conexion->query($sql);						// Proceso el SQL
-    header("Location: ?tabla=".$_GET['tabla']);
+    $columnas[] = "`$clave`";
+    $valores[] = "'$valor'";
+}
+
+// Convertimos arrays en cadenas para SQL
+$sql = "INSERT INTO `$tabla` (".implode(",", $columnas).") VALUES (".implode(",", $valores).");";
+
+// Ejecutamos y comprobamos errores
+$resultado = $conexion->query($sql);
+if(!$resultado){
+    die("Error en la consulta: " . $conexion->error);
+}
+
+// Redirección
+header("Location: ?tabla=".$tabla);
+exit;
 ?>
