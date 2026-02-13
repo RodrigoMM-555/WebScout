@@ -39,6 +39,29 @@
                 </div>
             ";
         }
+        elseif ($fila["Field"] === "id_usuario") {
+            // Consulta
+            $sql = "SELECT id, nombre, apellidos FROM usuarios";
+            $resultado = $conexion->query($sql);
+            // Primera parte 
+            echo "
+                <div class='control_formulario'>
+                    <label>$clave</label>
+                    <select name='$clave'>
+            ";
+            // Creamos las opciones
+            while ($u = $resultado->fetch_assoc()) {
+                $id = $u['id'];
+                $nombre = $u['nombre'];
+                $apellidos = $u['apellidos'];
+                echo "<option value='$id'>$nombre $apellidos</option>";
+            }
+            // Cerramos
+            echo "
+                    </select>
+                </div>
+            ";
+        }
         else {
             echo "
                 <div class='control_formulario'>

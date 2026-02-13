@@ -19,7 +19,17 @@
         while ($fila = $resultado->fetch_assoc()) {
         echo "<tr>";
         foreach($fila as $clave=>$valor){
-            echo "<td>".$valor."</td>";
+
+        if ($clave == "id_usuario") {
+            $id = (int)$valor;
+            $resNombre = $conexion->query("SELECT nombre, apellidos FROM usuarios WHERE id = $id;");
+            $user = $resNombre->fetch_assoc();
+            echo "<td>".$user['nombre']." ".$user['apellidos']."</td>";
+        }
+        
+            else{
+                echo "<td>".$valor."</td>";
+            }
         }
         echo '<td><a class="eliminar" href="controladores/procesaeliminar.php?tabla='.$_GET['tabla'].'&id='.$fila['id'].'">❌</a></td>';  
         echo "</tr>";

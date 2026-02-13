@@ -1,7 +1,8 @@
 # PRIORITARIO
+0. Poder subir y bajar archivos
 1. terminar avisos
 2. poder modificar en el crud
-4. hacer mas comoda la insercion, poner menus para evitar insertar datos equivocados. Poner una lista de padres en vez de tener que escribirlos
+4. cambiar las cabeceras de las tablas
 
 # SECUNDARIO
 5. Hacer un menu grafico
