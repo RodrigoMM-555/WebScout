@@ -62,6 +62,19 @@
                 </div>
             ";
         }
+        elseif ($fila["Field"] === "fecha_hora") {
+            echo "
+                <div class='control_formulario'>
+                    <label>$clave</label>
+                    <input 
+                        type='datetime-local'
+                        name='$clave'
+                        step='60'  <!-- step en segundos, 60 = solo minutos -->
+                </div>
+            ";
+        }
+        elseif ($fila["Field"]== "circular") {}
+
         else {
             echo "
                 <div class='control_formulario'>
@@ -73,6 +86,17 @@
                 </div>
             ";
         }
+    }
+    if ($tabla == "avisos") {
+        echo "
+            <div class='control_formulario'>
+                <label>circular</label>
+                <select name='circular'>
+                    <option value='si'>Si</option>
+                    <option value='no'>No</option>
+                </select>
+            </div>
+        ";
     }
 ?>
     <div class="control_formulario">

@@ -29,9 +29,10 @@ CREATE TABLE avisos (
     id INT AUTO_INCREMENT PRIMARY KEY,
     titulo VARCHAR(255),
     secciones VARCHAR(255),
-    fecha DATE,
-
+    fecha_hora DATETIME,
+    circular VARCHAR(255)
 );
+
 
 CREATE USER 
 'Uwebscout'@'localhost' 
@@ -46,3 +47,8 @@ MAX_USER_CONNECTIONS 0;
 GRANT ALL PRIVILEGES ON WebScout.* 
 TO 'Uwebscout'@'localhost';
 FLUSH PRIVILEGES;
+
+
+-- Modificaciones
+ALTER TABLE avisos ADD COLUMN fecha_hora DATETIME;
+ALTER TABLE avisos ADD COLUMN CIRCULAR VARCHAR(255);

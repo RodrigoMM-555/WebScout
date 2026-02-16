@@ -21,6 +21,12 @@
                     else if($_GET['operacion'] == "procesainsertar"){
                         include "controladores/procesainsertar.php";
                     }
+                    else if($_GET['operacion'] == "actualizar"){
+                        include "controladores/actualizar.php";
+                    }
+                    else if($_GET['operacion'] == "procesaactualizar"){
+                        include "controladores/procesaactualizar.php";
+                    }
                 }
             ?>
         </main>

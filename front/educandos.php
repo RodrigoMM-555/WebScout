@@ -55,9 +55,23 @@ switch(strtolower($educando['seccion'])) {
     <section class="derecha">
         <h1>Documentación</h1>
 
-        <div class="documentacion">algo</div>
-        <div class="documentacion">algo</div>
-        <div class="documentacion">algo</div>
+        <div class="documentacion">
+            <p>1-Ficha de inscripción</p>
+            <a href="../circulares/plantillas/1-Ficha de inscripción.pdf" target="_blank">⬇️</a></div>
+            <p>⬆️</p>
+        <div class="documentacion">
+            <p>2-Ficha sanitaria</p>
+            <a href="../circulares/plantillas/2-Ficha sanitaria menor edad.pdf" target="_blank">⬇️</a></div>
+            <p>⬆️</p>
+        <div class="documentacion">
+            <p>3-Exclusión de responsabilidad</p>
+            <a href="../circulares/plantillas/4-Exclusión de responsabilidad.pdf" target="_blank">⬇️</a></div>
+            <p>⬆️</p>
+        <div class="documentacion">
+            <p>4-Autorización ausentarse de actividades</p>
+            <a href="../circulares/plantillas/5-Autorización ausentarse actividades.pdf" target="_blank">⬇️</a>
+            <p>⬆️</p>
+        </div>
 
     </section>
 </main>
