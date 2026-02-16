@@ -29,6 +29,7 @@ CREATE TABLE avisos (
     id INT AUTO_INCREMENT PRIMARY KEY,
     titulo VARCHAR(255),
     secciones VARCHAR(255)
+    fecha DATE,
 );
 
 CREATE USER 
