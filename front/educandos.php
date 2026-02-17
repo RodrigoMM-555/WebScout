@@ -58,19 +58,38 @@ switch(strtolower($educando['seccion'])) {
         <div class="documentacion">
             <p>1-Ficha de inscripción</p>
             <a href="../circulares/plantillas/1-Ficha de inscripción.pdf" target="_blank">⬇️</a></div>
-            <p>⬆️</p>
+            <form action='contrl/subearchivo.php' method='post' enctype='multipart/form-data'>
+                <input type='file' name='archivo' value='Seleccionar archivo'>
+                <input type='hidden' name='nombreCompleto' value='<?=$educando['nombre']?> <?=$educando['apellidos']?>'>
+                <input type='submit' value='⬆️'>
+            </form>
+
         <div class="documentacion">
             <p>2-Ficha sanitaria</p>
             <a href="../circulares/plantillas/2-Ficha sanitaria menor edad.pdf" target="_blank">⬇️</a></div>
-            <p>⬆️</p>
+            <form action='contrl/subearchivo.php' method='post' enctype='multipart/form-data'>
+                <input type='file' name='archivo' value='Seleccionar archivo'>
+                <input type='hidden' name='nombreCompleto' value='<?=$educando['nombre']?> <?=$educando['apellidos']?>'>
+                <input type='submit' value='⬆️'>
+            </form>
+
         <div class="documentacion">
             <p>3-Exclusión de responsabilidad</p>
             <a href="../circulares/plantillas/4-Exclusión de responsabilidad.pdf" target="_blank">⬇️</a></div>
-            <p>⬆️</p>
+            <form action='contrl/subearchivo.php' method='post' enctype='multipart/form-data'>
+                <input type='file' name='archivo' value='Seleccionar archivo'>
+                <input type='hidden' name='nombreCompleto' value='<?=$educando['nombre']?> <?=$educando['apellidos']?>'>
+                <input type='submit' value='⬆️'>
+            </form>
+
         <div class="documentacion">
             <p>4-Autorización ausentarse de actividades</p>
             <a href="../circulares/plantillas/5-Autorización ausentarse actividades.pdf" target="_blank">⬇️</a>
-            <p>⬆️</p>
+            <form action='contrl/subearchivo.php' method='post' enctype='multipart/form-data'>
+                <input type='file' name='archivo' value='Seleccionar archivo'>
+                <input type='hidden' name='nombreCompleto' value='<?=$educando['nombre']?> <?=$educando['apellidos']?>'>
+                <input type='submit' value='⬆️'>
+            </form>
         </div>
 
     </section>

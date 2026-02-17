@@ -73,7 +73,17 @@
                 </div>
             ";
         }
-        elseif ($fila["Field"]== "circular") {}
+        elseif ($fila["Field"]== "circular") {
+            echo "
+                <div class='control_formulario'>
+                    <label>circular</label>
+                    <select name='circular'>
+                        <option value='si'>Si</option>
+                        <option value='no'>No</option>
+                    </select>
+                </div>
+        ";
+        }
 
         else {
             echo "
@@ -86,17 +96,6 @@
                 </div>
             ";
         }
-    }
-    if ($tabla == "avisos") {
-        echo "
-            <div class='control_formulario'>
-                <label>circular</label>
-                <select name='circular'>
-                    <option value='si'>Si</option>
-                    <option value='no'>No</option>
-                </select>
-            </div>
-        ";
     }
 ?>
     <div class="control_formulario">

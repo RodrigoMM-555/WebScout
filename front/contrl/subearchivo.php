@@ -1,47 +1,50 @@
 <?php
-// -----------------------------
-// subearchivo.php
-// Script para subir un archivo a la carpeta del educando
-// -----------------------------
 
-// Comprobar que se recibió un archivo
+// Mostrar errores durante desarrollo
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 if (!isset($_FILES['archivo']) || $_FILES['archivo']['error'] != 0) {
     die("Error: no se recibió ningún archivo o hubo un error en la subida.");
 }
 
-// Datos del archivo subido
-$archivoTmp = $_FILES['archivo']['tmp_name'];   // ruta temporal
-$nombreArchivo = $_FILES['archivo']['name'];    // nombre original
+$archivoTmp = $_FILES['archivo']['tmp_name'];
+$nombreOriginal = $_FILES['archivo']['name'];
+$extension = pathinfo($nombreOriginal, PATHINFO_EXTENSION);
 
-// Nombre del educando desde el formulario
+// Recoger datos
 $nombreEducando = $_POST['nombreCompleto'] ?? 'sin_nombre';
-$nombreEducando = str_replace(' ', '_', $nombreEducando); // reemplazar espacios
+$tituloAviso = $_POST['tituloAviso'] ?? 'sin_aviso';
 
-// Carpeta base absoluta: uploads/circulares/educandos/<nombreEducando>
+// Función segura
+function limpiarTexto($texto) {
+    $texto = str_replace(' ', '_', $texto);
+    $tmp = @iconv('UTF-8', 'ASCII//TRANSLIT', $texto);
+    if ($tmp !== false) $texto = $tmp;
+    return preg_replace('/[^A-Za-z0-9_\-]/', '', $texto);
+}
+
+$nombreEducando = limpiarTexto($nombreEducando);
+$tituloAviso = limpiarTexto($tituloAviso);
+
+// Carpeta destino CORRECTA
 $baseDir = $_SERVER['DOCUMENT_ROOT'] . '/WebScout/circulares/educandos/' . $nombreEducando;
 
-// Crear carpetas si no existen
+// Crear carpeta si no existe
 if (!is_dir($baseDir)) {
-    if (!mkdir($baseDir, 0777, true)) {  // true = crea carpetas padres
-        die("Error: no se pudo crear la carpeta $baseDir. Comprueba permisos.");
-    } else {
-        echo "Carpeta creada correctamente: $baseDir <br>";
+    if (!mkdir($baseDir, 0777, true)) {
+        $err = error_get_last();
+        die("Error: no se pudo crear la carpeta $baseDir. Motivo: " . ($err['message'] ?? 'desconocido'));
     }
 }
 
-// Ruta final del archivo
-$rutaFinal = $baseDir . '/' . $nombreArchivo;
+$nuevoNombre = $tituloAviso . "_" . $nombreEducando . "." . $extension;
+$rutaFinal = $baseDir . '/' . $nuevoNombre;
 
-// Depuración antes de mover archivo
-echo "Archivo temporal: $archivoTmp <br>";
-echo "Ruta destino: $rutaFinal <br>";
-echo "Archivo válido subido?: " . (is_uploaded_file($archivoTmp) ? "Sí" : "No") . "<br>";
-echo "Carpeta escribible?: " . (is_writable($baseDir) ? "Sí" : "No") . "<br>";
-
-// Mover el archivo
 if (move_uploaded_file($archivoTmp, $rutaFinal)) {
-    echo "<strong>Archivo subido correctamente a: $rutaFinal</strong>";
+    echo "<strong>Archivo subido correctamente</strong>";
 } else {
     echo "<strong>Error al subir el archivo</strong>";
 }
+
 ?>
