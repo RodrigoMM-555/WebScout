@@ -126,7 +126,7 @@ while ($aviso = $resultado->fetch_assoc()) {
                     <td>$nombreCompleto</td>
                     <td><a href='../circulares/plantillas/6-Autorización participación actividad.pdf' target='_blank'>⬇️</a></td>
                     <td>
-                        <form action='contrl/subearchivo.php' method='post' enctype='multipart/form-data'>
+                        <form action='contrl/subearchivo.php?ori=avisos' method='post' enctype='multipart/form-data'>
                             <input type='file' name='archivo' required>
                             <input type='hidden' name='nombreCompleto' value='".htmlspecialchars($nombreCompleto)."'>
                             <input type='hidden' name='tituloAviso' value='".htmlspecialchars($aviso['titulo'])."'>

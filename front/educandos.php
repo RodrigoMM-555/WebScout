@@ -2,6 +2,16 @@
 include("inc/header.html");
 include("inc/conexion_bd.php");
 
+function limpiarTexto($texto) {
+    $texto = str_replace(' ', '_', $texto);
+    $tmp = @iconv('UTF-8', 'ASCII//TRANSLIT', $texto);
+    if ($tmp !== false) {
+        $texto = $tmp;
+    }
+    return preg_replace('/[^A-Za-z0-9_\-]/', '', $texto);
+}
+
+
 // Comprobamos que nos pasan el id por GET
 if(!isset($_GET['id'])) {
     die("No se ha especificado un educando.");
@@ -41,6 +51,9 @@ switch(strtolower($educando['seccion'])) {
     default:
         $clase_color = 'otros';
 }
+
+$nombreCompleto = $educando['nombre'] . " " . $educando['apellidos'];
+
 ?>
 
 <main>
@@ -55,39 +68,46 @@ switch(strtolower($educando['seccion'])) {
     <section class="derecha">
         <h1>Documentación</h1>
 
-        <div class="documentacion">
+        <div class="documentacion" id="doc1">
             <p>1-Ficha de inscripción</p>
-            <a href="../circulares/plantillas/1-Ficha de inscripción.pdf" target="_blank">⬇️</a></div>
-            <form action='contrl/subearchivo.php' method='post' enctype='multipart/form-data'>
-                <input type='file' name='archivo' value='Seleccionar archivo'>
-                <input type='hidden' name='nombreCompleto' value='<?=$educando['nombre']?> <?=$educando['apellidos']?>'>
+            <a href="../circulares/plantillas/1-Ficha de inscripción.pdf" target="_blank">⬇️</a>
+            <form action='contrl/subearchivo.php?ori=educandos' method='post' enctype='multipart/form-data'>
+                <input type='file' name='archivo' required>
+                <input type='hidden' name='nombreCompleto' value="<?=htmlspecialchars($nombreCompleto)?>">
+                <input type='hidden' name='tituloAviso' value='1-Ficha de inscripción'>
                 <input type='submit' value='⬆️'>
             </form>
+        </div>
 
-        <div class="documentacion">
+        <div class="documentacion" id="doc2">
             <p>2-Ficha sanitaria</p>
-            <a href="../circulares/plantillas/2-Ficha sanitaria menor edad.pdf" target="_blank">⬇️</a></div>
-            <form action='contrl/subearchivo.php' method='post' enctype='multipart/form-data'>
-                <input type='file' name='archivo' value='Seleccionar archivo'>
-                <input type='hidden' name='nombreCompleto' value='<?=$educando['nombre']?> <?=$educando['apellidos']?>'>
+            <a href="../circulares/plantillas/2-Ficha sanitaria menor edad.pdf" target="_blank">⬇️</a>
+            <form action='contrl/subearchivo.php?ori=educandos' method='post' enctype='multipart/form-data'>
+                <input type='file' name='archivo' required>
+                <input type='hidden' name='nombreCompleto' value="<?=htmlspecialchars($nombreCompleto)?>">
+                <input type='hidden' name='tituloAviso' value='2-Ficha sanitaria'>
                 <input type='submit' value='⬆️'>
             </form>
+        </div>
 
-        <div class="documentacion">
+        <div class="documentacion" id="doc3">
             <p>3-Exclusión de responsabilidad</p>
-            <a href="../circulares/plantillas/4-Exclusión de responsabilidad.pdf" target="_blank">⬇️</a></div>
-            <form action='contrl/subearchivo.php' method='post' enctype='multipart/form-data'>
-                <input type='file' name='archivo' value='Seleccionar archivo'>
-                <input type='hidden' name='nombreCompleto' value='<?=$educando['nombre']?> <?=$educando['apellidos']?>'>
+            <a href="../circulares/plantillas/4-Exclusión de responsabilidad.pdf" target="_blank">⬇️</a>
+            <form action='contrl/subearchivo.php?ori=educandos' method='post' enctype='multipart/form-data'>
+                <input type='file' name='archivo' required>
+                <input type='hidden' name='nombreCompleto' value="<?=htmlspecialchars($nombreCompleto)?>">
+                <input type='hidden' name='tituloAviso' value='3-Exclusión de responsabilidad'>
                 <input type='submit' value='⬆️'>
             </form>
+        </div>
 
-        <div class="documentacion">
+        <div class="documentacion" id="doc4">
             <p>4-Autorización ausentarse de actividades</p>
             <a href="../circulares/plantillas/5-Autorización ausentarse actividades.pdf" target="_blank">⬇️</a>
-            <form action='contrl/subearchivo.php' method='post' enctype='multipart/form-data'>
-                <input type='file' name='archivo' value='Seleccionar archivo'>
-                <input type='hidden' name='nombreCompleto' value='<?=$educando['nombre']?> <?=$educando['apellidos']?>'>
+            <form action='contrl/subearchivo.php?ori=educandos' method='post' enctype='multipart/form-data'>
+                <input type='file' name='archivo' required>
+                <input type='hidden' name='nombreCompleto' value="<?=htmlspecialchars($nombreCompleto)?>">
+                <input type='hidden' name='tituloAviso' value='4-Autorización ausentarse de actividades'>
                 <input type='submit' value='⬆️'>
             </form>
         </div>
@@ -95,6 +115,40 @@ switch(strtolower($educando['seccion'])) {
     </section>
 </main>
 
-<?php 
+<?php
+
+$titulos = [
+    1 => "1-Ficha de inscripción",
+    2 => "2-Ficha sanitaria",
+    3 => "3-Exclusión de responsabilidad",
+    4 => "4-Autorización ausentarse de actividades"
+];
+
+$nombreCarpeta = limpiarTexto($nombreCompleto);
+
+$ruta = $_SERVER['DOCUMENT_ROOT'] . '/WebScout/circulares/educandos/' . $nombreCarpeta;
+
+echo "error: " . $ruta;
+
+if (is_dir($ruta)) {
+
+    $archivos = array_diff(scandir($ruta), ['.', '..']);
+
+    foreach ($titulos as $num => $titulo) {
+
+        $tituloLimpio = limpiarTexto($titulo);
+        $prefijo = $tituloLimpio . '_' . $nombreCarpeta;
+
+        foreach ($archivos as $f) {
+            if (strpos($f, $prefijo) === 0) {
+                echo "<script>
+                        document.getElementById('doc$num').classList.add('entregado');
+                      </script>";
+                break;
+            }
+        }
+    }
+}
+
 include("inc/footer.html");
 ?>

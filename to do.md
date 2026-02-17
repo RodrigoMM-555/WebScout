@@ -1,6 +1,5 @@
 # PRIORITARIO
 0. Poder subir y bajar archivos, tanto en avisos como en perfil y que tengan estilo
-1. terminar avisos, añadir estado de la entrega y mejorar estilo de la tabla
 6. Mejora visual general
 8. Estilizar y organizar el admin
 

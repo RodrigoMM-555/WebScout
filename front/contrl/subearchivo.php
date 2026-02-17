@@ -1,5 +1,7 @@
 <?php
 
+include("../inc/conexion_bd.php");
+
 // Mostrar errores durante desarrollo
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
@@ -42,7 +44,28 @@ $nuevoNombre = $tituloAviso . "_" . $nombreEducando . "." . $extension;
 $rutaFinal = $baseDir . '/' . $nuevoNombre;
 
 if (move_uploaded_file($archivoTmp, $rutaFinal)) {
-    echo "<strong>Archivo subido correctamente</strong>";
+    $origen = $_GET['ori'] ?? 'inicio';
+    if ($origen == "educandos") {
+        $sql = "SELECT id FROM educandos WHERE nombre = ? AND apellidos = ?";
+        $stmt = $conexion->prepare($sql);
+        $nombres = explode('_', $nombreEducando);
+        echo $nombres;
+        $nombre = $nombres[0] ?? '';
+        $apellidos = $nombres[1] ?? '';
+        $stmt->bind_param("ss", $nombre, $apellidos);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        if ($row = $result->fetch_assoc()) {
+            $origen = "educandos.php?id=" . $row['id'];
+            header("Location: ../$origen");
+        } else {
+            $origen = "inicio";
+        }
+    }
+    else {
+        header("Location: ../$origen.php");
+    }
+
 } else {
     echo "<strong>Error al subir el archivo</strong>";
 }

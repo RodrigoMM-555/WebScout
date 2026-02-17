@@ -314,6 +314,10 @@ section.derecha p {
     border-radius: 8px;
     box-shadow: var(--sombra);
 }
+.documentacion.entregado {
+    background: #d4edda;
+    border-left-color: #28a745;
+}
 
 /* ===== Responsive corregido ===== */
 @media (max-width: 900px) {
