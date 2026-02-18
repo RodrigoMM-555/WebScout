@@ -1,16 +1,18 @@
 # PRIORITARIO
-0. Poder subir y bajar archivos, tanto en avisos como en perfil y que tengan estilo
-6. Mejora visual general
-8. Estilizar y organizar el admin
-
+14. historial de archivos para los padres
+15. panel para ver si se a entregado la documentacion en admin -> podemos hacer una tabla o un grid, verde entregado rojo por entregar
+deberiamos poder verlo desde el propio panel de avisos, ¿otra tabla de mysql pero que sea dinamica?
+16. tabla por secciones
 
 # SECUNDARIO
 5. Hacer un menu grafico
+6. formulario de masistencia a losa visos -> si viene se le deja entregar la documentacion, sino no se le deja
 7. Añadir un calendario dinamico y un menu para modificarlo
-4. cambiar las cabeceras de las tablas
-10. cuenta bancaria, acceso con contraseña
-11. año de ficha subida
-12. añdir perfiles multiples, tipo dos padres
+10. cuenta bancaria, acceso con contraseña -> consultar con el grupo
+11. año de ficha subida -> consultar si se tieen que reentregar cada año
 13. infromacion encesaria para avisos
-14. historial de archivos
-15. panel para ver sis e a entregado la documentacion en admin
+
+# MMMM....
+12. añdir perfiles multiples, tipo dos padres
+Pued crear dos eprfiles de ser necesario
+Preguntar si es necesario tener mas que un perfil por familia

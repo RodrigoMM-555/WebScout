@@ -11,6 +11,11 @@ while($col = $columnas_result->fetch_assoc()){
     $nombre = $col['Field'];
     // Creamos un label bonito automáticamente
     $label = ucfirst(str_replace('_',' ',$nombre));
+    if ($nombre == "id_usuario") {
+        $label = "Madre/Padre";
+    } elseif ($nombre == "anio") {
+        $label = "Año";
+    }
     $opcionesOrden[$nombre] = $label;
 }
 ?>
@@ -41,7 +46,16 @@ while($col = $columnas_result->fetch_assoc()){
         while ($fila = $resultado->fetch_assoc()) {
             echo "<tr>";
             foreach($fila as $clave=>$valor){
+                if ($clave == "id_usuario") {
+                    echo "<th>Madre/Padre</th>";
+                    continue;
+                } elseif ($clave == "anio") {
+                    echo "<th>Año</th>";
+                    continue;
+                } else {
+                $clave = ucfirst(str_replace('_',' ',$clave));
                 echo "<th>".$clave."</th>";
+                }
             }
             echo "<th>Editar</th><th>Eliminar</th>";
             echo "</tr>";

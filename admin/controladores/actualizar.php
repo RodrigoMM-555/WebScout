@@ -63,7 +63,7 @@ if ($id) {
             $selected = $valores['id_usuario'] ?? '';
             echo "
                 <div class='control_formulario'>
-                    <label>$clave</label>
+                    <label>Madre/Padre</label>
                     <select name='$clave'>
             ";
             while ($u = $resultado2->fetch_assoc()) {
@@ -102,6 +102,9 @@ if ($id) {
         }
         else {
             $value = $valores[$clave] ?? '';
+            if ($fila["Field"] === "anio") {
+                $clave = "año";
+            }
             echo "
                 <div class='control_formulario'>
                     <label>$clave</label>

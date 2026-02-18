@@ -60,7 +60,7 @@ $nombreCompleto = $educando['nombre'] . " " . $educando['apellidos'];
     <section class="izquierda <?=$clase_color?>">
         <h1><?=$educando['nombre']?> <?=$educando['apellidos']?></h1>
         <p>Sección: <?=$educando['seccion']?></p>
-        <p>Año: <?=$educando['año']?></p>
+        <p>Año: <?=$educando['anio']?></p>
         <p>DNI: <?=$educando['dni']?></p>
         <button type="button" onclick="history.back()">&larr; Atrás</button>
     </section>

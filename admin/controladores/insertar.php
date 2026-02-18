@@ -46,7 +46,7 @@
             // Primera parte 
             echo "
                 <div class='control_formulario'>
-                    <label>$clave</label>
+                    <label>Madre/Padre</label>
                     <select name='$clave'>
             ";
             // Creamos las opciones
@@ -84,8 +84,10 @@
                 </div>
         ";
         }
-
         else {
+            if ($fila["Field"] === "anio") {
+                $clave = "año";
+            }
             echo "
                 <div class='control_formulario'>
                     <label>$clave</label>

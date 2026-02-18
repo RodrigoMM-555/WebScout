@@ -17,6 +17,10 @@ foreach($_POST as $clave => $valor){
         $valor = implode(",", $valor);
     }
 
+    if($clave == "año"){
+        $clave = "anio";
+    }
+
     $valor = $conexion->real_escape_string($valor);
 
     $columnas[] = "`$clave`";
