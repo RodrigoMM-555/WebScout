@@ -68,6 +68,7 @@ $nombreCompleto = $educando['nombre'] . " " . $educando['apellidos'];
     <section class="derecha">
         <h1>Documentación</h1>
 
+        <article>
         <div class="documentacion" id="doc1">
             <p>1-Ficha de inscripción</p>
             <a href="../circulares/plantillas/1-Ficha de inscripción.pdf" target="_blank">⬇️</a>
@@ -111,6 +112,7 @@ $nombreCompleto = $educando['nombre'] . " " . $educando['apellidos'];
                 <input type='submit' value='⬆️'>
             </form>
         </div>
+        </article>
 
     </section>
 </main>
@@ -127,8 +129,6 @@ $titulos = [
 $nombreCarpeta = limpiarTexto($nombreCompleto);
 
 $ruta = $_SERVER['DOCUMENT_ROOT'] . '/WebScout/circulares/educandos/' . $nombreCarpeta;
-
-echo "error: " . $ruta;
 
 if (is_dir($ruta)) {
 

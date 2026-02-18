@@ -252,8 +252,7 @@ main:has(section.izquierda, section.derecha) {
 }
 
 /* Columnas */
-section.izquierda,
-section.derecha {
+section.izquierda, section.derecha {
     background: var(--gris-claro);
     width: 350px;
     padding: 30px;
@@ -261,6 +260,18 @@ section.derecha {
     border-radius: 0 0 var(--radius) var(--radius); /* redondeo solo abajo */
     box-shadow: var(--sombra);
 }
+
+section.derecha:has(article) {
+    width: auto;
+}
+
+section.derecha article{
+    display: grid;
+    grid-template-columns: repeat(2,2fr);
+    gap: 15px;
+
+}
+
 section.izquierda.colonia { background: orange; color: black; }
 section.izquierda.manada { background: yellow; color: black; }
 section.izquierda.tropa { background: blue; color: white; }
