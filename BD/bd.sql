@@ -17,7 +17,7 @@ CREATE TABLE educandos (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(100),
     apellidos VARCHAR(100),
-    año INT,
+    anio INT,
     seccion VARCHAR(100),
     dni VARCHAR(9),
     id_usuario INT NOT NULL,
@@ -30,7 +30,11 @@ CREATE TABLE avisos (
     titulo VARCHAR(255),
     secciones VARCHAR(255),
     fecha_hora DATETIME,
-    circular VARCHAR(255)
+    circular VARCHAR(255),
+    lugar VARCHAR(255),
+    municipio VARCHAR(255),
+    provincia VARCHAR(255),
+    responsable VARCHAR(255)
 );
 
 
@@ -52,3 +56,5 @@ FLUSH PRIVILEGES;
 -- Modificaciones
 ALTER TABLE avisos ADD COLUMN fecha_hora DATETIME;
 ALTER TABLE avisos ADD COLUMN CIRCULAR VARCHAR(255);
+ALTER TABLE avisos ADD COLUMN responsable VARCHAR(255);
+ALTER TABLE educandos CHANGE COLUMN `año` `anio` INT;

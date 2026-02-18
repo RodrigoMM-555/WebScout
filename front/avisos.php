@@ -82,6 +82,10 @@ while ($aviso = $resultado->fetch_assoc()) {
         echo "<h3>" . htmlspecialchars($aviso["titulo"]) . "</h3>";
         echo "<p>" . nl2br(htmlspecialchars($aviso["contenido"])) . "</p>";
         echo "<p style='font-size:14px; color:gray;'>$fecha_formateada</p>";
+        echo "<p>Lugar: " . $aviso["lugar"] . "</p>";
+        echo "<p>Municipio: " . $aviso["municipio"] . "</p>";
+        echo "<p>Provincia: " . $aviso["provincia"] . "</p>";
+        echo "<p>Responsable de la actividad: ".$aviso["responsable"]."</p>";
         echo "<p>Secciones: " . implode(", ", explode(",", $aviso["secciones"])) . "</p>";
 
         if ($aviso["circular"] == "no") {
