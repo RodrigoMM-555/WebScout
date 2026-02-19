@@ -12,7 +12,6 @@ deberiamos poder verlo desde el propio panel de avisos, ¿otra tabla de mysql pe
 11. año de ficha subida -> consultar si se tieen que reentregar cada año
 13. infromacion encesaria para avisos
 
-# MMMM....
-12. añdir perfiles multiples, tipo dos padres
-Pued crear dos eprfiles de ser necesario
-Preguntar si es necesario tener mas que un perfil por familia
+# Cosas a mejorar
+Usar funciones apra agrupar codigo repetido, por ejemplo el limpiado de texto
+
