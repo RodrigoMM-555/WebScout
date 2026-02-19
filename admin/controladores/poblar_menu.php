@@ -1,38 +1,57 @@
 <?php
-	// Ahora lo que quiero es un listado de las tablas en la base de datos
-	$resultado = $conexion->query("
-    SHOW TABLES;
-    ");
+    // Recogemos parámetros
+    $tabla = $_GET['tabla'] ?? null;
+    $seccion = $_GET['seccion'] ?? null;
+
+    // Listado de tablas
+    $resultado = $conexion->query("SHOW TABLES;");
+
     while ($fila = $resultado->fetch_assoc()) {
-        $clase = "";							            // De entrada no tienes clase	
-        if($fila['Tables_in_'.$db] == $_GET['tabla']){	    // Pero si el nombre de esta tabla coincide con la tabla cargada
-            $clase  = "activo";			                    // En ese caso tu clase es "activo"
+
+        $nombreRealTabla = $fila['Tables_in_'.$db];
+        $clase = "";
+
+        // Marca la tabla principal como activa
+        if($nombreRealTabla == $tabla){
+            $clase  = "activo";
         }
-        
-        $nombre_tabla = ucfirst(str_replace('_',' ',$fila['Tables_in_'.$db]));
+
+        $nombre_tabla = ucfirst(str_replace('_',' ',$nombreRealTabla));
 
         if ($nombre_tabla == "Educandos") {
+
+            // Clases activas por sección
+            $claseColonia = ($seccion == "colonia") ? "activo" : "";
+            $claseManada  = ($seccion == "manada") ? "activo" : "";
+            $claseTropa   = ($seccion == "tropa") ? "activo" : "";
+            $clasePosta   = ($seccion == "posta") ? "activo" : "";
+            $claseRutas   = ($seccion == "rutas") ? "activo" : "";
+
             echo '
-                <a href="?tabla='.$fila['Tables_in_'.$db].'" class="'.$clase.'">
-                '.$nombre_tabla.'
+                <a href="?tabla='.$nombreRealTabla.'" class="'.$clase.'">
+                    '.$nombre_tabla.'
                 </a>
-                <a href="?tabla='.$fila['Tables_in_'.$db].'&seccion=colonia" class="colonia">Colonia</a>
-                <a href="?tabla='.$fila['Tables_in_'.$db].'&seccion=manada" class="manada">Manada</a>
-                <a href="?tabla='.$fila['Tables_in_'.$db].'&seccion=tropa" class="tropa">Tropa</a>
-                <a href="?tabla='.$fila['Tables_in_'.$db].'&seccion=posta" class="posta">Posta</a>
-                <a href="?tabla='.$fila['Tables_in_'.$db].'&seccion=rutas" class="rutas">Rutas</a>
+
+                <a href="?tabla='.$nombreRealTabla.'&seccion=colonia" class="colonia '.$claseColonia.'">Colonia</a>
+                <a href="?tabla='.$nombreRealTabla.'&seccion=manada" class="manada '.$claseManada.'">Manada</a>
+                <a href="?tabla='.$nombreRealTabla.'&seccion=tropa" class="tropa '.$claseTropa.'">Tropa</a>
+                <a href="?tabla='.$nombreRealTabla.'&seccion=posta" class="posta '.$clasePosta.'">Posta</a>
+                <a href="?tabla='.$nombreRealTabla.'&seccion=rutas" class="rutas '.$claseRutas.'">Rutas</a>
             ';
+
         } else {
+
             echo '
-                <a href="?tabla='.$fila['Tables_in_'.$db].'" class="'.$clase.'">
-                '.$nombre_tabla.'
+                <a href="?tabla='.$nombreRealTabla.'" class="'.$clase.'">
+                    '.$nombre_tabla.'
                 </a>
             ';
         }
     }
 ?>
+
 <style>
-	.activo{
-  	border: 2px solid #000;
-  }
+    .activo{
+        border: 2px solid #000;
+    }
 </style>
