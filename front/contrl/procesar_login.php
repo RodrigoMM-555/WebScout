@@ -1,6 +1,8 @@
+<!-- Procesar login -->
 <?php
 include '../inc/conexion_bd.php';
 
+// Recogemos la ifnormacion de login
 $nombre = trim($_POST['usuario']);
 $contraseña = $_POST['password'];
 
@@ -16,6 +18,7 @@ if ($resultado->num_rows === 0) {
     header("Location: ../index.php?error=invalid");
     exit;
 }
+
 $stored_password = $resultado->fetch_assoc()['contraseña'];
 
 // Verificar la contraseña

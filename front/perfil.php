@@ -1,20 +1,22 @@
+<!-- Perfil de los padres -->
 <?php 
 include("inc/header.html");
 include("inc/conexion_bd.php");
 
+// Obtenemos el nombre del usuario de la sesión
 session_start();
 $nombre = $_SESSION["nombre"];
 
-// Preparar y ejecutar la consulta para el usuario
+// Preparar y ejecutar la consulta para usuarios
 $sql = "SELECT * FROM usuarios WHERE nombre = ?";
 $stmt = $conexion->prepare($sql);
 $stmt->bind_param("s", $nombre);
 $stmt->execute();
 $resultado = $stmt->get_result();
-
-// Sacamos la fila del resultado del usuario
 $fila = $resultado->fetch_assoc();
 ?>
+
+<!-- Pintamos la informacion del ususario -->
 <main>
     <section class="izquierda">
         <h1>Perfil</h1>
@@ -59,11 +61,11 @@ while($educando = $resultado_educandos->fetch_assoc()) {
             $clase = 'otros';
     }
 
+    // Pintamos al hijo con su clase correspondiente y un onclick para ir a su perfil
     echo "<div class='hijo $clase' onclick=\"window.location='educandos.php?id=".$educando['id']."'\">"
     .$educando['nombre']." ".$educando['apellidos']."</div>";
 }
 ?>
-
     </section>
 </main>
 

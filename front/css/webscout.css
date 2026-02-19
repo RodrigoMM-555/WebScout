@@ -315,7 +315,7 @@ section.derecha p {
     color: black;
 }
 
-/* Documentación */
+
 .documentacion {
     padding: 15px;
     margin: 20px 0;
@@ -330,7 +330,7 @@ section.derecha p {
     border-left-color: #28a745;
 }
 
-/* ===== Responsive corregido ===== */
+/* ===== Responsive ===== */
 @media (max-width: 900px) {
     main:has(section.izquierda, section.derecha) {
         flex-direction: column;
@@ -413,6 +413,7 @@ main.avisos h1 {
     text-align: center;
     color: #666;
 }
+
 
 /* =========================================================
    ======================== RESPONSIVE ======================

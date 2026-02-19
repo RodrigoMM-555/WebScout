@@ -1,3 +1,4 @@
+<!-- Conexiona la BBDD del front -->
 <?php
     $host = "localhost";
     $user = "Uwebscout";

@@ -1,8 +1,10 @@
 sudo mysql -u root -p
 
+-- Crear y activar la base de datos
 CREATE DATABASE WebScout;
 USE WebScout;
 
+-- Tabla de usuarios
 CREATE TABLE usuarios (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL,
@@ -13,6 +15,7 @@ CREATE TABLE usuarios (
     direccion VARCHAR(100) NOT NULL
 );
 
+-- Tabla de educandos, foreign key a usuarios n a 1
 CREATE TABLE educandos (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(100),
@@ -25,6 +28,7 @@ CREATE TABLE educandos (
         ON DELETE CASCADE
 );
 
+-- Tabla de avisos
 CREATE TABLE avisos (
     id INT AUTO_INCREMENT PRIMARY KEY,
     titulo VARCHAR(255),
@@ -37,7 +41,7 @@ CREATE TABLE avisos (
     responsable VARCHAR(255)
 );
 
-
+-- Crear el usuario y asignar permisos
 CREATE USER 
 'Uwebscout'@'localhost' 
 IDENTIFIED  BY 'Uwebscout5$';

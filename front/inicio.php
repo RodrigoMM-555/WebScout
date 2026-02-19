@@ -7,17 +7,15 @@ include("inc/header.html")
     <article class="carrusel">
         <img src="../img/lis.jpg" alt="placeholder">
         <img src="../img/SCOUT.png" alt="placeholder">
-
-        <!-- Overlay oscuro -->
+        <!-- Difuminado y texto -->
         <div class="overlay"></div>
-
-        <!-- Texto centrado -->
         <div class="texto-carrusel">Grupo Scout Seeonee</div>
     </article>
 
      <article class="info">
         <!-- Imagen del calendario -->
         <img class="calendario" src="../img/calendario.jpg" alt="placeholder">
+
         <!-- Info varia -->
         <div>
             <p>Correo</p>
@@ -27,6 +25,7 @@ include("inc/header.html")
     </article>
 </main>
 
+<!-- Script del carrusel de fotos -->
 <script>
 let contenedor = document.querySelector(".carrusel");
 let contenido = document.querySelectorAll(".carrusel img")
@@ -75,7 +74,6 @@ botonatras.onclick = function(){
 // Ajusta carrusel al cambiar tamaño de pantalla
 window.addEventListener('resize', actualizarCarrusel);
 </script>
-
 
 <?php
 include("inc/footer.html")
