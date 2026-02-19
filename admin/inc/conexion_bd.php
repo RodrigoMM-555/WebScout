@@ -1,3 +1,4 @@
+<!-- Conexion BBDD admin -->
 <?php
     $host = "localhost";
     $user = "Uwebscout";

@@ -1,3 +1,4 @@
+<!-- Parecido a procesa insertar pero poniedno los anteriores valores -->
 <?php
 // Sacamos el nombre de la tabla
 $tabla = $_GET['tabla'];

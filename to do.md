@@ -1,17 +1,29 @@
 # PRIORITARIO
-17. Tabla para lisat de espera
+- Tabla para lista de espera
 
-14. historial de archivos para los padres
-15. panel para ver si se a entregado la documentacion en admin -> podemos hacer una tabla o un grid, verde entregado rojo por entregar
-deberiamos poder verlo desde el propio panel de avisos, ¿otra tabla de mysql pero que sea dinamica?
-16. tabla por secciones
+- historial de archivos para los padres
+- panel para ver si se a entregado la documentacion en admin -> podemos hacer una tabla o un grid, verde entregado rojo por entregar
+deberiamos poder verlo desde el propio panel de avisos, ¿otra tabla de mysql pero que sea dinamica? -> MngoDB??
+
 
 # SECUNDARIO
-5. Hacer un menu grafico
-6. formulario de masistencia a losa visos -> si viene se le deja entregar la documentacion, sino no se le deja
-7. Añadir un calendario dinamico y un menu para modificarlo
-10. cuenta bancaria, acceso con contraseña -> consultar con el grupo
-11. año de ficha subida -> consultar si se tieen que reentregar cada año
-13. infromacion encesaria para avisos
-12. añadir mas de un apdre al usuario
-13. añadir comprobaciones para evitar errores fatales o warnings
+- formulario de asistencia en los avisos -> si viene se le deja entregar la documentacion, sino viene no se le deja
+- Añadir un calendario dinamico y un menu para modificarlo
+- añadir mas de un padre al usuario
+- añadir comprobaciones para evitar errores fatales o warnings
+- que se ordenen correctamente las secciones
+
+
+
+# CONSULTAS AL GRUPO
+- cuenta bancaria, acceso con contraseña -> consultar con el grupo
+- año de subida de la ficha -> consultar si se tieen que reentregar cada año
+
+
+# TERCIARIO
+Boton para subir todos los educandos un año
+Que las secciones vayan segun los años
+
+Necesario -> hacer que el campo seccion sea insertado segun el año
+          -> rehacer la logica de varios archivos
+          -> pruebas de compatibilidad

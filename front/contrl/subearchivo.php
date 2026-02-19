@@ -1,24 +1,22 @@
+<!-- Subir archivos segun nombres -->
 <?php
-
 include("../inc/conexion_bd.php");
 
-// Mostrar errores durante desarrollo
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-
+// Validar que se recibió un archivo sin errores
 if (!isset($_FILES['archivo']) || $_FILES['archivo']['error'] != 0) {
     die("Error: no se recibió ningún archivo o hubo un error en la subida.");
 }
 
-$archivoTmp = $_FILES['archivo']['tmp_name'];
-$nombreOriginal = $_FILES['archivo']['name'];
-$extension = pathinfo($nombreOriginal, PATHINFO_EXTENSION);
+// Obtener información del archivo
+$archivoTmp = $_FILES['archivo']['tmp_name'];                               // Ruta temporal del archivo
+$nombreOriginal = $_FILES['archivo']['name'];                               // Nombre original del archivo
+$extension = pathinfo($nombreOriginal, PATHINFO_EXTENSION);    // Extensión del archivo
 
-// Recoger datos
+// Recoger datos, si no hay se asigna un valor por defecto
 $nombreEducando = $_POST['nombreCompleto'] ?? 'sin_nombre';
 $tituloAviso = $_POST['tituloAviso'] ?? 'sin_aviso';
 
-// Función segura
+// Función para limpiar el texto
 function limpiarTexto($texto) {
     $texto = str_replace(' ', '_', $texto);
     $tmp = @iconv('UTF-8', 'ASCII//TRANSLIT', $texto);
@@ -26,13 +24,14 @@ function limpiarTexto($texto) {
     return preg_replace('/[^A-Za-z0-9_\-]/', '', $texto);
 }
 
+// Limpiar los textos para evitar problemas con caracteres especiales
 $nombreEducando = limpiarTexto($nombreEducando);
 $tituloAviso = limpiarTexto($tituloAviso);
 
-// Carpeta destino CORRECTA
+// Carpeta destino del archivo
 $baseDir = $_SERVER['DOCUMENT_ROOT'] . '/WebScout/circulares/educandos/' . $nombreEducando;
 
-// Crear carpeta si no existe
+// Crear carpeta si no existe, conpermisos adecuados y mensaje de error
 if (!is_dir($baseDir)) {
     if (!mkdir($baseDir, 0777, true)) {
         $err = error_get_last();
@@ -40,9 +39,12 @@ if (!is_dir($baseDir)) {
     }
 }
 
+// Preparamos el nombre y ruta final
 $nuevoNombre = $tituloAviso . "_" . $nombreEducando . "." . $extension;
 $rutaFinal = $baseDir . '/' . $nuevoNombre;
 
+// Mover el archivo a la ubicación final, tambien sacamos el id del educando para redireccionar a su pagina, si no se encuentra se redirecciona al inicio
+// y en caso de problema con la subida se muestra un mensaje de error
 if (move_uploaded_file($archivoTmp, $rutaFinal)) {
     $origen = $_GET['ori'] ?? 'inicio';
     if ($origen == "educandos") {

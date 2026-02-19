@@ -1,15 +1,17 @@
+<!-- Pintar las tablas -->
 <?php
 // Recogemos los parámetros de ordenación si vienen por GET
 $ordenarPor = $_GET['ordenar_por'] ?? 'id';
 $direccion = $_GET['direccion'] ?? 'ASC'; // ASC o DESC
 $tabla = $_GET['tabla'] ?? 'educandos';
+$seccion = $_GET['seccion'] ?? null;
 
 // Obtener las columnas dinámicamente desde la base de datos
 $opcionesOrden = [];
 $columnas_result = $conexion->query("SHOW COLUMNS FROM `$tabla`");
 while($col = $columnas_result->fetch_assoc()){
     $nombre = $col['Field'];
-    // Creamos un label bonito automáticamente
+    // Creamos un label adecuado automáticamente
     $label = ucfirst(str_replace('_',' ',$nombre));
     if ($nombre == "id_usuario") {
         $label = "Madre/Padre";
@@ -20,14 +22,15 @@ while($col = $columnas_result->fetch_assoc()){
 }
 ?>
 
+<!-- Filtros de ordenacion -->
 <div class="tabla-controles" style="display:flex; align-items:center; margin-bottom:10px; gap:10px; flex-wrap:wrap;">
     <!-- Botones de ordenación dinámicos -->
     <div style="display:flex; gap:5px; flex-wrap:wrap;">
         <?php foreach($opcionesOrden as $columna => $label): 
             $nuevaDireccion = ($ordenarPor == $columna && $direccion == 'ASC') ? 'DESC' : 'ASC';
         ?>
-            <a href="?tabla=<?= htmlspecialchars($tabla) ?>&ordenar_por=<?= $columna ?>&direccion=<?= $nuevaDireccion ?>" 
-               style="padding:5px 10px; background:#555; color:#fff; text-decoration:none; border-radius:4px; <?= $ordenarPor==$columna?'background:#007bff;':'' ?>">
+            <a href="?tabla=<?= htmlspecialchars($tabla) ?>&ordenar_por=<?= $columna ?>&direccion=<?= $nuevaDireccion ?><?= $seccion ? '&seccion='.urlencode($seccion) : '' ?>"
+            style="padding:5px 10px; background:#555; color:#fff; text-decoration:none; border-radius:4px; <?= $ordenarPor==$columna?'background:#007bff;':'' ?>">
                 <?= $label ?> <?= ($ordenarPor==$columna)?($direccion=='ASC'?'↑':'↓'):'' ?>
             </a>
         <?php endforeach; ?>
@@ -61,8 +64,14 @@ while($col = $columnas_result->fetch_assoc()){
             echo "</tr>";
         }
 
-        // Ahora la consulta completa con orden
-        $resultado = $conexion->query("SELECT * FROM `$tabla` ORDER BY `$ordenarPor` $direccion;");
+        // Consultas de ordenacion y filtrado por sección
+        if(isset($_GET['seccion'])){
+                    $seccion = $_GET['seccion'];
+                    $resultado = $conexion->query("SELECT * FROM `$tabla` WHERE seccion = '$seccion' ORDER BY `$ordenarPor` $direccion;");
+        } else {
+            // Ahora la consulta completa con orden
+            $resultado = $conexion->query("SELECT * FROM `$tabla` ORDER BY `$ordenarPor` $direccion;");
+        }
 
         // Colores por sección
         $coloresSeccion = [

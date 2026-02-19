@@ -13,6 +13,9 @@
         if ($fila['Extra'] === 'auto_increment') {
             continue;
         }
+
+        // Segun como se llame la columna, pintamos un tipo de input u otro para evitar introducciones erróneas
+
         elseif ($fila['Field'] === 'seccion') {
             echo "
                 <div class='control_formulario'>
