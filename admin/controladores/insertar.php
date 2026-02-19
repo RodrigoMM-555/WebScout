@@ -17,6 +17,7 @@
         // Segun como se llame la columna, pintamos un tipo de input u otro para evitar introducciones erróneas
 
         elseif ($fila['Field'] === 'seccion') {
+            $clave = ucfirst($clave);
             echo "
                 <div class='control_formulario'>
                     <label>$clave</label>
@@ -31,6 +32,7 @@
             ";
         }
         elseif( $fila["Field"] === "secciones") {
+            $clave = ucfirst($clave);
             echo "
                 <div class='control_formulario secciones-multiples'>
                     <label>$clave</label><br>
@@ -66,6 +68,7 @@
             ";
         }
         elseif ($fila["Field"] === "fecha_hora") {
+            $clave = ucfirst($clave);
             echo "
                 <div class='control_formulario'>
                     <label>$clave</label>
@@ -79,7 +82,7 @@
         elseif ($fila["Field"]== "circular") {
             echo "
                 <div class='control_formulario'>
-                    <label>circular</label>
+                    <label>Circular</label>
                     <select name='circular'>
                         <option value='si'>Si</option>
                         <option value='no'>No</option>
@@ -89,8 +92,9 @@
         }
         else {
             if ($fila["Field"] === "anio") {
-                $clave = "año";
+                $clave = "Año";
             }
+            $clave = ucfirst($clave);
             echo "
                 <div class='control_formulario'>
                     <label>$clave</label>

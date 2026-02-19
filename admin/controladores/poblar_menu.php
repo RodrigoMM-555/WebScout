@@ -21,12 +21,11 @@
         if ($nombre_tabla == "Educandos") {
 
             // Clases activas por sección
-            $claseColonia = ($seccion == "colonia") ? "activo" : "";
-            $claseManada  = ($seccion == "manada") ? "activo" : "";
-            $claseTropa   = ($seccion == "tropa") ? "activo" : "";
-            $clasePosta   = ($seccion == "posta") ? "activo" : "";
-            $claseRutas   = ($seccion == "rutas") ? "activo" : "";
-
+            $claseColonia = ($seccion == "colonia") ? "seccion-colonia" : "";
+            $claseManada  = ($seccion == "manada") ? "seccion-manada" : "";
+            $claseTropa   = ($seccion == "tropa") ? "seccion-tropa" : "";
+            $clasePosta   = ($seccion == "posta") ? "seccion-posta" : "";
+            $claseRutas   = ($seccion == "rutas") ? "seccion-rutas" : "";
             echo '
                 <a href="?tabla='.$nombreRealTabla.'" class="'.$clase.'">
                     '.$nombre_tabla.'
@@ -51,7 +50,29 @@
 ?>
 
 <style>
-    .activo{
-        border: 2px solid #000;
-    }
+a.seccion-colonia { 
+    background-color: #ffe5b4; 
+    color: var(--morado-oscuro);
+    border: 1px solid #000;
+}
+
+a.seccion-manada { 
+    background-color: #fff9c4; 
+    color: var(--morado-oscuro);
+    border: 1px solid #000;
+}
+a.seccion-tropa { 
+    background-color: #bbdefb;
+    color: var(--morado-oscuro);
+    border: 1px solid #000;
+}
+a.seccion-posta { 
+    background-color: #ffcdd2;
+    color: var(--morado-oscuro);
+    border: 1px solid #000;
+}
+a.seccion-rutas { background-color: #c8e6c9; 
+    color: var(--morado-oscuro);
+    border: 1px solid #000;
+}
 </style>

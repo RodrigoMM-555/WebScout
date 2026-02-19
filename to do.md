@@ -1,10 +1,6 @@
 # PRIORITARIO
 - Tabla para lista de espera
-
 - historial de archivos para los padres
-- panel para ver si se a entregado la documentacion en admin -> podemos hacer una tabla o un grid, verde entregado rojo por entregar
-deberiamos poder verlo desde el propio panel de avisos, ¿otra tabla de mysql pero que sea dinamica? -> MngoDB??
-
 
 # SECUNDARIO
 - formulario de asistencia en los avisos -> si viene se le deja entregar la documentacion, sino viene no se le deja
