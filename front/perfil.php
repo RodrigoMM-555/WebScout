@@ -15,29 +15,38 @@ $stmt->execute();
 $resultado = $stmt->get_result();
 $fila = $resultado->fetch_assoc();
 ?>
-
-<!-- Pintamos la informacion del ususario -->
 <main>
+    <!-- Pintamso el usuario -->
     <section class="izquierda">
         <h1>Perfil</h1>
-        <article>
-            <div>
-                <p><?=$fila["nombre"]?> <?=$fila["apellidos"] ?></p>
-                <p><?=$fila["telefono"]?></p>
-                <p><?=$fila["email"]?></p>
-            </div>
-            <div>
-                <p><?=$fila["nombre2"]?> <?=$fila["apellidos2"] ?></p>
-                <p><?=$fila["telefono2"]?></p>
-                <p><?=$fila["email2"]?></p>
-            </div>
-        </article>
-        <p><?=$fila["direccion"]?></p>
+        <div>
+            <p>
+                <?=$fila["nombre"]?> <?=$fila["apellidos"]?>
+                <?php if (!empty($fila["nombre2"])): ?>
+                    / <?=$fila["nombre2"]?> <?=$fila["apellidos2"]?>
+                <?php endif; ?>
+            </p>
+
+            <p>
+                <?=$fila["telefono"]?>
+                <?php if (!empty($fila["telefono2"])): ?>
+                    / <?=$fila["telefono2"]?>
+                <?php endif; ?>
+            </p>
+
+            <p>
+                <?=$fila["email"]?>
+                <?php if (!empty($fila["email2"])): ?>
+                    / <?=$fila["email2"]?>
+                <?php endif; ?>
+            </p>
+
+            <p><?=$fila["direccion"]?></p>
+        </div>
     </section>
 
     <section class="derecha">
         <h1>Hijos</h1>
-
 <?php
 // Preparar y ejecutar la consulta para educandos
 $sql = "SELECT * FROM educandos WHERE id_usuario = ? ORDER BY FIELD(seccion, 'colonia', 'manada', 'tropa', 'posta', 'rutas')";

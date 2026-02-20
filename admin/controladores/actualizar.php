@@ -114,7 +114,7 @@ if ($id) {
                     <label>Rol</label>
                     <select name='rol'>
                         <option value='usuario'>Usuario</option>
-                        <option value='administrador'>Administrador</option>
+                        <option value='admin'>Administrador</option>
                     </select>
                 </div>
         ";
