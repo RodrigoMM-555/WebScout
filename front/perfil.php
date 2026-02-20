@@ -31,7 +31,7 @@ $fila = $resultado->fetch_assoc();
 
 <?php
 // Preparar y ejecutar la consulta para educandos
-$sql = "SELECT * FROM educandos WHERE id_usuario = ?";
+$sql = "SELECT * FROM educandos WHERE id_usuario = ? ORDER BY FIELD(seccion, 'colonia', 'manada', 'tropa', 'posta', 'rutas')";
 $stmt = $conexion->prepare($sql);
 $stmt->bind_param("i", $fila["id"]);  // id es un entero
 $stmt->execute();

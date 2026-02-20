@@ -174,7 +174,7 @@ if (!array_key_exists($ordenarPor, $opcionesOrden)) {
                     $aviso_educandos = [];
 
                     if (!empty($seccionesArray)) {
-                        $stmtEdu = $conexion->prepare("SELECT nombre, apellidos FROM `educandos` WHERE seccion = ?");
+                        $stmtEdu = $conexion->prepare("SELECT nombre, apellidos, seccion FROM `educandos` WHERE seccion = ?");
                         foreach ($seccionesArray as $sec) {
                             $secTrim = (string)$sec;
                             $stmtEdu->bind_param("s", $secTrim);
@@ -195,6 +195,7 @@ if (!array_key_exists($ordenarPor, $opcionesOrden)) {
                     echo "<table class='tabla-archivos'>
                             <tr>
                                 <th>Niñ@</th>
+                                <th>Sección</th>
                                 <th>Entregado</th>
                             </tr>";
 
@@ -207,8 +208,10 @@ if (!array_key_exists($ordenarPor, $opcionesOrden)) {
                         }
                         $vistos[$nombreCompleto] = true;
                         $lista_nombres[] = $nombreCompleto;
+                        $lista_secciones[] = $edu['seccion'] ?? '';
                     }
 
+                    $nsec = 0;
                     foreach ($lista_nombres as $nombreCompleto) {
                         // Comprobamos entrega
                         $nombreCarpeta = function_exists('limpiarTexto') ? limpiarTexto($nombreCompleto) : $nombreCompleto;
@@ -234,13 +237,15 @@ if (!array_key_exists($ordenarPor, $opcionesOrden)) {
                         $filaClaseEntrega = $entregado ? "tr-entregado" : "tr-pendiente";
                         $nombreCompleto = str_replace('_', ' ', $nombreCompleto);
 
-                        echo "<tr class='" . htmlspecialchars($filaClaseEntrega) . "'>
+                        echo "<tr class='" . htmlspecialchars($filaClaseEntrega) . " seccion-".htmlspecialchars($lista_secciones[$nsec])."'>
                                 <td>" . htmlspecialchars($nombreCompleto) . "</td>
+                                <td>" . htmlspecialchars($lista_secciones[$nsec]) . "</td>
                                 <td>" . ($entregado
                                     ? "<span style='color:green; font-weight:bold;'>Sí</span>"
                                     : "<span style='color:red; font-weight:bold;'>No</span>"
                                 ) . "</td>
                               </tr>";
+                        $nsec++;
                     }
 
                     echo "</table>";

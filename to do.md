@@ -1,15 +1,14 @@
 # PRIORITARIO
+- Poner en marcha el servidor para comprobar rutas
 - Tabla para lista de espera
 - historial de archivos para los padres
-- Datos opcionales opcionales
+- Que se muestren los datos opcionales
 
 # SECUNDARIO
 - formulario de asistencia en los avisos -> si viene se le deja entregar la documentacion, sino viene no se le deja
 - Añadir un calendario dinamico y un menu para modificarlo
-- añadir mas de un padre al usuario
 - añadir comprobaciones para evitar errores fatales o warnings
-- que se ordenen correctamente las secciones
-
+- comprobar que el pdf subido es el correcto
 
 
 # CONSULTAS AL GRUPO
