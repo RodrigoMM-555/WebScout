@@ -1,3 +1,12 @@
+<?php
+session_start();
+
+if (!isset($_SESSION['rol']) || $_SESSION['rol'] !== 'admin') {
+    header("Location: https://www.youtube.com/watch?v=dQw4w9WgXcQ");
+    exit;
+}
+?>
+
 <!doctype html>
 <html>
 	<head>

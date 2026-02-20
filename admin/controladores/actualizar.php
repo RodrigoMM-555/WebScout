@@ -59,7 +59,7 @@ if ($id) {
             ";
         }
         elseif ($fila["Field"] === "id_usuario") {
-            $sql2 = "SELECT id, nombre, apellidos FROM usuarios";
+            $sql2 = "SELECT id, nombre, apellidos, rol FROM usuarios";
             $resultado2 = $conexion->query($sql2);
             $selected = $valores['id_usuario'] ?? '';
             echo "
@@ -68,6 +68,9 @@ if ($id) {
                     <select name='$clave'>
             ";
             while ($u = $resultado2->fetch_assoc()) {
+                if ($u["rol"] !== "usuario") {
+                    continue; // Solo mostrar usuarios normales, no admins
+                }
                 $id_u = $u['id'];
                 $nombre_u = $u['nombre'];
                 $apellidos_u = $u['apellidos'];

@@ -1,13 +1,12 @@
-<!-- Procesar login -->
 <?php
 include '../inc/conexion_bd.php';
 
-// Recogemos la ifnormacion de login
+// Recogemos la información de login
 $nombre = trim($_POST['usuario']);
 $contraseña = $_POST['password'];
 
-// Obtener la contraseña del usuario
-$sql = "SELECT contraseña FROM usuarios WHERE nombre = ? LIMIT 1";
+// Obtener contraseña y rol
+$sql = "SELECT contraseña, rol FROM usuarios WHERE nombre = ? LIMIT 1";
 $stmt = $conexion->prepare($sql);
 $stmt->bind_param("s", $nombre);
 $stmt->execute();
@@ -19,10 +18,11 @@ if ($resultado->num_rows === 0) {
     exit;
 }
 
-$stored_password = $resultado->fetch_assoc()['contraseña'];
+// Obtener datos del usuario
+$usuario = $resultado->fetch_assoc();
 
-// Verificar la contraseña
-if (!password_verify($contraseña, $stored_password)) {
+// Verificar contraseña
+if (!password_verify($contraseña, $usuario['contraseña'])) {
     header("Location: ../index.php?error=invalid");
     exit;
 }
@@ -30,6 +30,13 @@ if (!password_verify($contraseña, $stored_password)) {
 // Iniciar sesión
 session_start();
 $_SESSION["nombre"] = $nombre;
+$_SESSION["rol"] = $usuario['rol'];
 
-header("Location: ../inicio.php");
+// 🔹 Redirección según rol
+if ($usuario['rol'] === 'admin') {
+    header("Location: ../../admin/index.php");
+} else {
+    header("Location: ../inicio.php");
+}
 exit;
+?>

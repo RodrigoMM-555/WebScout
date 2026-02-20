@@ -24,7 +24,12 @@ foreach($_POST as $clave => $valor){
     $valor = $conexion->real_escape_string($valor);
 
     $columnas[] = "`$clave`";
-    $valores[] = "'$valor'";
+    if ($valor === "" || $valor === null) {
+        $valores[] = "NULL";
+    } else {
+        $valor = $conexion->real_escape_string($valor);
+        $valores[] = "'$valor'";
+    }
 }
 
 // Convertimos en asignaciones para UPDATE

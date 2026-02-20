@@ -8,15 +8,16 @@ USE WebScout;
 CREATE TABLE usuarios (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL,
-    apellidos VARCHAR(100),
+    apellidos VARCHAR(100) NOT NULL,
     contraseña VARCHAR(100) NOT NULL,
     email VARCHAR(100) NOT NULL,
     telefono INT NOT NULL,
-    direccion VARCHAR(100) NOT NULL,
-    nombre2 VARCHAR(100) NOT NULL,
-    apellidos2 VARCHAR(100) NOT NULL,
-    email2 VARCHAR(100) NOT NULL,
-    telefono2 INT NOT NULL
+    direccion VARCHAR(100),
+    nombre2 VARCHAR(100),
+    apellidos2 VARCHAR(100),
+    email2 VARCHAR(100),
+    telefono2 INT ,
+    rol ENUM('admin','usuario') NOT NULL DEFAULT 'usuario'
 );
 
 -- Tabla de educandos, foreign key a usuarios n a 1
@@ -69,7 +70,8 @@ ALTER TABLE educandos CHANGE COLUMN `año` `anio` INT;
 ALTER TABLE avisos ADD COLUMN lugar VARCHAR(255);
 ALTER TABLE avisos ADD COLUMN municipio VARCHAR(255);
 ALTER TABLE avisos ADD COLUMN provincia VARCHAR(255);
-ALTER TABLE usuarios ADD COLUMN nombre2 VARCHAR(100) NOT NULL;
-ALTER TABLE usuarios ADD COLUMN apellidos2 VARCHAR(100) NOT NULL;
-ALTER TABLE usuarios ADD COLUMN email2 VARCHAR(100) NOT NULL;
-ALTER TABLE usuarios ADD COLUMN telefono2 INT NOT NULL;
+ALTER TABLE usuarios ADD COLUMN nombre2 VARCHAR(100);
+ALTER TABLE usuarios ADD COLUMN apellidos2 VARCHAR(100);
+ALTER TABLE usuarios ADD COLUMN email2 VARCHAR(100);
+ALTER TABLE usuarios ADD COLUMN telefono2 INT;
+ALTER TABLE usuarios ADD COLUMN rol ENUM('admin','usuario') NOT NULL DEFAULT 'usuario';

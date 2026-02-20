@@ -15,12 +15,12 @@
         }
 
         // Segun como se llame la columna, pintamos un tipo de input u otro para evitar introducciones erróneas
-
+        // seccion
         elseif ($fila['Field'] === 'seccion') {
-            $clave = ucfirst($clave);
+            $clave2 = ucfirst($clave);
             echo "
                 <div class='control_formulario'>
-                    <label>$clave</label>
+                    <label>$clave2</label>
                     <select name='$clave'>
                         <option value='colonia'>Colonia</option>
                         <option value='manada'>Manada</option>
@@ -31,11 +31,12 @@
                 </div>
             ";
         }
+        // secciones (para actividades)
         elseif( $fila["Field"] === "secciones") {
-            $clave = ucfirst($clave);
+            $clave2 = ucfirst($clave);
             echo "
                 <div class='control_formulario secciones-multiples'>
-                    <label>$clave</label><br>
+                    <label>$clave2</label><br>
                     <input type='checkbox' name='secciones[]' value='colonia'> Colonia
                     <input type='checkbox' name='secciones[]' value='manada'> Manada
                     <input type='checkbox' name='secciones[]' value='tropa'> Tropa
@@ -44,9 +45,10 @@
                 </div>
             ";
         }
+        // id_usuario
         elseif ($fila["Field"] === "id_usuario") {
             // Consulta
-            $sql = "SELECT id, nombre, apellidos FROM usuarios";
+            $sql = "SELECT id, nombre, apellidos, rol FROM usuarios";
             $resultado = $conexion->query($sql);
             // Primera parte 
             echo "
@@ -56,6 +58,9 @@
             ";
             // Creamos las opciones
             while ($u = $resultado->fetch_assoc()) {
+                if ($u["rol"] !== "usuario") {
+                    continue; // Solo mostrar usuarios normales, no admins
+                }
                 $id = $u['id'];
                 $nombre = $u['nombre'];
                 $apellidos = $u['apellidos'];
@@ -67,11 +72,12 @@
                 </div>
             ";
         }
+        // fecha_hora
         elseif ($fila["Field"] === "fecha_hora") {
-            $clave = ucfirst($clave);
+            $clave2 = ucfirst($clave);
             echo "
                 <div class='control_formulario'>
-                    <label>$clave</label>
+                    <label>$clave2</label>
                     <input 
                         type='datetime-local'
                         name='$clave'
@@ -79,6 +85,7 @@
                 </div>
             ";
         }
+        // circular
         elseif ($fila["Field"]== "circular") {
             echo "
                 <div class='control_formulario'>
@@ -90,14 +97,27 @@
                 </div>
         ";
         }
-        else {
-            if ($fila["Field"] === "anio") {
-                $clave = "Año";
-            }
-            $clave = ucfirst($clave);
+        // rol
+        elseif ($fila["Field"]== "rol") {
             echo "
                 <div class='control_formulario'>
-                    <label>$clave</label>
+                    <label>Rol</label>
+                    <select name='rol'>
+                        <option value='usuario'>Usuario</option>
+                        <option value='administrador'>Administrador</option>
+                    </select>
+                </div>
+        ";
+        }
+        // otra cosa
+        else {
+            if ($fila["Field"] === "anio") {
+                $clave = "año";
+            }
+            $clave2 = ucfirst($clave);
+            echo "
+                <div class='control_formulario'>
+                    <label>$clave2</label>
                     <input 
                         type='text'
                         name='$clave'
