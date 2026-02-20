@@ -2,7 +2,6 @@
 - Poner en marcha el servidor para comprobar rutas
 - Tabla para lista de espera
 - historial de archivos para los padres
-- Que se muestren los datos opcionales
 
 # SECUNDARIO
 - formulario de asistencia en los avisos -> si viene se le deja entregar la documentacion, sino viene no se le deja

@@ -260,6 +260,19 @@ section.izquierda, section.derecha {
     border-radius: 0 0 var(--radius) var(--radius); /* redondeo solo abajo */
     box-shadow: var(--sombra);
 }
+section.izquierda {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+section.izquierda article {
+    width: 50%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+
+}
 
 section.derecha:has(article) {
     width: auto;

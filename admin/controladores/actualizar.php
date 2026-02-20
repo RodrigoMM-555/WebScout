@@ -5,6 +5,10 @@ $tabla = $_GET['tabla'];
 $id = $_GET['id'] ?? 0; // Obtenemos el ID del registro a actualizar (nuevo)
 echo "<h1>" . ($id ? "Actualizar" : "Insertar") . " en $tabla</h1>";
 
+if ($tabla == "usuarios") {
+    echo "<p style='color: red;'>ES NECESARIA LA CONTRASEÑA ORIGINAL PARA PODER MODIFICAR EL REGISTRO</p>";
+}
+
 // Si hay ID, cargamos los datos actuales de la fila
 $valores = [];
 if ($id) {
@@ -104,10 +108,24 @@ if ($id) {
                 </div>
         ";
         }
+        elseif ($fila["Field"]== "rol") {
+            echo "
+                <div class='control_formulario'>
+                    <label>Rol</label>
+                    <select name='rol'>
+                        <option value='usuario'>Usuario</option>
+                        <option value='administrador'>Administrador</option>
+                    </select>
+                </div>
+        ";
+        }
         else {
             $value = $valores[$clave] ?? '';
             if ($fila["Field"] === "anio") {
                 $clave = "año";
+            }
+            if ($fila["Field"] === "contraseña") {
+                $value = "";
             }
             echo "
                 <div class='control_formulario'>

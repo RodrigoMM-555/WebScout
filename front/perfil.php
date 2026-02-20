@@ -20,9 +20,18 @@ $fila = $resultado->fetch_assoc();
 <main>
     <section class="izquierda">
         <h1>Perfil</h1>
-        <p><?=$fila["nombre"]?> <?=$fila["apellidos"] ?></p>
-        <p><?=$fila["telefono"]?></p>
-        <p><?=$fila["email"]?></p>
+        <article>
+            <div>
+                <p><?=$fila["nombre"]?> <?=$fila["apellidos"] ?></p>
+                <p><?=$fila["telefono"]?></p>
+                <p><?=$fila["email"]?></p>
+            </div>
+            <div>
+                <p><?=$fila["nombre2"]?> <?=$fila["apellidos2"] ?></p>
+                <p><?=$fila["telefono2"]?></p>
+                <p><?=$fila["email2"]?></p>
+            </div>
+        </article>
         <p><?=$fila["direccion"]?></p>
     </section>
 
