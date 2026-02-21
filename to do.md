@@ -13,6 +13,7 @@
 # CONSULTAS AL GRUPO
 - cuenta bancaria, acceso con contraseña -> consultar con el grupo
 - año de subida de la ficha -> consultar si se tieen que reentregar cada año
+- tema contraseñas -> como queremos gestionarlas, podemos verlas, solo cambiarlas?
 
 
 # TERCIARIO
