@@ -8,13 +8,15 @@
 - Añadir un calendario dinamico y un menu para modificarlo
 - añadir comprobaciones para evitar errores fatales o warnings
 - comprobar que el pdf subido es el correcto
+- formulario para restablecer contraseña y contraseña necesaria para modificar el perfil
 
 
 # CONSULTAS AL GRUPO
 - cuenta bancaria, acceso con contraseña -> consultar con el grupo
 - año de subida de la ficha -> consultar si se tieen que reentregar cada año
 - tema contraseñas -> como queremos gestionarlas, podemos verlas, solo cambiarlas?
-
+- tema proteccion de datos -> como va que puedo mostrar que no hay alguna medida sobre alamcenamiento de datos?
+- Las autorizaciones hay que borrarlas o guardarlas
 
 # TERCIARIO
 Boton para subir todos los educandos un año
