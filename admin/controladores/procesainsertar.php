@@ -43,6 +43,33 @@ if(!$resultado){
     die("Error en la consulta: " . $conexion->error);
 }
 
+
+if($tabla === "avisos"){
+
+    $id_aviso = $conexion->insert_id;
+
+    // Si recibes secciones como array
+    if(isset($_POST['secciones']) && is_array($_POST['secciones'])){
+
+        $secciones = $_POST['secciones'];
+
+        $lista = implode(",", $secciones_limpias);
+
+        $sqlEducandos = "SELECT id FROM educandos WHERE seccion IN ($lista)";
+        $resEducandos = $conexion->query($sqlEducandos);
+
+        while($fila = $resEducandos->fetch_assoc()){
+            $id_educando = $fila['id'];
+
+            $sqlAsistencia = "
+                INSERT INTO asistencias (id_aviso, id_educando)
+                VALUES ($id_aviso, $id_educando)
+            ";
+            $conexion->query($sqlAsistencia);
+        }
+    }
+}
+
 // Redirección
 header("Location: ?tabla=".$tabla);
 exit;

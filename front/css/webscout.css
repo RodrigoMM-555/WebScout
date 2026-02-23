@@ -414,6 +414,9 @@ main.avisos h1 {
     color: #666;
 }
 
+.tr-entregado { background: #e9f9ed; }   /* verde */
+.tr-pendiente { background: #fdeaea; }  /* rojo */
+.tr-pendiente-gris { background: #e0e0e0; } /* gris */
 
 /* =========================================================
    ======================== RESPONSIVE ======================

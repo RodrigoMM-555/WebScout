@@ -46,6 +46,18 @@ CREATE TABLE avisos (
     responsable VARCHAR(255)
 );
 
+-- Tabla intermedia avisos-educandos -> asistencia a eventos
+CREATE TABLE asistencias (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    id_aviso INT NOT NULL,
+    id_educando INT NOT NULL,
+    asistencia ENUM('pendiente','si','no') DEFAULT 'pendiente',
+    fecha_respuesta DATETIME NULL,
+    UNIQUE KEY unique_asistencia (id_aviso, id_educando),
+    FOREIGN KEY (id_aviso) REFERENCES avisos(id) ON DELETE CASCADE,
+    FOREIGN KEY (id_educando) REFERENCES educandos(id) ON DELETE CASCADE
+);
+
 -- Crear el usuario y asignar permisos
 CREATE USER 
 'Uwebscout'@'localhost' 
