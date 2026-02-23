@@ -1,6 +1,6 @@
 <!-- Pintar las tablas -->
 <?php
-include_once "../inc/conexion.php";
+include_once "../inc/conexion_bd.php";
 
 // Recogemos parámetros de ordenación y filtro
 $ordenarPor    = $_GET['ordenar_por'] ?? 'id';  // Columna por la que ordenar, por defecto 'id'
@@ -177,111 +177,9 @@ if (!array_key_exists($ordenarPor, $opcionesOrden)) {
                 // Bloque especial para avisos circulares
                 // Se pinta una subtabla con los educandos y si entregaron la circular
                 if ($tabla === "avisos" && isset($fila["circular"]) && $fila["circular"] === "si") {
-                    $avisoId = (int)$fila['id'];
 
-                    // Obtenemos secciones y título del aviso
-                    $stmt = $conexion->prepare("SELECT secciones, titulo FROM `avisos` WHERE id = ?");
-                    $stmt->bind_param("i", $avisoId);
-                    $stmt->execute();
-                    $resAviso = $stmt->get_result();
-                    $datosAviso = $resAviso ? $resAviso->fetch_assoc() : null;
-                    $stmt->close();
+                    echo "<tr><td colspan='100%'><a href='asistencia_documentacion.php?id_aviso=" . (int)$fila['id'] . "'>Ver asistencia de documentación</a></td></tr>";
 
-                    $seccionesCSV = $datosAviso['secciones'] ?? '';
-                    $tituloAviso  = $datosAviso['titulo'] ?? '';
-
-                    $seccionesArray = array_filter(array_map('trim', explode(',', $seccionesCSV)));
-
-                    $aviso_educandos = [];
-
-                    // Obtener todos los educandos de las secciones del aviso
-                    if (!empty($seccionesArray)) {
-                        $placeholders = implode(',', array_fill(0, count($seccionesArray), '?'));
-                        $tipos = str_repeat('s', count($seccionesArray));
-
-                        $stmtEdu = $conexion->prepare(query: "SELECT nombre, apellidos, seccion FROM educandos WHERE seccion IN ($placeholders) ORDER BY FIELD(seccion, 'colonia', 'manada', 'tropa', 'posta', 'rutas')");
-                        $stmtEdu->bind_param($tipos, ...$seccionesArray);
-                        $stmtEdu->execute();
-                        $educandos_result = $stmtEdu->get_result();
-                        
-                        while ($a = $educandos_result->fetch_assoc()) {
-                            $aviso_educandos[] = $a;
-                        }
-                        $stmtEdu->close();
-                    }
-
-                    // Eliminamos duplicados por nombre completo
-                    $vistos = [];
-                    $aviso_educandos_unicos = [];
-                    foreach ($aviso_educandos as $edu) {
-                        $nombreCompleto = trim(($edu['nombre'] ?? '') . '_' . ($edu['apellidos'] ?? ''));
-                        if ($nombreCompleto === '' || isset($vistos[$nombreCompleto])) {
-                            continue;
-                        }
-                        $vistos[$nombreCompleto] = true;
-                        $aviso_educandos_unicos[] = $edu;
-                    }
-                    $aviso_educandos = $aviso_educandos_unicos;
-
-                    // Pintamos la subtabla con información de entrega
-                    echo "<tr class='" . htmlspecialchars($claseFila) . "'>";
-                    echo "<td>" . (int)$fila['id'] . "</td>";
-                    echo "<td colspan='100%'>";
-
-                    echo "<table class='tabla-archivos'>
-                            <tr>
-                                <th>Niñ@</th>
-                                <th>Sección</th>
-                                <th>Entregado</th>
-                            </tr>";
-
-                    $lista_secciones = [];
-                    foreach ($aviso_educandos as $edu) {
-                        $lista_secciones[] = $edu['seccion'] ?? '';
-                    }
-
-                    $nsec = 0;
-                    foreach ($aviso_educandos as $edu) {
-                        $nombreCompleto = trim(($edu['nombre'] ?? '') . '_' . ($edu['apellidos'] ?? ''));
-                        $nombreCarpeta = function_exists('limpiarTexto') ? limpiarTexto($nombreCompleto) : $nombreCompleto;
-                        $tituloLimpio  = function_exists('limpiarTexto') ? limpiarTexto($tituloAviso) : $tituloAviso;
-
-                        $ruta = $_SERVER['DOCUMENT_ROOT'] . '/WebScout/circulares/educandos/' . $nombreCarpeta;
-
-                        // Comprobamos si existe el archivo correspondiente a la entrega
-                        $entregado = false;
-                        if (is_dir($ruta)) {
-                            $archivos = @scandir($ruta);
-                            if ($archivos !== false) {
-                                $archivos = array_diff($archivos, ['.', '..']);
-                                $prefijo = $tituloLimpio . '_' . $nombreCarpeta . '.';
-                                foreach ($archivos as $f) {
-                                    if (strpos($f, $prefijo) === 0) {
-                                        $entregado = true;
-                                        break;
-                                    }
-                                }
-                            }
-                        }
-
-                        $filaClaseEntrega = $entregado ? "tr-entregado" : "tr-pendiente";
-                        $nombreCompleto = str_replace('_', ' ', $nombreCompleto);
-                        $seccion = htmlspecialchars($lista_secciones[$nsec] ?? '');
-
-                        echo "<tr class='" . htmlspecialchars($filaClaseEntrega) . " seccion-{$seccion}'>
-                                <td>" . htmlspecialchars($nombreCompleto) . "</td>
-                                <td>" . $seccion . "</td>
-                                <td>" . ($entregado
-                                    ? "<span style='color:green; font-weight:bold;'>Sí</span>"
-                                    : "<span style='color:red; font-weight:bold;'>No</span>"
-                                ) . "</td>
-                            </tr>";
-
-                        $nsec++;
-                    }
-
-                    echo "</table>";
-                    echo "</td></tr>";
                 }
             }
         }

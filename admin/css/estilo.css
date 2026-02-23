@@ -208,6 +208,31 @@ input[type="submit"]:hover {
     transform: translateY(-2px);
 }
 
+
+/* =======================================================
+   Pantalla Asistencia y Documentación
+   ======================================================= */
+
+div.asi{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 18px;
+}
+div.asi a {
+    background: var(--morado-medio);
+    color: #fff;
+    padding: 8px 14px;
+    border-radius: var(--radius-sm);
+    text-decoration: none;
+    font-weight: 600;
+    transition: .25s;
+}
+
+/* =======================================================
+   media
+   ======================================================= */
+
 @media (max-width: 800px) {
     body {
         flex-direction: column;

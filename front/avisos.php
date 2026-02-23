@@ -161,7 +161,8 @@ while ($aviso = $resultado->fetch_assoc()) {
                         <input type='submit' value='⬆️'>
                     </form></td>";
                 } else {
-                    echo "<td></td><td></td>
+                    echo "<td></td>
+                    <td>
                     <span style='color:gray;'>No aplica</span>";
                 }
 
