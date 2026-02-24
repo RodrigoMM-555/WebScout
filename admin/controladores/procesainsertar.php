@@ -48,24 +48,33 @@ if($tabla === "avisos"){
 
     $id_aviso = $conexion->insert_id;
 
-    // Si recibes secciones como array
     if(isset($_POST['secciones']) && is_array($_POST['secciones'])){
 
         $secciones = $_POST['secciones'];
 
-        $lista = implode(",", $secciones_limpias);
+        // Escapamos y agregamos comillas
+        $secciones_escapadas = array_map(function($s) use ($conexion) {
+            return "'" . $conexion->real_escape_string($s) . "'";
+        }, $secciones);
+
+        $lista = implode(",", $secciones_escapadas);
 
         $sqlEducandos = "SELECT id FROM educandos WHERE seccion IN ($lista)";
         $resEducandos = $conexion->query($sqlEducandos);
 
+        if(!$resEducandos){
+            die("Error en consulta educandos: " . $conexion->error);
+        }
+
         while($fila = $resEducandos->fetch_assoc()){
             $id_educando = $fila['id'];
-
             $sqlAsistencia = "
                 INSERT INTO asistencias (id_aviso, id_educando)
                 VALUES ($id_aviso, $id_educando)
             ";
-            $conexion->query($sqlAsistencia);
+            if(!$conexion->query($sqlAsistencia)){
+                die("Error insertando asistencia: " . $conexion->error);
+            }
         }
     }
 }

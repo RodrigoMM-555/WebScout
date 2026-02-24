@@ -418,6 +418,91 @@ main.avisos h1 {
 .tr-pendiente { background: #fdeaea; }  /* rojo */
 .tr-pendiente-gris { background: #e0e0e0; } /* gris */
 
+
+/* =========================================================
+   ==================== CALENDARIO TRIMESTRE ===============
+   ========================================================= */
+
+.calendario-trimestre {
+    background: ghostwhite;
+    padding: 15px;
+    border-radius: var(--radius);
+    box-shadow: var(--sombra);
+    margin: 50px;
+}
+
+.calendario-trimestre h2 {
+    text-align: center;
+    margin-bottom: 15px;
+    color: var(--morado-principal);
+}
+
+.calendario-trimestre .titulo-evento {
+    color: #333;
+    margin-bottom: 3px;
+    font-size: 20px;
+}
+
+.calendario-trimestre section {
+    display: grid;
+    grid-template-columns: repeat(5,2fr);
+    gap: 10px;
+}
+
+section.ronda {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-around;
+    align-items: center;
+    align-content: stretch;
+    margin: 10px;
+}
+
+section.ronda ul{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0px;
+    margin: 0px;
+    padding: 0px;
+}
+
+section.ronda ul h2, section.ronda ul p {
+    margin: 0;
+    padding: 0;
+    color: var(--morado-oscuro);
+}
+
+.calendario-trimestre .evento {
+    background: white;
+    border-left: 4px solid var(--morado-principal);
+    border-radius: 8px;
+    padding: 8px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+    transition: 0.2s ease;
+    min-height: 70px;
+}
+
+.calendario-trimestre .evento:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
+
+.calendario-trimestre .fecha {
+    font-weight: bold;
+    font-size: 20px;
+    color: var(--morado-oscuro);
+    margin-bottom: 5px;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    .calendario-trimestre section {
+        grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    }
+}
+
+
 /* =========================================================
    ======================== RESPONSIVE ======================
    ========================================================= */

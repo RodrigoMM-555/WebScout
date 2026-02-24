@@ -15,6 +15,7 @@ include("inc/header.html")
      <article class="info">
         <!-- Imagen del calendario -->
         <img class="calendario" src="../img/calendario.jpg" alt="placeholder">
+        <?php include("inc/calendario.php") ?>
 
         <!-- Info varia -->
         <div>

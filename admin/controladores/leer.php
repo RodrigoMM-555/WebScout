@@ -164,6 +164,8 @@ if (!array_key_exists($ordenarPor, $opcionesOrden)) {
                         $user = $resNombre ? $resNombre->fetch_assoc() : null;
                         $nombreComp = $user ? trim(($user['nombre'] ?? '') . ' ' . ($user['apellidos'] ?? '')) : '';
                         echo "<td>" . htmlspecialchars($nombreComp) . "</td>";
+                    } else if ($clave === "fecha_hora") {
+                        echo "<td>" . date("d/m/Y H:i", strtotime($valor)) . "</td>";
                     } else {
                         echo "<td>" . htmlspecialchars((string)$valor) . "</td>";
                     }
