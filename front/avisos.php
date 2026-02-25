@@ -88,10 +88,19 @@ while ($aviso = $resultado->fetch_assoc()) {
         echo "<h3>" . htmlspecialchars($aviso["titulo"]) . "</h3>";
         echo "<p>" . nl2br(htmlspecialchars($aviso["contenido"])) . "</p>";
         echo "<p style='font-size:14px; color:gray;'>$fecha_formateada</p>";
-        echo "<p>Lugar: " . $aviso["lugar"] . "</p>";
-        echo "<p>Municipio: " . $aviso["municipio"] . "</p>";
-        echo "<p>Provincia: " . $aviso["provincia"] . "</p>";
-        echo "<p>Responsable de la actividad: ".$aviso["responsable"]."</p>";
+
+        if (!empty($aviso["lugar"])) {
+            echo "<p>Lugar: " . htmlspecialchars($aviso["lugar"]) . "</p>";
+        }
+        if (!empty($aviso["municipio"])) {
+            echo "<p>Municipio: " . htmlspecialchars($aviso["municipio"]) . "</p>";
+        }
+        if (!empty($aviso["provincia"])) {
+            echo "<p>Provincia: " . htmlspecialchars($aviso["provincia"]) . "</p>";
+        }
+        if (!empty($aviso["responsable"])) {
+            echo "<p>Responsable de la actividad: " . htmlspecialchars($aviso["responsable"]) . "</p>";
+        }
         echo "<p>Secciones: " . implode(", ", explode(",", $aviso["secciones"])) . "</p>";
 
         // Circular
@@ -126,7 +135,7 @@ while ($aviso = $resultado->fetch_assoc()) {
                     $checkedSi = "checked";
                     $checkedNo = "";
                 } elseif ($asis["asistencia"] === "no") {
-                    $filaClase = "tr-pendiente"; // rojo
+                    $filaClase = "tr-pendiente-gris"; // gris también
                     $checkedSi = "";
                     $checkedNo = "checked";
                 }
@@ -215,8 +224,12 @@ while ($aviso = $resultado->fetch_assoc()) {
                     </form></td>";
                 } else {
                     echo "<td></td>
-                    <td>
-                    <span style='color:gray;'>No aplica</span>";
+                    <td>";
+                    if ($asis && $asis["asistencia"] === "no") {
+                        echo "<span;'>No asiste</span>";
+                    } else {
+                        echo "<span style='color: blue; font-weight:bold;'>RESPONDER</span>";
+                    }
                 }
 
                 echo "</td>
