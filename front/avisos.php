@@ -55,7 +55,9 @@ while ($fila = $resultado->fetch_assoc()) {
 }
 
 // Obtenemos los avisos de la base de datos
-$sql = "SELECT * FROM avisos";
+$fechaActual = new DateTime();
+$fechaFormateada = $fechaActual->format("Y-m-d H:i:s");
+$sql = "SELECT * FROM avisos WHERE fecha_hora >= '$fechaFormateada' ORDER BY fecha_hora";
 $resultado = $conexion->query($sql);
 
 $avisos_mostrados = [];
@@ -94,7 +96,58 @@ while ($aviso = $resultado->fetch_assoc()) {
 
         // Circular
         if ($aviso["circular"] == "no") {
+
             echo "<p>No hay circular adjunta</p>";
+            echo "<table class='tabla-archivos'>
+                <tr>
+                    <th>Niñ@</th>
+                    <th>Asistencia</th>
+                </tr>";
+
+            foreach ($lista_nombres as $edu) {
+
+                $id_educando = $edu["id"];
+                $nombreCompleto = $edu["nombreCompleto"];
+
+                // Comprobar asistencia
+                $stmtAsis = $conexion->prepare("SELECT asistencia FROM asistencias WHERE id_aviso = ? AND id_educando = ?");
+                $stmtAsis->bind_param("ii", $aviso["id"], $id_educando);
+                $stmtAsis->execute();
+                $resAsis = $stmtAsis->get_result();
+                $asis = $resAsis->num_rows > 0 ? $resAsis->fetch_assoc() : null;
+
+                // Estado visual
+                if (!$asis || $asis["asistencia"] === "pendiente") {
+                    $filaClase = "tr-pendiente-gris";
+                    $checkedSi = "";
+                    $checkedNo = "";
+                } elseif ($asis["asistencia"] === "si") {
+                    $filaClase = "tr-entregado"; // verde
+                    $checkedSi = "checked";
+                    $checkedNo = "";
+                } elseif ($asis["asistencia"] === "no") {
+                    $filaClase = "tr-pendiente"; // rojo
+                    $checkedSi = "";
+                    $checkedNo = "checked";
+                }
+
+                echo "<tr class='$filaClase'>
+                    <td>$nombreCompleto</td>
+                    <td>
+                        <form action='contrl/cambiar_asistencia.php' method='post'>
+                            <input type='hidden' name='id_aviso' value='".$aviso["id"]."'>
+                            <input type='hidden' name='id_educando' value='".$id_educando."'>
+                            <label class='switch'>
+                                <input type='radio' name='asiste' value='1' $checkedSi onchange='this.form.submit()'> Sí
+                                <input type='radio' name='asiste' value='0' $checkedNo onchange='this.form.submit()'> No
+                                <span class='slider'></span>
+                            </label>
+                        </form>
+                    </td>
+                </tr>";
+            }
+
+            echo "</table>";
         }
 
         if ($aviso["circular"] == "si") {

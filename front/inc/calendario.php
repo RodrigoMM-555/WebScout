@@ -17,6 +17,15 @@ date_default_timezone_set("Europe/Madrid");
         } else {
             $rondaI = (int)$fechaActual->format("Y");
         }
+
+        if ($mes <= 12 && $mes >= 10) {
+            $trimestreI = 1;
+        } elseif ($mes >= 1 && $mes < 4) {
+            $trimestreI = 2;
+        } else {
+            $trimestreI = 3;
+        }
+
         $rondaF = $rondaI + 1;
         // Calculamos trimestre (1 a 4)
         $trimestre = ceil($mes / 3);
@@ -42,7 +51,7 @@ date_default_timezone_set("Europe/Madrid");
         echo"
         <section class='ronda'>
         <h2>RONDA ".$rondaI."/".$rondaF."</h2>
-        <h1 style='color: darkorange;'>· Calendario Trimestre ·</h1>
+        <h1 style='color: darkorange;'>· Trimestre ".$trimestreI." ·</h1>
         <ul>
             <h3> Grupo Scout Seeonee</h3>
             <p>Campanar, Valencia</p>

@@ -178,9 +178,9 @@ if (!array_key_exists($ordenarPor, $opcionesOrden)) {
 
                 // Bloque especial para avisos circulares
                 // Se pinta una subtabla con los educandos y si entregaron la circular
-                if ($tabla === "avisos" && isset($fila["circular"]) && $fila["circular"] === "si") {
+                if ($tabla === "avisos") {
 
-                    echo "<tr><td colspan='100%'><a href='asistencia_documentacion.php?id_aviso=" . (int)$fila['id'] . "'>Ver asistencia de documentación</a></td></tr>";
+                    echo "<tr><td colspan='100%'><a href='asistencia_documentacion.php?id_aviso=" . (int)$fila['id'] . "'>Ver asistencia y documentación</a></td></tr>";
 
                 }
             }
