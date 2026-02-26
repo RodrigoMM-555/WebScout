@@ -11,6 +11,9 @@
     while ($fila = $resultado->fetch_assoc()) {
         $clave = $fila['Field']; // nombre de la columna
 
+        $clave2 = ucfirst(str_replace('_', ' ', $clave));
+
+
         // Saltar columna auto_increment
         if ($fila['Extra'] === 'auto_increment') {
             continue;
@@ -18,7 +21,6 @@
 
         // SECCIÓN
         elseif ($fila['Field'] === 'seccion') {
-            $clave2 = ucfirst(str_replace('_', ' ', $clave));
             echo '
             <div class="control_formulario">
                 <label>'.$clave2.'</label>
@@ -33,9 +35,8 @@
             ';
         }
 
-        // SECCIONES MÚLTIPLES
+        // SECCIONES MULTIPLES
         elseif( $fila["Field"] === "secciones") {
-            $clave2 = ucfirst(str_replace('_', ' ', $clave));
             echo "
                 <div class='control_formulario secciones-multiples'>
                     <label>$clave2</label><br>
@@ -74,7 +75,6 @@
 
         // FECHAS
         elseif ($fila["Field"] === "fecha_hora_inicio" || $fila["Field"] === "fecha_hora_fin") {
-            $clave2 = ucfirst(str_replace('_', ' ', $clave));
             echo "
                 <div class='control_formulario'>
                     <label>$clave2</label>
@@ -87,7 +87,6 @@
 
         // CIRCULAR
         elseif ($fila["Field"]== "circular") {
-            $clave2 = ucfirst(str_replace('_', ' ', $clave));
             echo "
                 <div class='control_formulario'>
                     <label>$clave2</label>
@@ -101,7 +100,6 @@
 
         // ROL
         elseif ($fila["Field"]== "rol") {
-            $clave2 = ucfirst(str_replace('_', ' ', $clave));
             echo "
                 <div class='control_formulario'>
                     <label>$clave2</label>
@@ -115,7 +113,6 @@
 
         // TIPO EVENTO
         elseif ($fila["Field"]== "tipo") {
-            $clave2 = ucfirst(str_replace('_', ' ', $clave));
             echo "
                 <div class='control_formulario'>
                     <label>$clave2</label>
@@ -130,16 +127,34 @@
             ";
         }
 
-        // AÑO (este se controla por JS)
+        // AÑO
         elseif ($fila["Field"] === "anio") {
             echo '
                 <div class="control_formulario">
                     <label>Año</label>
                     <select name="año" id="select-anio">
-                        <!-- Estas opciones serán reemplazadas dinámicamente -->
-                        <option value="2024">2024</option>
-                        <option value="2025">2025</option>
-                        <option value="2026">2026</option>
+                        <option value="">—</option>
+
+                        <!-- Lista estática que TÚ controles -->
+                        <option value="2020">2020</option>
+                        <option value="2019">2019</option>
+
+                        <option value="2018">2018</option>
+                        <option value="2017">2017</option>
+                        <option value="2016">2016</option>
+
+                        <option value="2015">2015</option>
+                        <option value="2014">2014</option>
+                        <option value="2013">2013</option>
+
+                        <option value="2012">2012</option>
+                        <option value="2011">2011</option>
+                        <option value="2010">2010</option>
+
+                        <option value="2009">2009</option>
+                        <option value="2008">2008</option>
+                        <option value="2007">2007</option>
+
                     </select>
                 </div>
             ';
@@ -147,7 +162,6 @@
 
         // CUALQUIER OTRO CAMPO
         else {
-            $clave2 = ucfirst(str_replace('_', ' ', $clave));
             echo "
                 <div class='control_formulario'>
                     <label>$clave2</label>
@@ -164,57 +178,47 @@
 
 <link rel="stylesheet" href="css/estilo.css">
 
-<!-- JS que filtra los años según la sección seleccionada -->
+<!-- JS: año → sección automática -->
 <script>
 document.addEventListener("DOMContentLoaded", function () {
-    const seccion = document.getElementById("select-seccion");
+
     const anio = document.getElementById("select-anio");
+    const seccion = document.getElementById("select-seccion");
 
-    // Fecha actual
-    const now = new Date();
-    const year = now.getFullYear();
-    const month = now.getMonth() + 1;
+    // Determinar año scout (septiembre → año next)
+    const ahora = new Date();
+    const año = ahora.getFullYear();
+    const mes = ahora.getMonth() + 1;
+    const cursoScout = (mes >= 9) ? año + 1 : año;
 
-    // Año scout: cambia en septiembre
-    const cursoScout = month >= 9 ? year + 1 : year;
+    // Definir reglas:
+    // - 2 años más jóvenes → colonia
+    // - siguientes 3 → manada
+    // - siguientes 3 → tropa
+    // - siguientes 3 → posta
+    // - siguientes 3 → rutas
 
-    function obtenerAniosPorSeccion(sec) {
-        switch (sec) {
+    function calcularSeccion(añoNacido) {
+        const dif = cursoScout - añoNacido; // edad scout relativa
 
-            case "colonia": // 6 - 7 años
-                return [cursoScout - 6, cursoScout - 7];
+        if (dif === 6 || dif === 7) return "colonia";  // 2 años
 
-            case "manada":  // 8 - 10 años
-                return [cursoScout - 8, cursoScout - 9, cursoScout - 10];
+        if (dif >= 8 && dif <= 10) return "manada";    // 3 años
+        if (dif >= 11 && dif <= 13) return "tropa";     // 3 años
+        if (dif >= 14 && dif <= 16) return "posta";     // 3 años
+        if (dif >= 17 && dif <= 19) return "rutas";     // 3 años
 
-            case "tropa":   // 11 - 13 años
-                return [cursoScout - 11, cursoScout - 12, cursoScout - 13];
+        return null;
+    }
 
-            case "posta":   // 14 - 16 años
-                return [cursoScout - 14, cursoScout - 15, cursoScout - 16];
-
-            case "rutas":   // 17 - 19 años
-                return [cursoScout - 17, cursoScout - 18, cursoScout - 19];
-
-            default:
-                return [cursoScout];
+    function actualizarSeccion() {
+        const y = Number(anio.value);
+        const sec = calcularSeccion(y);
+        if (sec) {
+            seccion.value = sec;
         }
     }
 
-    function actualizarOpciones() {
-        const valor = seccion.value;
-        const opciones = obtenerAniosPorSeccion(valor);
-        anio.innerHTML = "";
-
-        opciones.forEach(a => {
-            const op = document.createElement("option");
-            op.value = a;
-            op.textContent = a;
-            anio.appendChild(op);
-        });
-    }
-
-    seccion.addEventListener("change", actualizarOpciones);
-    actualizarOpciones(); // ejecutar al cargar
+    anio.addEventListener("change", actualizarSeccion);
 });
 </script>

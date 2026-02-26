@@ -27,6 +27,9 @@ if ($id) {
     while ($fila = $resultado->fetch_assoc()) {
         $clave = $fila['Field'];
 
+        $clave2 = ucfirst(str_replace('_', ' ', $clave));
+
+
         // Saltar columna auto_increment pero guardar ID en oculto
         if ($fila['Extra'] === 'auto_increment') {
             if ($id) {
@@ -38,7 +41,7 @@ if ($id) {
             $selected = $valores['seccion'] ?? '';
             echo "
                 <div class='control_formulario'>
-                    <label>$clave</label>
+                    <label>$clave2</label>
                     <select name='$clave'>
                         <option value='colonia' " . ($selected=='colonia'?'selected':'') . ">Colonia</option>
                         <option value='manada' " . ($selected=='manada'?'selected':'') . ">Manada</option>
@@ -53,7 +56,7 @@ if ($id) {
             $selected = explode(",", $valores['secciones'] ?? '');
             echo "
                 <div class='control_formulario secciones-multiples'>
-                    <label>$clave</label><br>
+                    <label>$clave2</label><br>
                     <input type='checkbox' name='secciones[]' value='colonia' " . (in_array('colonia',$selected)?'checked':'') . "> Colonia
                     <input type='checkbox' name='secciones[]' value='manada' " . (in_array('manada',$selected)?'checked':'') . "> Manada
                     <input type='checkbox' name='secciones[]' value='tropa' " . (in_array('tropa',$selected)?'checked':'') . "> Tropa
@@ -92,7 +95,7 @@ if ($id) {
             if ($value) $value = date('Y-m-d\TH:i', strtotime($value));
             echo "
                 <div class='control_formulario'>
-                    <label>$clave</label>
+                    <label>$clave2</label>
                     <input type='datetime-local' name='$clave' step='60' value='$value'>
                 </div>
             ";
@@ -101,7 +104,7 @@ if ($id) {
             $selected = $valores['circular'] ?? '';
             echo "
                 <div class='control_formulario'>
-                    <label>circular</label>
+                    <label>$clave2</label>
                     <select name='circular'>
                         <option value='si' " . ($selected == 'si' ? 'selected' : '') . ">Si</option>
                         <option value='no' " . ($selected == 'no' ? 'selected' : '') . ">No</option>
@@ -113,7 +116,7 @@ if ($id) {
             $selected = $valores['rol'] ?? '';
             echo "
                 <div class='control_formulario'>
-                    <label>Rol</label>
+                    <label>$clave2</label>
                     <select name='rol'>
                         <option value='usuario' " . ($selected == 'usuario' ? 'selected' : '') . ">Usuario</option>
                         <option value='admin' " . ($selected == 'admin' ? 'selected' : '') . ">Administrador</option>
@@ -125,7 +128,7 @@ if ($id) {
             $selected = $valores['tipo'] ?? '';
             echo "
                 <div class='control_formulario'>
-                    <label>Tipo</label>
+                    <label>$clave2</label>
                     <select name='tipo'>
                         <option value='sabado' " . ($selected=='sabado'?'selected':'') . ">Sabado</option>
                         <option value='campamento' " . ($selected=='campamento'?'selected':'') . ">Campamento</option>
@@ -139,14 +142,14 @@ if ($id) {
         else {
             $value = $valores[$clave] ?? '';
             if ($fila["Field"] === "anio") {
-                $clave = "año";
+                $clave2 = "Año";
             }
             if ($fila["Field"] === "contraseña") {
                 $value = "";
             }
             echo "
                 <div class='control_formulario'>
-                    <label>$clave</label>
+                    <label>$clave2</label>
                     <input type='text' name='$clave' placeholder='$clave' value='" . htmlspecialchars($value) . "'>
                 </div>
             ";

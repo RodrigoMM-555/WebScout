@@ -428,12 +428,19 @@ main.avisos h1 {
    ==================== CALENDARIO TRIMESTRE ===============
    ========================================================= */
 
+.info{
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin: 50px;
+}
+
 .calendario-trimestre {
     background: ghostwhite;
     padding: 15px;
     border-radius: var(--radius);
     box-shadow: var(--sombra);
-    margin: 50px;
+    width: 75%;
 }
 
 .calendario-trimestre h2 {
@@ -450,8 +457,9 @@ main.avisos h1 {
 
 .calendario-trimestre section {
     display: grid;
-    grid-template-columns: repeat(5,2fr);
-    gap: 10px;
+    grid-template-columns: repeat(4,1fr);
+    gap: 30px;
+    margin: 30px;
 }
 
 section.ronda {
@@ -482,10 +490,14 @@ section.ronda ul h2, section.ronda ul p {
     background: white;
     border-left: 4px solid var(--morado-principal);
     border-radius: 8px;
-    padding: 8px;
+    padding: 12px;
     box-shadow: 0 3px 8px rgba(0,0,0,0.08);
     transition: 0.2s ease;
     min-height: 70px;
+}
+
+.calendario-trimestre .evento:has(div.tipo-campamento) {
+    grid-column: span 2;
 }
 
 .calendario-trimestre .evento:hover {
@@ -543,9 +555,6 @@ section.ronda ul h2, section.ronda ul p {
         width: 90%;
     }
 
-    article.info img {
-        width: 100%;
-    }
 }
 
 @media (max-width: 500px) {

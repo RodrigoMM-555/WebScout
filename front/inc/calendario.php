@@ -39,15 +39,7 @@ date_default_timezone_set("Europe/Madrid");
 
         $fechaInicio = $inicio->format("Y-m-d H:i:s");
         $fechaFin = $fin->format("Y-m-d H:i:s");
-
-        // Consulta correcta para DATETIME
-        $sql = "SELECT * FROM avisos 
-                WHERE fecha_hora_inicio >= '$fechaInicio' 
-                AND fecha_hora_inicio < '$fechaFin'
-                ORDER BY fecha_hora_inicio";
-
-        $resultado = $conexion->query($sql);
-
+        
         echo"
         <section class='ronda'>
         <h2>RONDA ".$rondaI."/".$rondaF."</h2>
@@ -58,6 +50,14 @@ date_default_timezone_set("Europe/Madrid");
         </ul>
         </section>
             <section>";
+
+        // Consulta correcta para DATETIME
+        $sql = "SELECT * FROM avisos 
+                WHERE fecha_hora_inicio >= '$fechaInicio' 
+                AND fecha_hora_inicio < '$fechaFin'
+                ORDER BY fecha_hora_inicio";
+
+        $resultado = $conexion->query($sql);
 
         if ($resultado && $resultado->num_rows > 0) {
 
@@ -78,7 +78,14 @@ date_default_timezone_set("Europe/Madrid");
                     pattern: "EEEE d 'de' MMMM"
                 );
 
+                if (!empty($fila['fecha_hora_fin'])) {
+                    $fechaAvisoF = new DateTime($fila['fecha_hora_fin']);
+                    $fechaTextoF = ucfirst($formatter->format($fechaAvisoF));
+                    $fechaTextoI = ucfirst($formatter->format($fechaAvisoI));
+                    $fechaTexto = $fechaTextoI . " - " . $fechaTextoF;
+                } else {
                 $fechaTexto = ucfirst($formatter->format($fechaAvisoI));
+                }
 
                 // Dentro de cada dia guardamos dos cosas: el texto de la fecha y un array de eventos
                 // El array de eventos guarda el titulo de cada evento

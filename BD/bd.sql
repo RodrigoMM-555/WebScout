@@ -89,3 +89,20 @@ ALTER TABLE usuarios ADD COLUMN apellidos2 VARCHAR(100);
 ALTER TABLE usuarios ADD COLUMN email2 VARCHAR(100);
 ALTER TABLE usuarios ADD COLUMN telefono2 INT;
 ALTER TABLE usuarios ADD COLUMN rol ENUM('admin','usuario') NOT NULL DEFAULT 'usuario';
+
+
+-- usuario
+INSERT INTO `usuarios` (`nombre`,`apellidos`,`contraseña`,`email`,`telefono`,`direccion`,`nombre2`,`apellidos2`,`email2`,`telefono2`,`rol`
+) VALUES (
+  'r',
+  'r',
+  '',
+  'r',
+  1,
+  'r',
+  '',
+  '',
+  '',
+  NULL,
+  'admin'
+);
