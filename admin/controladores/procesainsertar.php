@@ -43,6 +43,42 @@ if(!$resultado){
     die("Error en la consulta: " . $conexion->error);
 }
 
+
+if($tabla === "avisos"){
+
+    $id_aviso = $conexion->insert_id;
+
+    if(isset($_POST['secciones']) && is_array($_POST['secciones'])){
+
+        $secciones = $_POST['secciones'];
+
+        // Escapamos y agregamos comillas
+        $secciones_escapadas = array_map(function($s) use ($conexion) {
+            return "'" . $conexion->real_escape_string($s) . "'";
+        }, $secciones);
+
+        $lista = implode(",", $secciones_escapadas);
+
+        $sqlEducandos = "SELECT id FROM educandos WHERE seccion IN ($lista)";
+        $resEducandos = $conexion->query($sqlEducandos);
+
+        if(!$resEducandos){
+            die("Error en consulta educandos: " . $conexion->error);
+        }
+
+        while($fila = $resEducandos->fetch_assoc()){
+            $id_educando = $fila['id'];
+            $sqlAsistencia = "
+                INSERT INTO asistencias (id_aviso, id_educando)
+                VALUES ($id_aviso, $id_educando)
+            ";
+            if(!$conexion->query($sqlAsistencia)){
+                die("Error insertando asistencia: " . $conexion->error);
+            }
+        }
+    }
+}
+
 // Redirección
 header("Location: ?tabla=".$tabla);
 exit;

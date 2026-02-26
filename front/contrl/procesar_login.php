@@ -34,7 +34,7 @@ $_SESSION["rol"] = $usuario['rol'];
 
 // 🔹 Redirección según rol
 if ($usuario['rol'] === 'admin') {
-    header("Location: ../../admin/index.php");
+    header("Location: ../../admin/index.php?tabla=educandos&ordenar_por=seccion&direccion=ASC");
 } else {
     header("Location: ../inicio.php");
 }

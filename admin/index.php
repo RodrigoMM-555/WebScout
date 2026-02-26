@@ -15,6 +15,7 @@ if (!isset($_SESSION['rol']) || $_SESSION['rol'] !== 'admin') {
     <body>
         <?php include "inc/conexion_bd.php"; ?>
         <nav>
+            <img src="../img/logo.png" alt="Placehodler logo" class="logo">
             <?php include "controladores/poblar_menu.php" ?>
         </nav>
         <main>

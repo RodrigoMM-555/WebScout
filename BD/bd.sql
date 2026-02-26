@@ -38,12 +38,26 @@ CREATE TABLE avisos (
     id INT AUTO_INCREMENT PRIMARY KEY,
     titulo VARCHAR(255),
     secciones VARCHAR(255),
-    fecha_hora DATETIME,
+    fecha_hora_inicio DATETIME,
+    fecha_hora_fin DATETIME,
     circular VARCHAR(255),
     lugar VARCHAR(255),
     municipio VARCHAR(255),
     provincia VARCHAR(255),
-    responsable VARCHAR(255)
+    responsable VARCHAR(255),
+    tipo ENUM('campamento','reunion','excursion','sabado','otro')
+);
+
+-- Tabla intermedia avisos-educandos -> asistencia a eventos
+CREATE TABLE asistencias (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    id_aviso INT NOT NULL,
+    id_educando INT NOT NULL,
+    asistencia ENUM('pendiente','si','no') DEFAULT 'pendiente',
+    fecha_respuesta DATETIME NULL,
+    UNIQUE KEY unique_asistencia (id_aviso, id_educando),
+    FOREIGN KEY (id_aviso) REFERENCES avisos(id) ON DELETE CASCADE,
+    FOREIGN KEY (id_educando) REFERENCES educandos(id) ON DELETE CASCADE
 );
 
 -- Crear el usuario y asignar permisos

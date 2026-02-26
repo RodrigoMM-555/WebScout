@@ -1,12 +1,15 @@
 # PRIORITARIO
-- Tabla para lista de espera
 - Historial de archivos para los padres
+- Mejorar la distribucion del formualrio de insert
+- Añadir tipso de avisos y que se vean distintos en el calendario
 
 # SECUNDARIO
-- Formulario de asistencia en los avisos -> si viene se le deja entregar la documentacion, sino viene no se le deja
-- Añadir un calendario dinamico y un menu para modificarlo
-- Añadir comprobaciones para evitar errores fatales o warnings
+- Tabla para lista de espera
 - Comprobar que el pdf subido es el correcto
+
+
+# TERCIARIO
+- Añadir comprobaciones para evitar errores fatales o warnings
 - Formulario para restablecer contraseña y contraseña necesaria para modificar el perfil
 
 
@@ -18,7 +21,7 @@
 - Las autorizaciones hay que borrarlas o guardarlas
 
 
-# TERCIARIO
+# MEJORAS
 Boton para subir todos los educandos un año
 Que las secciones vayan segun los años
 
