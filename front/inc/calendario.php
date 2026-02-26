@@ -43,7 +43,7 @@ date_default_timezone_set("Europe/Madrid");
         // Consulta correcta para DATETIME
         $sql = "SELECT * FROM avisos 
                 WHERE fecha_hora_inicio >= '$fechaInicio' 
-                AND fecha_hora_fin < '$fechaFin'
+                AND fecha_hora_inicio < '$fechaFin'
                 ORDER BY fecha_hora_inicio";
 
         $resultado = $conexion->query($sql);
@@ -80,17 +80,21 @@ date_default_timezone_set("Europe/Madrid");
 
                 $fechaTexto = ucfirst($formatter->format($fechaAvisoI));
 
-                // Guardamos cada evento dentro del día correspondiente
+                // Dentro de cada dia guardamos dos cosas: el texto de la fecha y un array de eventos
+                // El array de eventos guarda el titulo de cada evento
                 $eventosPorDia[$diaClave]['fechaTexto'] = $fechaTexto;
-                $eventosPorDia[$diaClave]['eventos'][] = $fila['titulo'];
+                $eventosPorDia[$diaClave]['eventos'][] = [
+                    'titulo' => $fila['titulo'],
+                    'tipo'   => $fila['tipo'],
+                ];
             }
 
             foreach($eventosPorDia as $dia => $info) {
                 echo "<div class='evento'>";
                 echo "<div class='fecha'>" . $info['fechaTexto'] . "</div>";
 
-                foreach($info['eventos'] as $titulo) {
-                    echo "<div class='titulo-evento'>" . htmlspecialchars($titulo) . "</div>";
+                foreach($info['eventos'] as $evento) {
+                    echo "<div class='titulo-evento tipo-".$evento['tipo']."'>" . htmlspecialchars($evento['titulo']) . "</div>";
                 }
 
                 echo "</div>";

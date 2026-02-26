@@ -98,23 +98,40 @@ if ($id) {
             ";
         }
         elseif ($fila["Field"]== "circular") {
+            $selected = $valores['circular'] ?? '';
             echo "
                 <div class='control_formulario'>
                     <label>circular</label>
                     <select name='circular'>
-                        <option value='si'>Si</option>
-                        <option value='no'>No</option>
+                        <option value='si' " . ($selected == 'si' ? 'selected' : '') . ">Si</option>
+                        <option value='no' " . ($selected == 'no' ? 'selected' : '') . ">No</option>
                     </select>
                 </div>
         ";
         }
         elseif ($fila["Field"]== "rol") {
+            $selected = $valores['rol'] ?? '';
             echo "
                 <div class='control_formulario'>
                     <label>Rol</label>
                     <select name='rol'>
-                        <option value='usuario'>Usuario</option>
-                        <option value='admin'>Administrador</option>
+                        <option value='usuario' " . ($selected == 'usuario' ? 'selected' : '') . ">Usuario</option>
+                        <option value='admin' " . ($selected == 'admin' ? 'selected' : '') . ">Administrador</option>
+                    </select>
+                </div>
+        ";
+        }
+        elseif ($fila["Field"]== "tipo") {
+            $selected = $valores['tipo'] ?? '';
+            echo "
+                <div class='control_formulario'>
+                    <label>Tipo</label>
+                    <select name='tipo'>
+                        <option value='sabado' " . ($selected=='sabado'?'selected':'') . ">Sabado</option>
+                        <option value='campamento' " . ($selected=='campamento'?'selected':'') . ">Campamento</option>
+                        <option value='reunion' " . ($selected=='reunion'?'selected':'') . ">Reunión</option>
+                        <option value='excursion' " . ($selected=='excursion'?'selected':'') . ">Excursión</option>
+                        <option value='otro' " . ($selected=='otro'?'selected':'') . ">Otro</option>
                     </select>
                 </div>
         ";

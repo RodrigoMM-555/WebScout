@@ -65,7 +65,7 @@ if (!array_key_exists($ordenarPor, $opcionesOrden)) {
     </div>
 
     <!-- Botón de insertar nuevo registro -->
-    <a href="?operacion=insertar&amp;tabla=<?= htmlspecialchars($tabla) ?>" class="boton_insertar" 
+    <a href="?operacion=insertar&amp;tabla=<?= htmlspecialchars($tabla) ?>&seccion=<?= htmlspecialchars($seccionFiltro) ?>" class="boton_insertar" 
        style="margin-left:auto; padding:5px 10px; background:green; color:#fff; text-decoration:none; border-radius:4px;">+</a>
 </div>
 
@@ -162,12 +162,12 @@ if (!array_key_exists($ordenarPor, $opcionesOrden)) {
                         $id = (int)$valor;
                         $resNombre = $conexion->query("SELECT nombre, apellidos FROM `usuarios` WHERE id = {$id};");
                         $user = $resNombre ? $resNombre->fetch_assoc() : null;
-                        $nombreComp = $user ? trim(($user['nombre'] ?? '') . ' ' . ($user['apellidos'] ?? '')) : '';
+                        $nombreComp = $user ? ucfirst(($user['nombre'] ?? '')) . ' ' . ucfirst(($user['apellidos'] ?? '')) : '';
                         echo "<td>" . htmlspecialchars($nombreComp) . "</td>";
-                    } else if ($clave === "fecha_hora") {
+                    } else if ($clave === "fecha_hora_inicio" || $clave === "fecha_hora_fin") {
                         echo "<td>" . date("d/m/Y H:i", strtotime($valor)) . "</td>";
                     } else {
-                        echo "<td>" . htmlspecialchars((string)$valor) . "</td>";
+                        echo "<td>" . ucfirst(str_replace('_', ' ', $valor)) . "</td>";
                     }
                 }
 
