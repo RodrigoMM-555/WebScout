@@ -32,16 +32,19 @@ while ($fila = $resultado->fetch_assoc()) {
         $claseTropa   = ($seccion == "tropa") ? "seccion-tropa" : "";
         $clasePosta   = ($seccion == "posta") ? "seccion-posta" : "";
         $claseRutas   = ($seccion == "rutas") ? "seccion-rutas" : "";
+        
+        $nombreRealTabla = "educandos&ordenar_por=seccion&direccion=ASC";
+
         echo '
             <a href="?tabla='.$nombreRealTabla.'" class="'.$clase.'">
                 '.$nombre_tabla.'
             </a>
 
-            <a href="?tabla='.$nombreRealTabla.'&seccion=colonia" class="colonia '.$claseColonia.'">Colonia</a>
-            <a href="?tabla='.$nombreRealTabla.'&seccion=manada" class="manada '.$claseManada.'">Manada</a>
-            <a href="?tabla='.$nombreRealTabla.'&seccion=tropa" class="tropa '.$claseTropa.'">Tropa</a>
-            <a href="?tabla='.$nombreRealTabla.'&seccion=posta" class="posta '.$clasePosta.'">Posta</a>
-            <a href="?tabla='.$nombreRealTabla.'&seccion=rutas" class="rutas '.$claseRutas.'">Rutas</a>
+            <a href="?tabla='.$nombreRealTabla.'&seccion=colonia" class="sec '.$claseColonia.'">Colonia</a>
+            <a href="?tabla='.$nombreRealTabla.'&seccion=manada" class="sec '.$claseManada.'">Manada</a>
+            <a href="?tabla='.$nombreRealTabla.'&seccion=tropa" class="sec '.$claseTropa.'">Tropa</a>
+            <a href="?tabla='.$nombreRealTabla.'&seccion=posta" class="sec '.$clasePosta.'">Posta</a>
+            <a href="?tabla='.$nombreRealTabla.'&seccion=rutas" class="sec '.$claseRutas.'">Rutas</a>
         ';
 
     } else {
@@ -50,6 +53,7 @@ while ($fila = $resultado->fetch_assoc()) {
             <a href="?tabla='.$nombreRealTabla.'" class="'.$clase.'">
                 '.$nombre_tabla.'
             </a>
+            
         ';
     }
 }

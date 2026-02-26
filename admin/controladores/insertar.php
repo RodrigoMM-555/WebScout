@@ -42,6 +42,7 @@
                     <input type='checkbox' name='secciones[]' value='tropa'> Tropa
                     <input type='checkbox' name='secciones[]' value='posta'> Posta
                     <input type='checkbox' name='secciones[]' value='rutas'> Rutas
+                    <input type='checkbox' name='secciones[]' value='colonia,manada,tropa,posta,rutas'> Todas las secciones
                 </div>
             ";
         }
