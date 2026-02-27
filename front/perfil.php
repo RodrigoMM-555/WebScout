@@ -22,25 +22,34 @@ $fila = $resultado->fetch_assoc();
         <div>
             <p>
                 <?=$fila["nombre"]?> <?=$fila["apellidos"]?>
-                <?php if (!empty($fila["nombre2"])): ?>
-                    / <?=$fila["nombre2"]?> <?=$fila["apellidos2"]?>
-                <?php endif; ?>
             </p>
-
+            <?php if (!empty($fila["nombre2"])): ?>
+            <p>
+                <?=$fila["nombre2"]?> <?=$fila["apellidos2"]?>
+            </p>
+            <?php endif; ?>
+        </div>
+        <div>
             <p>
                 <?=$fila["telefono"]?>
-                <?php if (!empty($fila["telefono2"])): ?>
-                    / <?=$fila["telefono2"]?>
-                <?php endif; ?>
             </p>
-
+            <?php if (!empty($fila["telefono2"])): ?>
+            <p>
+                <?=$fila["telefono2"]?>
+            </p>
+            <?php endif; ?>
+        </div>
+        <div>
             <p>
                 <?=$fila["email"]?>
-                <?php if (!empty($fila["email2"])): ?>
-                    / <?=$fila["email2"]?>
-                <?php endif; ?>
             </p>
-
+            <?php if (!empty($fila["email2"])): ?>
+            <p>
+                <?=$fila["email2"]?>
+            </p>
+            <?php endif; ?>
+        </div>
+        <div>
             <p><?=$fila["direccion"]?></p>
         </div>
     </section>

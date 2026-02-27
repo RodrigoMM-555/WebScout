@@ -273,17 +273,30 @@ section.derecha article{
 
 }
 
-section.izquierda.colonia { background: orange; color: black; }
-section.izquierda.manada { background: yellow; color: black; }
-section.izquierda.tropa { background: blue; color: white; }
-section.izquierda.posta { background: red; color: black; }
-section.izquierda.rutas { background: green; color: black; }
+section.izquierda.colonia { background: #FFB347; color: #5A2E00; }
+section.izquierda.manada { background: #FFD93D; color: #5C4A00; }
+section.izquierda.tropa { background: #339AF0; color: #0B3D66; }
+section.izquierda.posta { background: #FF6B6B; color: #5A1E1E; }
+section.izquierda.rutas { background: #51CF66; color: #124D2A; }
 
 
 section.izquierda p,
 section.derecha p {
     margin: 20px 0;
     font-size: 18px;
+}
+
+section.izquierda div{
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    justify-content: space-around;
+}
+
+section.izquierda article {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
 /* Botones hijos */
@@ -296,24 +309,24 @@ section.derecha p {
 }
 
 .colonia{
-    background: orange;
-    color: black;
+    background: #FFB347;
+    color: #5A2E00;
 }
 .manada{
-    background: yellow;
-    color: black;
+    background: #FFD93D;
+    color: #5C4A00;
 }
 .tropa{
-    background: blue;
-    color: white;
+    background: #339AF0;
+    color: #0B3D66;
 }
 .posta{
-    background: red;
-    color: black;
+    background: #FF6B6B;
+    color: #5A1E1E;
 }
 .rutas{
-    background: green;
-    color: black;
+    background: #51CF66;
+    color: #124D2A;
 }
 
 
@@ -354,6 +367,12 @@ button {
     transition: all 0.3s ease;
     box-shadow: var(--sombra);
 }
+
+.izquierda.colonia button { background: #5A2E00; color: #FFB347; }
+.izquierda.manada button { background: #5C4A00; color: #FFD93D; }
+.izquierda.tropa button { background: #0B3D66; color: #339AF0; }
+.izquierda.posta button { background: #5A1E1E; color: #FF6B6B; }
+.izquierda.rutas button { background: #124D2A; color: #51CF66; }
 
 button:hover {
     background-color: #f0f0f0;
