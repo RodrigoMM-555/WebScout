@@ -6,6 +6,8 @@
 # SECUNDARIO
 - Tabla para lista de espera
 - Comprobar que el pdf subido es el correcto
+- Restricciones de contraseña
+- generador de archivos con toda la info par apoder descargarlos
 
 
 # TERCIARIO

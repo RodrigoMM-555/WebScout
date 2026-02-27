@@ -88,6 +88,10 @@ main {
 
 /* Tabla */
 
+td {
+    text-align: center;
+}
+
 /* Colores suaves por sección */
 /* Colores suaves por sección con prioridad */
 tr.seccion-colonia td { background-color: #ffe5b4 !important; }  /* naranja suave */

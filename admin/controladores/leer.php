@@ -156,18 +156,22 @@ if (!array_key_exists($ordenarPor, $opcionesOrden)) {
                     if (in_array($clave, ['email2', 'telefono2', 'nombre2', 'apellidos2'])) {
                         continue;
                     }
-
-                    // Mostrar nombre completo de padre/madre
-                    if ($clave === "id_usuario") {
-                        $id = (int)$valor;
-                        $resNombre = $conexion->query("SELECT nombre, apellidos FROM `usuarios` WHERE id = {$id};");
-                        $user = $resNombre ? $resNombre->fetch_assoc() : null;
-                        $nombreComp = $user ? ucfirst(($user['nombre'] ?? '')) . ' ' . ucfirst(($user['apellidos'] ?? '')) : '';
-                        echo "<td>" . htmlspecialchars($nombreComp) . "</td>";
-                    } else if ($clave === "fecha_hora_inicio" || $clave === "fecha_hora_fin") {
-                        echo "<td>" . date("d/m/Y H:i", strtotime($valor)) . "</td>";
+                    if (!empty($valor)) {
+                        // Mostrar nombre completo de padre/madre
+                        if ($clave === "id_usuario") {
+                            $id = (int)$valor;
+                            $resNombre = $conexion->query("SELECT nombre, apellidos FROM `usuarios` WHERE id = {$id};");
+                            $user = $resNombre ? $resNombre->fetch_assoc() : null;
+                            $nombreComp = $user ? ucfirst(($user['nombre'] ?? '')) . ' ' . ucfirst(($user['apellidos'] ?? '')) : '';
+                            echo "<td>" . htmlspecialchars($nombreComp) . "</td>";
+                        // Formatear fechas
+                        } else if ($clave === "fecha_hora_inicio" || $clave === "fecha_hora_fin") {
+                            echo "<td>" . date("d/m/Y", strtotime($valor)) ."<br>". date("H:i", strtotime($valor)) ."</td>";
+                        } else {
+                            echo "<td>" . ucfirst(str_replace('_', ' ', $valor)) . "</td>";
+                        }
                     } else {
-                        echo "<td>" . ucfirst(str_replace('_', ' ', $valor)) . "</td>";
+                        echo "<td>-</td>";
                     }
                 }
 

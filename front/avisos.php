@@ -69,6 +69,7 @@ while ($aviso = $resultado->fetch_assoc()) {
     // Lista de educandos que pertenecen a las secciones del aviso
     $lista_nombres = [];
     foreach ($educandos as $edu) {
+        // Compara las secciones del aviso con la sección del educando
         if (strpos($aviso['secciones'], $edu['seccion']) !== false) {
             $lista_nombres[] = [
                 "id" => $edu["id"],
@@ -80,6 +81,7 @@ while ($aviso = $resultado->fetch_assoc()) {
     // Si hay educandos que deben recibir el aviso y aún no se ha mostrado
     if (!empty($lista_nombres) && !in_array($aviso["id"], $avisos_mostrados)) {
 
+        // Informacion incial del aviso
         // Formateamos la fecha
         $fecha_inicio_formateada = date("d/m/Y H:i", strtotime($aviso["fecha_hora_inicio"]));
         if (!empty($aviso["fecha_hora_fin"])) {
@@ -108,7 +110,7 @@ while ($aviso = $resultado->fetch_assoc()) {
         }
         echo "<p>Secciones: " . implode(", ", explode(",", $aviso["secciones"])) . "</p>";
 
-        // Circular
+        // Si no hay circular
         if ($aviso["circular"] == "no") {
 
             echo "<p>No hay circular adjunta</p>";
@@ -123,16 +125,16 @@ while ($aviso = $resultado->fetch_assoc()) {
                 $id_educando = $edu["id"];
                 $nombreCompleto = $edu["nombreCompleto"];
 
-                // Comprobar asistencia
+                // Comprobar asistencia del educando en la BBDD
                 $stmtAsis = $conexion->prepare("SELECT asistencia FROM asistencias WHERE id_aviso = ? AND id_educando = ?");
                 $stmtAsis->bind_param("ii", $aviso["id"], $id_educando);
                 $stmtAsis->execute();
                 $resAsis = $stmtAsis->get_result();
                 $asis = $resAsis->num_rows > 0 ? $resAsis->fetch_assoc() : null;
 
-                // Estado visual
+                // Estado visual segun ele stado de la asistencia
                 if (!$asis || $asis["asistencia"] === "pendiente") {
-                    $filaClase = "tr-pendiente-gris";
+                    $filaClase = "tr-pendiente-gris"; // gris
                     $checkedSi = "";
                     $checkedNo = "";
                 } elseif ($asis["asistencia"] === "si") {
@@ -145,6 +147,7 @@ while ($aviso = $resultado->fetch_assoc()) {
                     $checkedNo = "checked";
                 }
 
+                // Pintamos el formualrio de asistencia
                 echo "<tr class='$filaClase'>
                     <td>$nombreCompleto</td>
                     <td>
@@ -163,7 +166,7 @@ while ($aviso = $resultado->fetch_assoc()) {
 
             echo "</table>";
         }
-
+        // Si hay circualr
         if ($aviso["circular"] == "si") {
             echo "<table class='tabla-archivos'>
                 <tr>
@@ -208,13 +211,13 @@ while ($aviso = $resultado->fetch_assoc()) {
                             }
                         }
                     }
-
                     $filaClase = $entregado ? "tr-entregado" : "tr-pendiente"; // verde o rojo
                     $puedeSubir = true;
                     $checkedSi = "checked";
                     $checkedNo = "";
                 }
 
+                // Pintamos lo que queda del formulario segun si puede subir o no el archivo, segun si va o no va
                 echo "<tr class='$filaClase'>
                     <td>$nombreCompleto</td>";
                 

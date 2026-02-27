@@ -66,7 +66,6 @@
 
                 echo "<option value='{$u['id']}'>{$u['nombre']} {$u['apellidos']}</option>";
             }
-
             echo "
                     </select>
                 </div>
@@ -132,29 +131,8 @@
             echo '
                 <div class="control_formulario">
                     <label>Año</label>
-                    <select name="año" id="select-anio">
+                    <select name="anio" id="select-anio">
                         <option value="">—</option>
-
-                        <!-- Lista estática que TÚ controles -->
-                        <option value="2020">2020</option>
-                        <option value="2019">2019</option>
-
-                        <option value="2018">2018</option>
-                        <option value="2017">2017</option>
-                        <option value="2016">2016</option>
-
-                        <option value="2015">2015</option>
-                        <option value="2014">2014</option>
-                        <option value="2013">2013</option>
-
-                        <option value="2012">2012</option>
-                        <option value="2011">2011</option>
-                        <option value="2010">2010</option>
-
-                        <option value="2009">2009</option>
-                        <option value="2008">2008</option>
-                        <option value="2007">2007</option>
-
                     </select>
                 </div>
             ';
@@ -220,5 +198,30 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     anio.addEventListener("change", actualizarSeccion);
+});
+
+// ---------------------------
+// GENERAR AÑOS AUTOMÁTICOS
+// ---------------------------
+document.addEventListener("DOMContentLoaded", function () {
+
+    const selectAnio = document.getElementById("select-anio");
+
+    const ahora = new Date();
+    const añoActual = ahora.getFullYear();
+
+    // Generamos edades entre 6 y 20 años
+    const edadMin = 6;
+    const edadMax = 19;
+
+    const añoMax = añoActual - edadMin; // más joven = 6 años
+    const añoMin = añoActual - edadMax; // mayor = 20 años
+
+    for (let y = añoMax; y >= añoMin; y--) {
+        const option = document.createElement("option");
+        option.value = y;
+        option.textContent = y;
+        selectAnio.appendChild(option);
+    }
 });
 </script>

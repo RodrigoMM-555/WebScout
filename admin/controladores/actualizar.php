@@ -1,4 +1,4 @@
-<!-- Parecido a procesa insertar pero poniedno los anteriores valores -->
+<!-- Parecido a procesa insertar pero poniendo los anteriores valores -->
 <?php
 // Sacamos el nombre de la tabla
 $tabla = $_GET['tabla'];
@@ -9,7 +9,7 @@ if ($tabla == "usuarios") {
     echo "<p style='color: red;'>ES NECESARIA LA CONTRASEÑA ORIGINAL PARA PODER MODIFICAR EL REGISTRO</p>";
 }
 
-// Si hay ID, cargamos los datos actuales de la fila
+// Si hay ID, cargamos los datos actuales
 $valores = [];
 if ($id) {
     $sql = "SELECT * FROM `$tabla` WHERE id = ?";
@@ -17,32 +17,32 @@ if ($id) {
     $stmt->bind_param("i", $id);
     $stmt->execute();
     $resultado = $stmt->get_result();
-    $valores = $resultado->fetch_assoc(); // Array asociativo con los valores actuales
+    $valores = $resultado->fetch_assoc();
 }
 ?>
 <form action="?operacion=procesaactualizar&tabla=<?= $_GET['tabla'] ?>" method="POST">
 <?php
-    // Pedimos la estructura de la tabla
+    // Pedimos estructura de la tabla
     $resultado = $conexion->query("DESCRIBE `$tabla`;");
     while ($fila = $resultado->fetch_assoc()) {
         $clave = $fila['Field'];
-
         $clave2 = ucfirst(str_replace('_', ' ', $clave));
 
-
-        // Saltar columna auto_increment pero guardar ID en oculto
+        // ID
         if ($fila['Extra'] === 'auto_increment') {
             if ($id) {
                 echo "<input type='hidden' name='id' value='$id'>";
             }
             continue;
         }
-        elseif ($fila['Field'] === 'seccion') {
+
+        // SELECT SECCIÓN (añadido id='select-seccion')
+        elseif ($clave === 'seccion') {
             $selected = $valores['seccion'] ?? '';
             echo "
                 <div class='control_formulario'>
                     <label>$clave2</label>
-                    <select name='$clave'>
+                    <select name='$clave' id='select-seccion'>
                         <option value='colonia' " . ($selected=='colonia'?'selected':'') . ">Colonia</option>
                         <option value='manada' " . ($selected=='manada'?'selected':'') . ">Manada</option>
                         <option value='tropa' " . ($selected=='tropa'?'selected':'') . ">Tropa</option>
@@ -52,7 +52,9 @@ if ($id) {
                 </div>
             ";
         }
-        elseif ($fila["Field"] === "secciones") {
+
+        // SECCIONES MÚLTIPLES
+        elseif ($clave === 'secciones') {
             $selected = explode(",", $valores['secciones'] ?? '');
             echo "
                 <div class='control_formulario secciones-multiples'>
@@ -65,94 +67,96 @@ if ($id) {
                 </div>
             ";
         }
-        elseif ($fila["Field"] === "id_usuario") {
+
+        // ID USUARIO
+        elseif ($clave === "id_usuario") {
             $sql2 = "SELECT id, nombre, apellidos, rol FROM usuarios";
             $resultado2 = $conexion->query($sql2);
             $selected = $valores['id_usuario'] ?? '';
-            echo "
-                <div class='control_formulario'>
-                    <label>Madre/Padre</label>
-                    <select name='$clave'>
-            ";
+            echo "<div class='control_formulario'><label>Madre/Padre</label>
+                  <select name='$clave'>";
             while ($u = $resultado2->fetch_assoc()) {
-                if ($u["rol"] !== "usuario") {
-                    continue; // Solo mostrar usuarios normales, no admins
-                }
-                $id_u = $u['id'];
-                $nombre_u = $u['nombre'];
-                $apellidos_u = $u['apellidos'];
-                $sel = ($id_u == $selected) ? 'selected' : '';
-                echo "<option value='$id_u' $sel>$nombre_u $apellidos_u</option>";
+                if ($u["rol"] !== "usuario") continue;
+                $sel = ($u['id'] == $selected) ? "selected" : "";
+                echo "<option value='{$u['id']}' $sel>{$u['nombre']} {$u['apellidos']}</option>";
             }
-            echo "
-                    </select>
-                </div>
-            ";
+            echo "</select></div>";
         }
-        elseif ($fila["Field"] === "fecha_hora") {
-            $value = $valores['fecha_hora'] ?? '';
-            // Convertimos a formato compatible con datetime-local
-            if ($value) $value = date('Y-m-d\TH:i', strtotime($value));
+
+        // FECHAS
+        elseif ($clave === "fecha_hora_inicio" || $clave === "fecha_hora_fin") {
             echo "
                 <div class='control_formulario'>
                     <label>$clave2</label>
-                    <input type='datetime-local' name='$clave' step='60' value='$value'>
+                    <input type='datetime-local'
+                           name='$clave'
+                           value='" . (isset($valores[$clave]) ? date('Y-m-d\TH:i', strtotime($valores[$clave])) : '') . "'
+                           step='60'>
                 </div>
             ";
         }
-        elseif ($fila["Field"]== "circular") {
-            $selected = $valores['circular'] ?? '';
+
+        // AÑO (VACÍO, JS lo rellena)
+        elseif ($clave === "anio") {
+            echo '
+                <div class="control_formulario">
+                    <label>Año</label>
+                    <select name="anio" id="select-anio">
+                        <option value="">—</option>
+                    </select>
+                </div>
+            ';
+        }
+
+        // SELECTS NORMALES
+        elseif ($clave === "circular") {
+            $sel = $valores['circular'] ?? '';
             echo "
                 <div class='control_formulario'>
                     <label>$clave2</label>
                     <select name='circular'>
-                        <option value='si' " . ($selected == 'si' ? 'selected' : '') . ">Si</option>
-                        <option value='no' " . ($selected == 'no' ? 'selected' : '') . ">No</option>
+                        <option value='si' " . ($sel=='si'?'selected':'') . ">Sí</option>
+                        <option value='no' " . ($sel=='no'?'selected':'') . ">No</option>
                     </select>
-                </div>
-        ";
+                </div>";
         }
-        elseif ($fila["Field"]== "rol") {
-            $selected = $valores['rol'] ?? '';
+
+        elseif ($clave === "rol") {
+            $sel = $valores['rol'] ?? '';
             echo "
-                <div class='control_formulario'>
-                    <label>$clave2</label>
-                    <select name='rol'>
-                        <option value='usuario' " . ($selected == 'usuario' ? 'selected' : '') . ">Usuario</option>
-                        <option value='admin' " . ($selected == 'admin' ? 'selected' : '') . ">Administrador</option>
-                    </select>
-                </div>
-        ";
+            <div class='control_formulario'>
+                <label>$clave2</label>
+                <select name='rol'>
+                    <option value='usuario' " . ($sel=='usuario'?'selected':'') . ">Usuario</option>
+                    <option value='admin' " . ($sel=='admin'?'selected':'') . ">Administrador</option>
+                </select>
+            </div>";
         }
-        elseif ($fila["Field"]== "tipo") {
-            $selected = $valores['tipo'] ?? '';
+
+        elseif ($clave === "tipo") {
+            $sel = $valores['tipo'] ?? '';
             echo "
-                <div class='control_formulario'>
-                    <label>$clave2</label>
-                    <select name='tipo'>
-                        <option value='sabado' " . ($selected=='sabado'?'selected':'') . ">Sabado</option>
-                        <option value='campamento' " . ($selected=='campamento'?'selected':'') . ">Campamento</option>
-                        <option value='reunion' " . ($selected=='reunion'?'selected':'') . ">Reunión</option>
-                        <option value='excursion' " . ($selected=='excursion'?'selected':'') . ">Excursión</option>
-                        <option value='otro' " . ($selected=='otro'?'selected':'') . ">Otro</option>
-                    </select>
-                </div>
-        ";
+            <div class='control_formulario'>
+                <label>$clave2</label>
+                <select name='tipo'>
+                    <option value='sabado' " . ($sel=='sabado'?'selected':'') . ">Sábado</option>
+                    <option value='campamento' " . ($sel=='campamento'?'selected':'') . ">Campamento</option>
+                    <option value='reunion' " . ($sel=='reunion'?'selected':'') . ">Reunión</option>
+                    <option value='excursion' " . ($sel=='excursion'?'selected':'') . ">Excursión</option>
+                    <option value='otro' " . ($sel=='otro'?'selected':'') . ">Otro</option>
+                </select>
+            </div>";
         }
+
+        // CAMPOS NORMALES
         else {
             $value = $valores[$clave] ?? '';
-            if ($fila["Field"] === "anio") {
-                $clave2 = "Año";
-            }
-            if ($fila["Field"] === "contraseña") {
-                $value = "";
-            }
+            if ($clave === "contraseña") $value = "";
             echo "
-                <div class='control_formulario'>
-                    <label>$clave2</label>
-                    <input type='text' name='$clave' placeholder='$clave' value='" . htmlspecialchars($value) . "'>
-                </div>
-            ";
+            <div class='control_formulario'>
+                <label>$clave2</label>
+                <input type='text' name='$clave' value='" . htmlspecialchars($value) . "'>
+            </div>";
         }
     }
 ?>
@@ -162,3 +166,66 @@ if ($id) {
 </form>
 
 <link rel="stylesheet" href="css/estilo.css">
+
+<!-- ============================
+     SCRIPTS (UNIFICADOS Y CORREGIDOS)
+============================= -->
+<script>
+const anioGuardado = <?= isset($valores["anio"]) ? json_encode((int)$valores["anio"]) : 'null' ?>;
+
+document.addEventListener("DOMContentLoaded", function () {
+
+    const selectAnio = document.getElementById("select-anio");
+    const selectSeccion = document.getElementById("select-seccion");
+
+    const ahora = new Date();
+    const actual = ahora.getFullYear();
+    const mes = ahora.getMonth() + 1;
+    const cursoScout = (mes >= 9) ? actual + 1 : actual;
+
+    function calcularSeccion(añoNacido) {
+        const dif = cursoScout - añoNacido;
+
+        if (dif === 6 || dif === 7) return "colonia";
+        if (dif >= 8 && dif <= 10) return "manada";
+        if (dif >= 11 && dif <= 13) return "tropa";
+        if (dif >= 14 && dif <= 16) return "posta";
+        if (dif >= 17 && dif <= 19) return "rutas";
+        return null;
+    }
+
+    function actualizarSeccion() {
+        if (!selectAnio || !selectSeccion) return;
+        const y = Number(selectAnio.value);
+        const sec = calcularSeccion(y);
+        if (sec) selectSeccion.value = sec;
+    }
+
+    // === Generar años dinámicos ===
+    if (selectAnio) {
+        const edadMin = 6;
+        const edadMax = 19;
+
+        const max = actual - edadMin;
+        const min = actual - edadMax;
+
+        for (let y = max; y >= min; y--) {
+            const option = document.createElement("option");
+            option.value = y;
+            option.textContent = y;
+
+            if (anioGuardado && anioGuardado == y) {
+                option.selected = true;
+            }
+
+            selectAnio.appendChild(option);
+        }
+
+        // Si había año guardado → actualizar sección automáticamente
+        if (anioGuardado) actualizarSeccion();
+
+        // Cambios manuales
+        selectAnio.addEventListener("change", actualizarSeccion);
+    }
+});
+</script>
