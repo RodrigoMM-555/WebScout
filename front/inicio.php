@@ -11,6 +11,7 @@ include("inc/header.html")
         <div class="overlay"></div>
         <div class="texto-carrusel">Grupo Scout Seeonee</div>
     </article>
+    <ul class="paño"></ul>
 
      <article class="info">
         <!-- Imagen del calendario -->

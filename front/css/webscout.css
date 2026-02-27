@@ -28,12 +28,20 @@
    ====================== ESTILOS GLOBALES ==================
    ========================================================= */
 
-body {
+html,body {
     background-color: var(--azul-fondo);
+    height: 100%;
+    margin: 0;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
 }
 
 main {
     width: 100%;
+    flex: 1; /* 🔹 AÑADIDO */
 }
 
 /* =========================================================
@@ -55,6 +63,7 @@ body.login {
     border-radius: 16px;
     text-align: center;
     box-shadow: var(--sombra);
+    flex: 0;
 }
 
 .login h2 {
@@ -137,13 +146,11 @@ header > div {
     align-items: center;
 }
 
-/* corregido: menos margen, evita descuadre */
 header img {
     width: 60px;
     margin-inline: 15px;
 }
 
-/* asegura alineación de "Inicio" */
 header h2 {
     margin: 0;
     line-height: 1;
@@ -169,7 +176,6 @@ footer {
     text-align: center;
     padding: 10px;
     font-size: 14px;
-    margin-top: 20px;
     width: 100%;
 }
 
@@ -182,7 +188,28 @@ footer {
     height: 450px;
     overflow: hidden;
     position: relative;
+    margin-bottom: 10px;
 }
+
+ul.paño {
+  position: relative;
+}
+
+ul.paño::after {
+  content: "";
+  position: absolute;
+  inset: auto 0 0 0;
+  height: 10px;
+  background: repeating-linear-gradient(
+    135deg,
+    #FF5A66 0 16px,  /* rojo claro */
+    #7FB6F0 0 32px   /* azul claro */
+  );
+  pointer-events: none;
+  border-bottom-left-radius: inherit;
+  border-bottom-right-radius: inherit;
+}
+
 
 .carrusel section {
     display: flex;
@@ -249,7 +276,6 @@ main:has(section.izquierda, section.derecha) {
     align-items: flex-start;
     gap: 40px;
     width: 100%;
-    padding: 30px 0;
 }
 
 /* Columnas */
@@ -257,6 +283,7 @@ section.izquierda, section.derecha {
     background: var(--gris-claro);
     width: 350px;
     padding: 30px;
+    padding-top: 50px;
     text-align: center;
     border-radius: 0 0 var(--radius) var(--radius); /* redondeo solo abajo */
     box-shadow: var(--sombra);
@@ -476,7 +503,7 @@ main.avisos h1 {
 
 .calendario-trimestre section {
     display: grid;
-    grid-template-columns: repeat(4,1fr);
+    grid-template-columns: repeat(5,1fr);
     gap: 30px;
     margin: 30px;
 }

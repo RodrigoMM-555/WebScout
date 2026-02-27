@@ -278,3 +278,7 @@ if (!$hayAvisos) {
 }
 ?>
 </main>
+<?php
+include("inc/footer.html");
+?>
+</main>
