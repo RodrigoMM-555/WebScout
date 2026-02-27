@@ -1,13 +1,21 @@
+
 # PRIORITARIO
 - Historial de archivos para los padres
+- Historial de archivos para los admins
 - Mejorar la distribucion del formualrio de insert
-- Añadir tipso de avisos y que se vean distintos en el calendario
+- Que queremos ver en el CRUD -> queremos ver los ID?
+                                 queremos ver los apdres?
+                                 juntamos el nombre y apellido?
+                                 tenemos que ver los permisos?
+                                 -------------------------------> Creamos otra pagina para ver la infro extra del niño que no se vea en el CRUD
+
 
 # SECUNDARIO
 - Tabla para lista de espera
+- Tabla sanitaria
 - Comprobar que el pdf subido es el correcto
 - Restricciones de contraseña
-- generador de archivos con toda la info par apoder descargarlos
+- Generador de archivos con toda la info par apoder descargarlos
 
 
 # TERCIARIO
