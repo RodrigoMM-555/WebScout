@@ -20,7 +20,7 @@ if ($id) {
     $valores = $resultado->fetch_assoc();
 }
 ?>
-<form action="?operacion=procesaactualizar&tabla=<?= $_GET['tabla'] ?>" method="POST">
+<form action="?operacion=procesaactualizar&tabla=<?= $_GET['tabla'] ?>&seccion=<?= $_GET['seccion'] ?>&ordenar_por=<?= $_GET['ordenar_por'] ?>&direccion=<?= $_GET['direccion'] ?>" method="POST">
 <?php
     // Pedimos estructura de la tabla
     $resultado = $conexion->query("DESCRIBE `$tabla`;");

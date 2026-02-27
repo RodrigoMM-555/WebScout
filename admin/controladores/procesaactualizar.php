@@ -48,6 +48,6 @@ if(!$resultado){
 }
 
 // Redirección al listado
-header("Location: ?tabla=".$tabla);
+header("Location: ?tabla=".$tabla."&ordenar_por=".urlencode($_GET['ordenar_por'])."&direccion=".urlencode($_GET['direccion']));
 exit;
 ?>

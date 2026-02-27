@@ -65,7 +65,7 @@ if (!array_key_exists($ordenarPor, $opcionesOrden)) {
     </div>
 
     <!-- Botón de insertar nuevo registro -->
-    <a href="?operacion=insertar&amp;tabla=<?= htmlspecialchars($tabla) ?>&seccion=<?= htmlspecialchars($seccionFiltro) ?>" class="boton_insertar" 
+    <a href="?operacion=insertar&amp;tabla=<?= htmlspecialchars($tabla) ?>&seccion=<?= htmlspecialchars($seccionFiltro) ?>&ordenar_por=<?= htmlspecialchars($ordenarPor) ?>&direccion=<?= htmlspecialchars($direccion) ?>" class="boton_insertar" 
        style="margin-left:auto; padding:5px 10px; background:green; color:#fff; text-decoration:none; border-radius:4px;">+</a>
 </div>
 
@@ -176,8 +176,8 @@ if (!array_key_exists($ordenarPor, $opcionesOrden)) {
                 }
 
                 // Acciones: editar y eliminar
-                echo '<td><a href="?operacion=actualizar&amp;tabla=' . urlencode($tabla) . '&amp;id=' . (int)$fila['id'] . '">📝</a></td>';
-                echo '<td><a class="eliminar" href="controladores/procesaeliminar.php?tabla=' . urlencode($tabla) . '&amp;id=' . (int)$fila['id'] . '">❌</a></td>';
+                echo '<td><a href="?operacion=actualizar&amp;tabla=' . urlencode($tabla) . '&amp;id=' . (int)$fila['id'] . '&amp;ordenar_por=' . urlencode($ordenarPor) . '&amp;direccion=' . urlencode($direccion) . '">📝</a></td>';
+                echo '<td><a class="eliminar" href="controladores/procesaeliminar.php?tabla=' . urlencode($tabla) . '&amp;id=' . (int)$fila['id'] . '&ordenar_por=' . urlencode($ordenarPor) . '&direccion=' . urlencode($direccion) . '">❌</a></td>';
                 echo "</tr>";
 
                 // Bloque especial para avisos circulares

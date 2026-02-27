@@ -1,4 +1,4 @@
-<form action="?operacion=procesainsertar&tabla=<?= $_GET['tabla'] ?>" method="POST">
+<form action="?operacion=procesainsertar&tabla=<?= $_GET['tabla'] ?>&seccion=<?= $_GET['seccion'] ?>&ordenar_por=<?= $_GET['ordenar_por'] ?>&direccion=<?= $_GET['direccion'] ?>" method="POST">
 <?php
     // Sacamos el nombre de la tabla
     $tabla = $_GET['tabla'];
