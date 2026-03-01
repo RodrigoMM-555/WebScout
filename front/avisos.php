@@ -117,6 +117,7 @@ while ($aviso = $resultado->fetch_assoc()) {
             echo "<table class='tabla-archivos'>
                 <tr>
                     <th>Niñ@</th>
+                    <th> - </th> 
                     <th>Asistencia</th>
                 </tr>";
 
@@ -150,6 +151,15 @@ while ($aviso = $resultado->fetch_assoc()) {
                 // Pintamos el formualrio de asistencia
                 echo "<tr class='$filaClase'>
                     <td>$nombreCompleto</td>
+                    <td>";
+                    if ($asis && $asis["asistencia"] === "no") {
+                        echo "<span>No asiste</span>";
+                    } elseif ($asis && $asis["asistencia"] === "si") {
+                        echo "<span>Sí asiste</span>";
+                    } else {
+                        echo "<span style='color: blue; font-weight:bold;'>RESPONDER</span>";
+                    }
+                echo "</td>
                     <td>
                         <form action='contrl/cambiar_asistencia.php' method='post'>
                             <input type='hidden' name='id_aviso' value='".$aviso["id"]."'>

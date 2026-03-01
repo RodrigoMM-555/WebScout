@@ -224,4 +224,27 @@ document.addEventListener("DOMContentLoaded", function () {
         selectAnio.appendChild(option);
     }
 });
+
+// Evitar que se mezclen "Todas las secciones" con individuales
+document.addEventListener("DOMContentLoaded", function(){
+
+    // Todos los checkboxes dentro del div de secciones múltiples
+    const checkboxes = document.querySelectorAll(".secciones-multiples input[type=checkbox]");
+
+    // Checkbox de "Todas las secciones"
+    const todas = Array.from(checkboxes).find(cb => cb.value === "colonia,manada,tropa,posta,rutas");
+
+    checkboxes.forEach(cb => {
+        cb.addEventListener("change", function(){
+            if(this === todas && this.checked){
+                // Si marcamos "Todas", desmarcar el resto
+                checkboxes.forEach(c => { if(c !== todas) c.checked = false; });
+            } else if(this !== todas && this.checked){
+                // Si marcamos alguna individual, desmarcar "Todas"
+                todas.checked = false;
+            }
+        });
+    });
+
+});
 </script>

@@ -3,11 +3,7 @@
 - Historial de archivos para los padres
 - Historial de archivos para los admins
 - Mejorar la distribucion del formualrio de insert
-- Que queremos ver en el CRUD -> queremos ver los ID?
-                                 queremos ver los apdres?
-                                 juntamos el nombre y apellido?
-                                 tenemos que ver los permisos?
-                                 -------------------------------> Creamos otra pagina para ver la infro extra del niño que no se vea en el CRUD
+- Crear pagina o desplegable para poder ver mas info de los niños
 
 
 # SECUNDARIO
@@ -15,7 +11,7 @@
 - Tabla sanitaria
 - Comprobar que el pdf subido es el correcto
 - Restricciones de contraseña
-- Generador de archivos con toda la info par apoder descargarlos
+- Generador de archivos pdf con toda la info para poder descargarlos
 
 
 # TERCIARIO
@@ -33,7 +29,6 @@
 
 # MEJORAS
 Boton para subir todos los educandos un año
-Que las secciones vayan segun los años
 
 Necesario -> hacer que el campo seccion sea insertado segun el año
           -> rehacer la logica de varios archivos
@@ -42,3 +37,5 @@ Necesario -> hacer que el campo seccion sea insertado segun el año
 
 # Pruebas
 - Poner en marcha el servidor para comprobar rutas
+- Comprobar si los años de las secciones cambian
+

@@ -28,6 +28,7 @@ CREATE TABLE educandos (
     anio INT,
     seccion VARCHAR(100),
     dni VARCHAR(9),
+    permisos INT DEFAULT 0,
     id_usuario INT NOT NULL,
     FOREIGN KEY (id_usuario) REFERENCES usuarios(id)
         ON DELETE CASCADE
@@ -79,33 +80,20 @@ FLUSH PRIVILEGES;
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 -- Modificaciones
 ALTER TABLE avisos ADD COLUMN fecha_hora DATETIME;
 ALTER TABLE avisos ADD COLUMN CIRCULAR VARCHAR(255);
 ALTER TABLE avisos ADD COLUMN responsable VARCHAR(255);
 ALTER TABLE educandos CHANGE COLUMN `año` `anio` INT;
+
 ALTER TABLE avisos ADD COLUMN lugar VARCHAR(255);
 ALTER TABLE avisos ADD COLUMN municipio VARCHAR(255);
 ALTER TABLE avisos ADD COLUMN provincia VARCHAR(255);
+
 ALTER TABLE usuarios ADD COLUMN nombre2 VARCHAR(100);
 ALTER TABLE usuarios ADD COLUMN apellidos2 VARCHAR(100);
 ALTER TABLE usuarios ADD COLUMN email2 VARCHAR(100);
 ALTER TABLE usuarios ADD COLUMN telefono2 INT;
 ALTER TABLE usuarios ADD COLUMN rol ENUM('admin','usuario') NOT NULL DEFAULT 'usuario';
+
+ALTER TABLE educandos ADD permisos INT DEFAULT 0;
