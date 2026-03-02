@@ -1,8 +1,14 @@
 <?php 
-include("inc/header.html")
+/**
+ * inicio.php — Página de inicio (landing tras login)
+ * Muestra el carrusel de fotos, calendario trimestral e info de contacto.
+ */
+include("inc/header.php")
 ?>
 
 <main>
+    <ul class="paño" aria-hidden="true"></ul>
+
     <!-- Carrusel de fotos -->
     <article class="carrusel">
         <img src="../img/lis.jpg" alt="placeholder">
@@ -11,7 +17,6 @@ include("inc/header.html")
         <div class="overlay"></div>
         <div class="texto-carrusel">Grupo Scout Seeonee</div>
     </article>
-    <ul class="paño"></ul>
 
      <article class="info">
         <!-- Imagen del calendario -->
@@ -49,7 +54,8 @@ let botondelante = document.createElement("button")
 botondelante.textContent = "▶"
 contenedor.appendChild(botondelante)
 
-var contador = 0;
+// Contador de slide (let en vez de var para evitar contaminar el scope global)
+let contador = 0;
 function actualizarCarrusel() {
     let ancho = contenedor.offsetWidth;
     nuevo_contenedor.style.left = contador * -ancho + "px";

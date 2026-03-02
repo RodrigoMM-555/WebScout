@@ -1,14 +1,19 @@
-<!-- Pintar las tablas -->
+<!-- ============================================================
+     leer.php — Vista de listado/tabla CRUD para cualquier tabla
+     ============================================================
+     Muestra filtros de orden, chips de sección (educandos),
+     tabla de datos con permisos inline y acciones editar/eliminar.
+-->
 <?php
+// conexion_bd.php ya carga config.php (con las constantes PERM_*)
 include_once "../inc/conexion_bd.php";
 
+// Necesitamos el token CSRF para los enlaces de eliminar
+if (session_status() === PHP_SESSION_NONE) session_start();
+$csrfToken = generarTokenCSRF();
 
-// Constantes bitmask permisos
-define("PERM_COCHE", 1);
-define("PERM_WHATSAPP", 2);
-define("PERM_SOLO", 4);
-define("PERM_FOTOS", 8);
-
+// Mostrar mensaje flash si existe (ej: "Registro eliminado correctamente")
+mostrarFlash();
 
 // Recogemos parámetros
 $ordenarPor    = $_GET['ordenar_por'] ?? 'id';
@@ -50,26 +55,55 @@ if (!array_key_exists($ordenarPor, $opcionesOrden)) {
 ?>
 
 <!-- Filtros y ordenación -->
-<div class="tabla-controles" style="display:flex; align-items:center; margin-bottom:10px; gap:10px; flex-wrap:wrap;">
-    <div style="display:flex; gap:5px; flex-wrap:wrap;">
+<div class="tabla-controles">
+    <div class="orden-botones">
         <?php foreach ($opcionesOrden as $columna => $label): 
             $nuevaDireccion = ($ordenarPor === $columna && $direccion === 'ASC') ? 'DESC' : 'ASC';
             $href = "?tabla=" . urlencode($tabla) .
                     "&ordenar_por=" . urlencode($columna) .
                     "&direccion=" . urlencode($nuevaDireccion) .
                     ($seccionFiltro ? "&seccion=" . urlencode($seccionFiltro) : "");
+            $claseOrden = "orden-link" . ($ordenarPor === $columna ? " activo" : "");
         ?>
             <a href="<?= htmlspecialchars($href) ?>"
-               style="padding:5px 10px; background:#555; color:#fff; text-decoration:none; border-radius:4px; <?= $ordenarPor===$columna ? 'background:#007bff;' : '' ?>">
+               class="<?= $claseOrden ?>">
                 <?= htmlspecialchars($label) ?> <?= ($ordenarPor === $columna) ? ($direccion === 'ASC' ? '↑' : '↓') : '' ?>
             </a>
         <?php endforeach; ?>
     </div>
 
     <a href="?operacion=insertar&amp;tabla=<?= htmlspecialchars($tabla) ?>&seccion=<?= htmlspecialchars($seccionFiltro) ?>&ordenar_por=<?= htmlspecialchars($ordenarPor) ?>&direccion=<?= htmlspecialchars($direccion) ?>" 
-       class="boton_insertar" 
-       style="margin-left:auto; padding:5px 10px; background:green; text-decoration:none; border-radius:4px;">+</a>
+         class="boton_insertar">+</a>
 </div>
+
+<?php if ($tabla === 'educandos'): ?>
+<div class="subtablas-seccion">
+    <?php
+        $secciones = [
+            'colonia' => 'Colonia',
+            'manada' => 'Manada',
+            'tropa' => 'Tropa',
+            'posta' => 'Posta',
+            'rutas' => 'Rutas'
+        ];
+
+        $hrefTodas = "?tabla=" . urlencode($tabla) .
+                     "&ordenar_por=" . urlencode($ordenarPor) .
+                     "&direccion=" . urlencode($direccion);
+    ?>
+    <a href="<?= htmlspecialchars($hrefTodas) ?>" class="chip-seccion <?= empty($seccionFiltro) ? 'activo' : '' ?>">Todas</a>
+
+    <?php foreach ($secciones as $claveSeccion => $nombreSeccion):
+        $hrefSeccion = "?tabla=" . urlencode($tabla) .
+                      "&ordenar_por=" . urlencode($ordenarPor) .
+                      "&direccion=" . urlencode($direccion) .
+                      "&seccion=" . urlencode($claveSeccion);
+        $clases = "chip-seccion seccion-" . $claveSeccion . (($seccionFiltro === $claveSeccion) ? " activo" : "");
+    ?>
+        <a href="<?= htmlspecialchars($hrefSeccion) ?>" class="<?= htmlspecialchars($clases) ?>"><?= htmlspecialchars($nombreSeccion) ?></a>
+    <?php endforeach; ?>
+</div>
+<?php endif; ?>
 
 <table>
 <?php
@@ -159,7 +193,8 @@ if ($resultadoListado) {
                 $valor = htmlspecialchars($valor) . (isset($fila['apellidos']) ? " " . ucfirst(htmlspecialchars($fila['apellidos'])) : "");
             }
 
-            else if ($clave === "fecha_hora_inicio" || $clave === "fecha_hora_fin" && !empty($valor)) {
+            // ★ FIX: paréntesis para evaluar ambas condiciones correctamente
+        else if (($clave === "fecha_hora_inicio" || $clave === "fecha_hora_fin") && !empty($valor)) {
                 $valor = date("d/m/Y", strtotime($valor)) . " " . date("H:i", strtotime($valor));
             }
 
@@ -170,19 +205,29 @@ if ($resultadoListado) {
 
             $permisos = (int)$fila['permisos'];
 
-            $checkedCoche    = ($permisos & PERM_COCHE) ? "checked" : "";
             $checkedWhatsapp = ($permisos & PERM_WHATSAPP) ? "checked" : "";
             $checkedSolo     = ($permisos & PERM_SOLO) ? "checked" : "";
             $checkedFotos    = ($permisos & PERM_FOTOS) ? "checked" : "";
+            $checkedCoche    = ($permisos & PERM_COCHE) ? "checked" : "";
 
-            echo "<td><input type='checkbox' class='permiso-check' data-id='{$fila['id']}' data-permiso='1' $checkedCoche></td>";
             echo "<td><input type='checkbox' class='permiso-check' data-id='{$fila['id']}' data-permiso='2' $checkedWhatsapp></td>";
             echo "<td><input type='checkbox' class='permiso-check' data-id='{$fila['id']}' data-permiso='4' $checkedSolo></td>";
             echo "<td><input type='checkbox' class='permiso-check' data-id='{$fila['id']}' data-permiso='8' $checkedFotos></td>";
+            echo "<td><input type='checkbox' class='permiso-check' data-id='{$fila['id']}' data-permiso='1' $checkedCoche></td>";
         }
 
-        echo '<td><a href="?operacion=actualizar&amp;tabla=' . urlencode($tabla) . '&amp;id=' . (int)$fila['id'] . '">📝</a></td>';
-        echo '<td><a class="eliminar" href="controladores/procesaeliminar.php?tabla=' . urlencode($tabla) . '&amp;id=' . (int)$fila['id'] . '">❌</a></td>';
+        echo '<td><a href="?operacion=actualizar&amp;tabla=' . urlencode($tabla) . '&amp;id=' . (int)$fila['id']
+           . '&amp;ordenar_por=' . urlencode($ordenarPor) . '&amp;direccion=' . urlencode($direccion) . '">📝</a></td>';
+
+        // Enlace de eliminar con CSRF token y confirmación JS
+        $urlEliminar = 'controladores/procesaeliminar.php?tabla=' . urlencode($tabla)
+                     . '&id=' . (int)$fila['id']
+                     . '&ordenar_por=' . urlencode($ordenarPor)
+                     . '&direccion=' . urlencode($direccion)
+                     . '&csrf_token=' . urlencode($csrfToken);
+        echo '<td><a class="eliminar" href="' . htmlspecialchars($urlEliminar) . '"'
+           . ' onclick="return confirm(\'¿Seguro que quieres eliminar este registro?\')"'
+           . '>❌</a></td>';
 
         echo "</tr>";
 

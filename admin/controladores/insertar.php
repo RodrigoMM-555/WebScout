@@ -1,6 +1,15 @@
-<form action="?operacion=procesainsertar&tabla=<?= $_GET['tabla'] ?>&seccion=<?= $_GET['seccion'] ?>&ordenar_por=<?= $_GET['ordenar_por'] ?>&direccion=<?= $_GET['direccion'] ?>" method="POST">
+<!-- ============================================================
+     insertar.php — Formulario dinámico para insertar registros
+     ============================================================
+     Genera campos según la estructura de la tabla (DESCRIBE).
+     Incluye lógica especial para secciones, fechas, año, rol, etc.
+-->
+<form action="?operacion=procesainsertar&tabla=<?= htmlspecialchars($_GET['tabla']) ?>&seccion=<?= htmlspecialchars($_GET['seccion'] ?? '') ?>&ordenar_por=<?= htmlspecialchars($_GET['ordenar_por'] ?? 'id') ?>&direccion=<?= htmlspecialchars($_GET['direccion'] ?? 'ASC') ?>" method="POST">
 <?php
-    // Sacamos el nombre de la tabla
+    // Token CSRF para proteger el formulario
+    echo campoCSRF();
+
+    // Sacamos el nombre de la tabla (validado)
     $tabla = $_GET['tabla'];
     $seccion = $_GET['seccion'] ?? "colonia";
 
@@ -39,13 +48,13 @@
         elseif( $fila["Field"] === "secciones") {
             echo "
                 <div class='control_formulario secciones-multiples'>
-                    <label>$clave2</label><br>
-                    <input type='checkbox' name='secciones[]' value='colonia'> Colonia
-                    <input type='checkbox' name='secciones[]' value='manada'> Manada
-                    <input type='checkbox' name='secciones[]' value='tropa'> Tropa
-                    <input type='checkbox' name='secciones[]' value='posta'> Posta
-                    <input type='checkbox' name='secciones[]' value='rutas'> Rutas
-                    <input type='checkbox' name='secciones[]' value='colonia,manada,tropa,posta,rutas'> Todas las secciones
+                    <label>$clave2</label>
+                    <label class='check-item seccion-colonia'><input type='checkbox' name='secciones[]' value='colonia'> <span>Colonia</span></label>
+                    <label class='check-item seccion-manada'><input type='checkbox' name='secciones[]' value='manada'> <span>Manada</span></label>
+                    <label class='check-item seccion-tropa'><input type='checkbox' name='secciones[]' value='tropa'> <span>Tropa</span></label>
+                    <label class='check-item seccion-posta'><input type='checkbox' name='secciones[]' value='posta'> <span>Posta</span></label>
+                    <label class='check-item seccion-rutas'><input type='checkbox' name='secciones[]' value='rutas'> <span>Rutas</span></label>
+                    <label class='check-item seccion-todas'><input type='checkbox' name='secciones[]' value='colonia,manada,tropa,posta,rutas'> <span>Todas</span></label>
                 </div>
             ";
         }
@@ -138,6 +147,20 @@
             ';
         }
 
+        // PERMISOS (checkboxes de bits, igual que en la tabla)
+        elseif ($fila['Field'] === 'permisos') {
+            echo "
+                <input type='hidden' name='permisos' value='0'>
+                <div class='control_formulario secciones-multiples'>
+                    <label>Permisos</label>
+                    <label class='check-item'><input type='checkbox' name='permisos[]' value='1'> <span>Coche</span></label>
+                    <label class='check-item'><input type='checkbox' name='permisos[]' value='2'> <span>WhatsApp</span></label>
+                    <label class='check-item'><input type='checkbox' name='permisos[]' value='4'> <span>Solo</span></label>
+                    <label class='check-item'><input type='checkbox' name='permisos[]' value='8'> <span>Fotos</span></label>
+                </div>
+            ";
+        }
+
         // CUALQUIER OTRO CAMPO
         else {
             echo "
@@ -149,8 +172,9 @@
         }
     }
 ?>
-    <div class="control_formulario">
+    <div class="control_formulario botones-form">
         <input type="submit" value="Insertar">
+        <a href="?tabla=<?= htmlspecialchars($_GET['tabla']) ?>&seccion=<?= htmlspecialchars($_GET['seccion'] ?? '') ?>&ordenar_por=<?= htmlspecialchars($_GET['ordenar_por'] ?? 'id') ?>&direccion=<?= htmlspecialchars($_GET['direccion'] ?? 'ASC') ?>" class="btn-cancelar">Cancelar</a>
     </div>
 </form>
 

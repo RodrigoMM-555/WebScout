@@ -1,7 +1,22 @@
+<?php
+/**
+ * asistencia_documentacion.php — Vista de asistencia y documentación por aviso
+ * ===============================================================================
+ * Muestra educandos agrupados por estado de asistencia (asisten/pendientes/no)
+ * y comprueba si han entregado la circular (si aplica).
+ *
+ * ★ FIX: Requiere sesión de admin
+ * ★ FIX: limpiarTexto() ya no se duplica (viene de utils.php)
+ */
+session_start();
+?>
 <main>
 <link rel="stylesheet" href="css/estilo.css">
 <?php
 include "inc/conexion_bd.php";
+
+// Solo admins pueden ver esta página
+requerirAdmin();
 
 if (!isset($_GET['id_aviso'])) {
     echo "Aviso no especificado";
@@ -56,13 +71,7 @@ foreach ($educandos as $edu) {
     $stmtAsis->close();
 }
 
-// Función para limpiar texto
-function limpiarTexto($texto) {
-    $texto = str_replace(' ', '_', $texto);
-    $tmp = @iconv('UTF-8', 'ASCII//TRANSLIT', $texto);
-    if ($tmp !== false) $texto = $tmp;
-    return preg_replace('/[^A-Za-z0-9_\-]/', '', $texto);
-}
+// limpiarTexto() ya definida en utils.php (cargado por conexion_bd)
 
 // Pintar tabla
 echo "<div class='asi'>
@@ -112,7 +121,7 @@ foreach (['si','pendiente','no'] as $key) {
 
             $nombreCarpeta = limpiarTexto($nombre);
             $tituloLimpio  = limpiarTexto($tituloAviso);
-            $ruta = $_SERVER['DOCUMENT_ROOT'] . '/WebScout/circulares/educandos/' . $nombreCarpeta;
+            $ruta = BASE_PATH . '/circulares/educandos/' . $nombreCarpeta;
             $entregado = false;
 
             if (is_dir($ruta)) {

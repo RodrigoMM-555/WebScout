@@ -1,53 +1,98 @@
 <?php
+/**
+ * procesaactualizar.php — Actualiza un registro existente
+ * =========================================================
+ * Seguridad aplicada:
+ *   - Requiere sesión de admin
+ *   - Valida tabla contra whitelist
+ *   - Usa prepared statements (bind_param)
+ *   - Token CSRF validado
+ *   - Contraseña vacía → se omite (no hashea cadena vacía)
+ */
+session_start();
 include('../inc/conexion_bd.php');
 
-$tabla = $_GET['tabla'];
-$id = $_POST['id'];
+// Solo admins pueden actualizar
+requerirAdmin();
 
-$columnas = [];
-$valores = [];
+// Validar token CSRF
+validarCSRF();
 
-foreach($_POST as $clave => $valor){
-    if($clave == "contraseña"){
+// Validar tabla e id
+$tabla = validarTabla($_GET['tabla'] ?? '');
+$id    = (int)($_POST['id'] ?? 0);
+
+if ($id <= 0) {
+    die('ID de registro no válido.');
+}
+
+// ── Construir asignaciones SET col=? ────────────────────────
+$asignaciones = [];
+$tipos        = '';
+$params       = [];
+
+foreach ($_POST as $clave => $valor) {
+
+    // Saltar campos especiales
+    if ($clave === 'csrf_token' || $clave === 'id') continue;
+
+    // ★ FIX: Si la contraseña viene vacía, no actualizarla
+    if ($clave === 'contraseña') {
+        if ($valor === '' || $valor === null) {
+            continue; // Omitir — conserva la contraseña actual
+        }
         $valor = password_hash($valor, PASSWORD_DEFAULT);
     }
 
-    // Si es un array (caso de secciones[]), convertir a string
-    if (is_array($valor)){
-        $valor = implode(",", $valor);
+    // Corregir nombre de columna
+    if ($clave === 'año') {
+        $clave = 'anio';
     }
 
-    if($clave == "año"){
-        $clave = "anio";
+    // Arrays (secciones[] → cadena, permisos[] → suma de bits)
+    if (is_array($valor)) {
+        if ($clave === 'permisos') {
+            $valor = (string)array_sum(array_map('intval', $valor));
+        } else {
+            $valor = implode(',', $valor);
+        }
     }
 
-    $valor = $conexion->real_escape_string($valor);
-
-    $columnas[] = "`$clave`";
-    if ($valor === "" || $valor === null) {
-        $valores[] = "NULL";
-    } else {
-        $valor = $conexion->real_escape_string($valor);
-        $valores[] = "'$valor'";
-    }
+    $asignaciones[] = "`{$clave}` = ?";
+    $tipos         .= 's';
+    $params[]       = ($valor === '' || $valor === null) ? null : $valor;
 }
 
-// Convertimos en asignaciones para UPDATE
-$asignaciones = [];
-foreach($columnas as $i => $columna){
-    $asignaciones[] = $columna . '=' . $valores[$i];
+// Añadir el id al final del bind
+$tipos   .= 'i';
+$params[] = $id;
+
+// Construir UPDATE con placeholders
+$sql  = "UPDATE `{$tabla}` SET " . implode(', ', $asignaciones) . " WHERE id = ?";
+$stmt = $conexion->prepare($sql);
+
+if (!$stmt) {
+    die("Error preparando consulta: " . $conexion->error);
 }
 
-// Construimos la consulta UPDATE
-$sql = "UPDATE `$tabla` SET ".implode(",", $asignaciones)." WHERE id = '$id';";
-
-// Ejecutamos
-$resultado = $conexion->query($sql);
-if(!$resultado){
-    die("Error en la consulta: " . $conexion->error);
+// bind_param requiere referencias
+$bindParams = [$tipos];
+for ($i = 0; $i < count($params); $i++) {
+    $bindParams[] = &$params[$i];
 }
+call_user_func_array([$stmt, 'bind_param'], $bindParams);
+
+if (!$stmt->execute()) {
+    setFlash('error', 'Error al actualizar: ' . $stmt->error);
+} else {
+    setFlash('exito', 'Registro actualizado correctamente.');
+}
+
+$stmt->close();
 
 // Redirección al listado
-header("Location: ?tabla=".$tabla."&ordenar_por=".urlencode($_GET['ordenar_por'])."&direccion=".urlencode($_GET['direccion']));
+header("Location: ?tabla=" . urlencode($tabla)
+     . "&ordenar_por=" . urlencode($_GET['ordenar_por'] ?? 'id')
+     . "&direccion=" . urlencode($_GET['direccion'] ?? 'ASC'));
 exit;
 ?>

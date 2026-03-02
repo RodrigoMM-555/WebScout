@@ -1,4 +1,10 @@
 <?php
+/**
+ * procesar_login.php — Procesa el formulario de login
+ * =====================================================
+ * Verifica usuario/contraseña contra la BD.
+ * Crea sesión con nombre y rol, redirige según el tipo de usuario.
+ */
 include '../inc/conexion_bd.php';
 
 // Recogemos la información de login

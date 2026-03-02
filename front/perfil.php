@@ -1,13 +1,29 @@
+<?php
+/**
+ * perfil.php — Perfil del padre/madre y listado de hijos
+ * ========================================================
+ * Muestra datos personales del usuario y tarjetas de sus
+ * educandos con color por sección.
+ *
+ * ★ FIX: session_start() ANTES de cualquier salida HTML
+ * ★ FIX: htmlspecialchars() en todos los datos del usuario (anti-XSS)
+ */
+session_start();
+
+// Comprobar que hay sesión activa
+if (empty($_SESSION["nombre"])) {
+    header("Location: index.php");
+    exit;
+}
+
+$nombre = $_SESSION["nombre"];
+?>
 <!-- Perfil de los padres -->
-<?php 
-include("inc/header.html");
+<?php
+include("inc/header.php");
 include("inc/conexion_bd.php");
 
-// Obtenemos el nombre del usuario de la sesión
-session_start();
-$nombre = $_SESSION["nombre"];
-
-// Preparar y ejecutar la consulta para usuarios
+// Preparar y ejecutar la consulta para el usuario
 $sql = "SELECT * FROM usuarios WHERE nombre = ?";
 $stmt = $conexion->prepare($sql);
 $stmt->bind_param("s", $nombre);
@@ -16,44 +32,45 @@ $resultado = $stmt->get_result();
 $fila = $resultado->fetch_assoc();
 ?>
 <main>
-    <!-- Pintamso el usuario -->
+    <!-- Datos del usuario -->
     <section class="izquierda">
         <h1>Perfil</h1>
         <div>
             <p>
-                <?=$fila["nombre"]?> <?=$fila["apellidos"]?>
+                <?= htmlspecialchars($fila["nombre"]) ?> <?= htmlspecialchars($fila["apellidos"]) ?>
             </p>
             <?php if (!empty($fila["nombre2"])): ?>
             <p>
-                <?=$fila["nombre2"]?> <?=$fila["apellidos2"]?>
+                <?= htmlspecialchars($fila["nombre2"]) ?> <?= htmlspecialchars($fila["apellidos2"]) ?>
             </p>
             <?php endif; ?>
         </div>
         <div>
             <p>
-                <?=$fila["telefono"]?>
+                <?= htmlspecialchars($fila["telefono"]) ?>
             </p>
             <?php if (!empty($fila["telefono2"])): ?>
             <p>
-                <?=$fila["telefono2"]?>
+                <?= htmlspecialchars($fila["telefono2"]) ?>
             </p>
             <?php endif; ?>
         </div>
         <div>
             <p>
-                <?=$fila["email"]?>
+                <?= htmlspecialchars($fila["email"]) ?>
             </p>
             <?php if (!empty($fila["email2"])): ?>
             <p>
-                <?=$fila["email2"]?>
+                <?= htmlspecialchars($fila["email2"]) ?>
             </p>
             <?php endif; ?>
         </div>
         <div>
-            <p><?=$fila["direccion"]?></p>
+            <p><?= htmlspecialchars($fila["direccion"]) ?></p>
         </div>
     </section>
 
+    <!-- Tarjetas de los hijos -->
     <section class="derecha">
         <h1>Hijos</h1>
 <?php
@@ -88,9 +105,9 @@ while($educando = $resultado_educandos->fetch_assoc()) {
             $clase = 'otros';
     }
 
-    // Pintamos al hijo con su clase correspondiente y un onclick para ir a su perfil
-    echo "<div class='hijo $clase' onclick=\"window.location='educandos.php?id=".$educando['id']."'\">"
-    .$educando['nombre']." ".$educando['apellidos']."</div>";
+    // Pintamos al hijo con su clase de sección y enlace a su perfil
+    echo "<div class='hijo $clase' onclick=\"window.location='educandos.php?id=".(int)$educando['id']."'\">"
+    . htmlspecialchars($educando['nombre'] . " " . $educando['apellidos']) . "</div>";
 }
 ?>
     </section>

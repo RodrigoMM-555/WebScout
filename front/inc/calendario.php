@@ -1,7 +1,16 @@
 <!-- Calendario dinámico trimestre -->
-
 <?php
-include("conexion_bd.php");
+/**
+ * calendario.php — Genera el calendario trimestral
+ * Muestra los eventos/avisos del trimestre actual agrupados por día,
+ * coloreados por tipo de evento (sábado, campamento, etc.).
+ * Usa IntlDateFormatter para fechas en español.
+ */
+// conexion_bd.php ya se incluye desde la página padre
+// Solo lo incluimos si no existe $conexion aún
+if (!isset($conexion)) {
+    include_once("conexion_bd.php");
+}
 date_default_timezone_set("Europe/Madrid");
 ?>
 
@@ -51,13 +60,16 @@ date_default_timezone_set("Europe/Madrid");
         </section>
             <section>";
 
-        // Consulta correcta para DATETIME
+        // ★ FIX: Prepared statement para evitar SQLi en fechas
         $sql = "SELECT * FROM avisos 
-                WHERE fecha_hora_inicio >= '$fechaInicio' 
-                AND fecha_hora_inicio < '$fechaFin'
+                WHERE fecha_hora_inicio >= ? 
+                AND fecha_hora_inicio < ?
                 ORDER BY fecha_hora_inicio";
-
-        $resultado = $conexion->query($sql);
+        
+        $stmtCal = $conexion->prepare($sql);
+        $stmtCal->bind_param("ss", $fechaInicio, $fechaFin);
+        $stmtCal->execute();
+        $resultado = $stmtCal->get_result();
 
         if ($resultado && $resultado->num_rows > 0) {
 
@@ -65,7 +77,7 @@ date_default_timezone_set("Europe/Madrid");
 
             while($fila = $resultado->fetch_assoc()) {
                 $fechaAvisoI = new DateTime($fila['fecha_hora_inicio']);
-                $diaClave = $fechaAvisoI->format(format: "Y-m-d"); // clave única por día
+                $diaClave = $fechaAvisoI->format("Y-m-d"); // clave única por día
 
 
                 // Creamos el formatter para mostrar la fecha en texto

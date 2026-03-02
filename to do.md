@@ -2,7 +2,6 @@
 # PRIORITARIO
 - Historial de archivos para los padres
 - Historial de archivos para los admins
-- Mejorar la distribucion del formualrio de insert
 - Crear pagina o desplegable para poder ver mas info de los niños
 
 
@@ -29,10 +28,10 @@
 
 # MEJORAS
 Boton para subir todos los educandos un año
-
 Necesario -> hacer que el campo seccion sea insertado segun el año
           -> rehacer la logica de varios archivos
           -> pruebas de compatibilidad
+Hacerlo multigrupo
 
 
 # Pruebas

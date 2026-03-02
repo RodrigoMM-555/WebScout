@@ -1,30 +1,54 @@
 /* =======================================================
-   Admin - Estilos generales
+   Admin - Estilos organizados (2026)
+   Estructura:
+   1) Variables y base
+   2) Layout (nav / main)
+   3) Tablas y estados por sección
+   4) Controles (orden, insertar, filtros por sección)
+   5) Formularios
+   6) Bloque asistencia/documentación
+   7) Mensajes flash y utilidades
+   8) Responsive
    ======================================================= */
 
+/* ===================== 1) Variables y base ===================== */
 :root {
     --morado-claro: #b39ddb;
     --morado-medio: #9575cd;
     --morado-principal: #7b1fa2;
     --morado-oscuro: #6a1b9a;
+
     --blanco: #fff;
     --gris-100: #f6f7f3;
-    --gris-200: #eef0eb;
-    --texto: #2f4f3a;
+
+    --admin-superficie: #ffffff;
+    --admin-borde: #d8c5ec;
+    --admin-texto: #2a1b36;
+    --admin-texto-suave: #655377;
+    --admin-fondo: linear-gradient(180deg, #f8f6fb 0%, #f2f6fb 100%);
+
     --radius: 14px;
     --radius-sm: 10px;
     --sombra: 0 8px 20px rgba(0, 0, 0, .12);
+    --admin-sombra-suave: 0 10px 24px rgba(76, 36, 107, .14);
     --font: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-html, body {
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html,
+body {
     width: 100%;
     height: 100%;
     margin: 0;
     padding: 0;
     font-family: var(--font);
-    background: var(--gris-100);
-    color: var(--texto);
+    background: var(--admin-fondo);
+    color: var(--admin-texto);
 }
 
 body {
@@ -32,7 +56,17 @@ body {
     overflow: hidden;
 }
 
-/* Lateral */
+h1,
+h2,
+h3 {
+    color: var(--morado-oscuro);
+}
+
+p {
+    color: var(--admin-texto-suave);
+}
+
+/* ===================== 2) Layout ===================== */
 nav {
     background: var(--morado-principal);
     padding: 22px 16px;
@@ -42,65 +76,98 @@ nav {
     min-width: 220px;
     height: 100vh;
     overflow-y: auto;
-    box-shadow: 4px 0 12px rgba(0, 0, 0, .12);
     align-items: flex-start;
+    border-right: 1px solid rgba(255, 255, 255, .2);
+    box-shadow: 6px 0 18px rgba(34, 18, 47, .22);
+}
+
+.logo {
+    width: 100%;
+    max-width: 180px;
+    margin-inline: 24px;
+    margin-bottom: 10px;
 }
 
 nav a {
+    width: calc(100% - 2px);
+    box-sizing: border-box;
     background: rgba(255, 255, 255, .15);
     color: #fff;
     text-decoration: none;
     padding: 12px 14px;
-    border-radius: var(--radius-sm);
+    border: 1px solid rgba(255, 255, 255, .2);
+    border-radius: 12px;
     font-weight: 600;
-    transition: .25s;
     text-align: left;
-    width: 90%;
+    transition: .25s;
 }
 
 nav a:hover {
     background: rgba(255, 255, 255, .25);
-    transform: translateX(3px);
+    transform: translateX(4px);
 }
 
 nav a.activo {
     background: #fff;
     color: var(--morado-oscuro);
-    border: 2px solid #000;
+    border: 1px solid rgba(123, 31, 162, .25);
+    box-shadow: 0 8px 14px rgba(0, 0, 0, .12);
 }
 
-.sec {
-    width: 70%;
-}
-
-.sec.seccion-colonia:hover{ background-color: #fdf0d7 !important; }  /* naranja suave */
-.sec.seccion-manada:hover{ background-color: #fcf9dc !important; }  /* amarillo claro */
-.sec.seccion-tropa:hover{ background-color: #cee7fc !important; }  /* azul claro */
-.sec.seccion-posta:hover{ background-color: #fddee1 !important; }  /* rojo suave */
-.sec.seccion-rutas:hover{ background-color: #d8e6d8 !important; }  /* verde suave */
-
-/* Main */
 main {
     flex: 1;
-    padding: 24px;
+    padding: 22px;
     overflow-y: auto;
 }
 
-/* Tabla */
-
-td {
-    text-align: center;
+/* ===================== 3) Tablas y estados ===================== */
+table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    border: 1px solid var(--admin-borde);
+    border-radius: 16px;
+    overflow: hidden;
+    background: var(--admin-superficie);
+    box-shadow: var(--sombra);
 }
 
-/* Colores suaves por sección */
-/* Colores suaves por sección con prioridad */
-tr.seccion-colonia td { background-color: #ffe5b4 !important; }  /* naranja suave */
-tr.seccion-manada td   { background-color: #fff9c4 !important; }  /* amarillo claro */
-tr.seccion-tropa td   { background-color: #bbdefb !important; }  /* azul claro */
-tr.seccion-posta td   { background-color: #ffcdd2 !important; }  /* rojo suave */
-tr.seccion-rutas td   { background-color: #c8e6c9 !important; }  /* verde suave */
+th,
+td {
+    padding: 12px 16px;
+    text-align: center;
+    vertical-align: middle;
+    border-bottom: 1px solid #efe5f8;
+}
 
-/* Mantener hover con prioridad */
+th {
+    background: var(--morado-principal);
+    color: #fff;
+    letter-spacing: .2px;
+}
+
+tr:last-child td {
+    border-bottom: none;
+}
+
+tr:nth-child(even) {
+    background: #faf7ff;
+}
+
+tr:hover {
+    background: #f0e8fb;
+}
+
+tr a {
+    text-decoration: none;
+}
+
+tr.seccion-colonia td { background-color: #ffe5b4 !important; }
+tr.seccion-manada td  { background-color: #fff9c4 !important; }
+tr.seccion-tropa td   { background-color: #bbdefb !important; }
+tr.seccion-posta td   { background-color: #ffcdd2 !important; }
+tr.seccion-rutas td   { background-color: #c8e6c9 !important; }
+
 tr.seccion-colonia:hover td,
 tr.seccion-manada:hover td,
 tr.seccion-tropa:hover td,
@@ -109,80 +176,180 @@ tr.seccion-rutas:hover td {
     background-color: #ede7f6 !important;
 }
 
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-    background: var(--blanco);
-    border-radius: var(--radius);
-    overflow: hidden;
-    box-shadow: var(--sombra);
+/* ===================== 4) Controles ===================== */
+.tabla-controles {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 14px;
+    background: #fff;
+    border: 1px solid var(--admin-borde);
+    border-radius: 14px;
+    padding: 12px;
+    box-shadow: var(--admin-sombra-suave);
 }
 
-th, td {
-    padding: 12px 16px;
-    text-align: left;
+.orden-botones {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
 }
 
-th {
+.orden-link {
+    padding: 8px 12px;
+    border-radius: 10px;
+    background: #ede4f9;
+    color: var(--morado-oscuro);
+    text-decoration: none;
+    font-weight: 600;
+    border: 1px solid transparent;
+    transition: all .2s ease;
+}
+
+.orden-link:hover {
+    background: #e2d2f5;
+}
+
+.orden-link.activo {
     background: var(--morado-principal);
     color: #fff;
 }
 
-tr:nth-child(even) {
-    background: #f5f0ff;
-}
-
-tr:hover {
-    background: #ede7f6;
-}
-
-tr a {
-    text-decoration: none;
-}
-
-/* Botón insertar flotante */
 .boton_insertar {
-    position: fixed;
-    bottom: 30px;
-    right: 30px;
-    background: var(--morado-principal);
-    color: #fff;
-    width: 56px;
-    height: 56px;
-    line-height: 56px;
-    border-radius: 50%;
+    position: static;
+    width: auto;
+    min-width: 44px;
+    height: 44px;
+    line-height: 44px;
+    margin-left: auto;
+    border-radius: 12px;
+    font-size: 1.4rem;
     text-align: center;
-    font-size: 1.8rem;
-    font-weight: 700;
     text-decoration: none;
-    box-shadow: 0 6px 15px rgba(0, 0, 0, .2);
+    background: #2fa35a;
+    color: #fff;
+    box-shadow: 0 8px 16px rgba(28, 94, 57, .26);
     transition: .25s;
 }
 
 .boton_insertar:hover {
-    background: var(--morado-oscuro);
-    transform: translateY(-3px);
+    background: #24864a;
 }
 
-/* Formularios */
+.subtablas-seccion {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 0 0 14px;
+    padding: 10px 12px;
+    background: #fff;
+    border: 1px solid var(--admin-borde);
+    border-radius: 12px;
+    box-shadow: var(--admin-sombra-suave);
+}
+
+.chip-seccion {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 12px;
+    border-radius: 999px;
+    border: 1px solid #dac6ee;
+    background: #f4ecfb;
+    color: var(--morado-oscuro);
+    text-decoration: none;
+    font-weight: 600;
+    transition: .2s ease;
+}
+
+.chip-seccion:hover {
+    background: #ebdef8;
+}
+
+.chip-seccion.activo {
+    background: var(--morado-principal);
+    border-color: var(--morado-principal);
+    color: #fff;
+}
+
+.chip-seccion.seccion-colonia { background-color: #ffe5b4; border-color: #f4cb87; color: #7a4a0c; }
+.chip-seccion.seccion-manada { background-color: #fff9c4; border-color: #ebe28c; color: #736701; }
+.chip-seccion.seccion-tropa { background-color: #bbdefb; border-color: #90c7f6; color: #1d5f96; }
+.chip-seccion.seccion-posta { background-color: #ffcdd2; border-color: #f2a7af; color: #943744; }
+.chip-seccion.seccion-rutas { background-color: #c8e6c9; border-color: #a7d8a9; color: #2f6b33; }
+
+.chip-seccion.seccion-colonia:hover { background-color: #fcd693; border-color: #e9b86a; }
+.chip-seccion.seccion-manada:hover { background-color: #fff18e; border-color: #ddd26e; }
+.chip-seccion.seccion-tropa:hover { background-color: #9bcff9; border-color: #6ab4f0; }
+.chip-seccion.seccion-posta:hover { background-color: #ffb0b8; border-color: #ea8b96; }
+.chip-seccion.seccion-rutas:hover { background-color: #a8dba9; border-color: #88c88b; }
+
+.chip-seccion.seccion-colonia.activo { background-color: #d4920a; border-color: #d4920a; color: #fff; }
+.chip-seccion.seccion-manada.activo { background-color: #bfae00; border-color: #bfae00; color: #fff; }
+.chip-seccion.seccion-tropa.activo { background-color: #1976d2; border-color: #1976d2; color: #fff; }
+.chip-seccion.seccion-posta.activo { background-color: #c62828; border-color: #c62828; color: #fff; }
+.chip-seccion.seccion-rutas.activo { background-color: #2e7d32; border-color: #2e7d32; color: #fff; }
+
+/* ===================== 5) Formularios ===================== */
 form {
-    max-width: 980px;
+    border: 1px solid var(--admin-borde);
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: var(--admin-sombra-suave);
     display: grid;
-    gap: 16px;
-    background: var(--blanco);
-    padding: 22px;
-    border-radius: var(--radius);
-    box-shadow: var(--sombra);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+    max-width: 980px;
+    width: 100%;
+    padding: 18px;
+    margin: 0 auto; /* centrar el formulario */
 }
 
-.control_formulario {
+/* Botones de envío y cancelar en fila */
+.botones-form {
+    display: flex !important;
+    gap: 12px;
+    align-items: center;
+}
+
+.btn-cancelar {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 20px;
+    border-radius: 12px;
+    border: 1px solid var(--admin-borde);
+    background: var(--gris-100);
+    color: var(--admin-texto) !important;
+    font-weight: 700;
+    font-size: 1rem;
+    text-decoration: none;
+    cursor: pointer;
+    transition: .25s;
+}
+
+.btn-cancelar:hover {
+    background: #e0d6e8;
+    border-color: var(--morado-medio);
+}
+
+form .control_formulario {
     display: grid;
     gap: 8px;
+    min-width: 0;
+}
+
+form .control_formulario.secciones-multiples,
+form .control_formulario:has(textarea),
+form .control_formulario:has(input[type="submit"]),
+form .control_formulario:last-child {
+    grid-column: 1 / -1;
 }
 
 label {
     font-weight: 700;
+    color: var(--admin-texto);
 }
 
 input[type="text"],
@@ -190,20 +357,24 @@ input[type="email"],
 input[type="password"],
 input[type="date"],
 input[type="number"],
+input[type="datetime-local"],
 select,
 textarea {
+    width: 100%;
+    max-width: 100%;
     padding: 10px 12px;
-    border: 2px solid var(--morado-medio);
+    border: 1px solid #cfbae7;
     border-radius: 12px;
     outline: none;
+    background: #fdfaff;
     transition: .25s;
 }
 
 input:focus,
 select:focus,
 textarea:focus {
-    border-color: var(--morado-oscuro);
-    box-shadow: 0 0 0 3px rgba(106, 27, 154, .15);
+    border-color: var(--morado-principal);
+    box-shadow: 0 0 0 3px rgba(123, 31, 162, .15);
 }
 
 input[type="submit"] {
@@ -213,7 +384,7 @@ input[type="submit"] {
     color: #fff;
     font-weight: 700;
     border: none;
-    border-radius: 24px;
+    border-radius: 12px;
     cursor: pointer;
     box-shadow: 0 6px 12px rgba(0, 0, 0, .15);
     transition: .25s;
@@ -224,36 +395,196 @@ input[type="submit"]:hover {
     transform: translateY(-2px);
 }
 
-.logo {
-    width: 100%;
-    max-width: 180px;
-    margin-inline: 24px;
-    margin-bottom: 10px;
+.secciones-multiples {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    background: #faf5ff;
+    border: 1px solid #e4d5f4;
+    border-radius: 12px;
+    padding: 10px;
 }
 
-/* =======================================================
-   Pantalla Asistencia y Documentación
-   ======================================================= */
+.secciones-multiples label {
+    width: 100%;
+    margin-bottom: 2px;
+}
 
-div.asi{
+.secciones-multiples .check-item {
+    width: auto;
+    margin: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 10px;
+    border-radius: 999px;
+    border: 1px solid #dbc8ee;
+    background: #fff;
+    color: var(--admin-texto);
+    font-weight: 600;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.secciones-multiples .check-item span {
+    display: inline-block;
+}
+
+.secciones-multiples .check-item input[type="checkbox"] {
+    width: 16px;
+    height: 18px;
+    margin: 0;
+    accent-color: var(--morado-principal);
+}
+
+.secciones-multiples .check-item:has(input:checked) {
+    box-shadow: inset 0 0 0 2px rgba(0, 0, 0, .08);
+}
+
+.secciones-multiples .check-item.seccion-colonia:has(input:checked) {
+    background: #ffe5b4;
+    border-color: #f2c278;
+    color: #7a4a0c;
+}
+
+.secciones-multiples .check-item.seccion-manada:has(input:checked) {
+    background: #fff9c4;
+    border-color: #e9dd7f;
+    color: #736701;
+}
+
+.secciones-multiples .check-item.seccion-tropa:has(input:checked) {
+    background: #bbdefb;
+    border-color: #8bc1f5;
+    color: #1d5f96;
+}
+
+.secciones-multiples .check-item.seccion-posta:has(input:checked) {
+    background: #ffcdd2;
+    border-color: #f09ca6;
+    color: #943744;
+}
+
+.secciones-multiples .check-item.seccion-rutas:has(input:checked) {
+    background: #c8e6c9;
+    border-color: #9fcea1;
+    color: #2f6b33;
+}
+
+.secciones-multiples .check-item.seccion-todas:has(input:checked) {
+    background: #e8d9f7;
+    border-color: #c6a8e7;
+    color: #5e2f8d;
+}
+
+.permiso-check {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--morado-principal);
+}
+
+td a {
+    font-weight: 700;
+}
+
+.eliminar {
+    color: #cf3f60;
+}
+
+/* ===================== 6) Asistencia / documentación ===================== */
+div.asi {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 18px;
+    background: #fff;
+    border: 1px solid var(--admin-borde);
+    border-radius: 14px;
+    padding: 12px 16px;
+    box-shadow: var(--admin-sombra-suave);
 }
+
 div.asi a {
     background: var(--morado-medio);
     color: #fff;
     padding: 8px 14px;
-    border-radius: var(--radius-sm);
+    border-radius: 10px;
     text-decoration: none;
     font-weight: 600;
     transition: .25s;
 }
 
-/* =======================================================
-   media
-   ======================================================= */
+/* ===================== 7) Mensajes flash y utilidades ===================== */
+
+/* Mensajes flash (feedback tras acciones CRUD) */
+.flash {
+    padding: 12px 20px;
+    border-radius: var(--radius-sm);
+    margin-bottom: 16px;
+    font-weight: 500;
+    animation: flashEntrada .3s ease;
+}
+
+.flash-exito {
+    background: #e8f5e9;
+    color: #2e7d32;
+    border: 1px solid #a5d6a7;
+}
+
+.flash-error {
+    background: #fce4ec;
+    color: #c62828;
+    border: 1px solid #ef9a9a;
+}
+
+.flash-info {
+    background: #e3f2fd;
+    color: #1565c0;
+    border: 1px solid #90caf9;
+}
+
+@keyframes flashEntrada {
+    from { opacity: 0; transform: translateY(-8px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Enlace de cerrar sesión en la barra lateral */
+.logout-admin {
+    margin-top: auto;
+    color: #fff !important;
+    font-size: .88rem;
+    font-weight: 600;
+    padding: 10px 14px;
+    border-radius: 10px;
+    background: rgba(255, 255, 255, .12);
+    border: 1px solid rgba(255, 255, 255, .25);
+    text-decoration: none;
+    text-align: center;
+    transition: all .2s ease;
+}
+.logout-admin:hover {
+    background: rgba(255, 70, 70, .85);
+    border-color: rgba(255, 100, 100, .5);
+    color: #fff !important;
+}
+
+/* Transiciones suaves en botones e interacciones */
+a, button, input[type="submit"], .orden-link, .chip-seccion, .boton_insertar {
+    transition: all .2s ease;
+}
+
+/* Enlace de eliminar con confirmación visual */
+.eliminar:hover {
+    transform: scale(1.2);
+}
+
+/* ===================== 8) Responsive ===================== */
+@media (max-width: 1100px) {
+    form {
+        grid-template-columns: 1fr;
+    }
+}
 
 @media (max-width: 800px) {
     body {
@@ -265,9 +596,33 @@ div.asi a {
         overflow-x: auto;
         width: 100%;
         height: auto;
+        padding: 12px;
+        gap: 8px;
+    }
+
+    nav a {
+        width: auto;
+        white-space: nowrap;
     }
 
     main {
-        padding: 18px;
+        padding: 16px;
+    }
+
+    .tabla-controles {
+        padding: 10px;
+    }
+
+    .subtablas-seccion {
+        padding: 8px;
+    }
+
+    form {
+        grid-template-columns: 1fr;
+        padding: 16px;
+    }
+
+    .boton_insertar {
+        margin-left: 0;
     }
 }

@@ -1,6 +1,10 @@
-<!-- Parecido a procesa insertar pero poniendo los anteriores valores -->
+<!-- ============================================================
+     actualizar.php — Formulario dinámico para editar registros
+     ============================================================
+     Similar a insertar.php pero pre-rellena los valores existentes.
+-->
 <?php
-// Sacamos el nombre de la tabla
+// Sacamos el nombre de la tabla (validado contra whitelist)
 $tabla = $_GET['tabla'];
 $id = $_GET['id'] ?? 0; // Obtenemos el ID del registro a actualizar (nuevo)
 echo "<h1>" . ($id ? "Actualizar" : "Insertar") . " en $tabla</h1>";
@@ -20,8 +24,11 @@ if ($id) {
     $valores = $resultado->fetch_assoc();
 }
 ?>
-<form action="?operacion=procesaactualizar&tabla=<?= $_GET['tabla'] ?>&seccion=<?= $_GET['seccion'] ?>&ordenar_por=<?= $_GET['ordenar_por'] ?>&direccion=<?= $_GET['direccion'] ?>" method="POST">
+<form action="?operacion=procesaactualizar&tabla=<?= htmlspecialchars($_GET['tabla']) ?>&seccion=<?= htmlspecialchars($_GET['seccion'] ?? '') ?>&ordenar_por=<?= htmlspecialchars($_GET['ordenar_por'] ?? 'id') ?>&direccion=<?= htmlspecialchars($_GET['direccion'] ?? 'ASC') ?>" method="POST">
 <?php
+    // Token CSRF para proteger el formulario
+    echo campoCSRF();
+
     // Pedimos estructura de la tabla
     $resultado = $conexion->query("DESCRIBE `$tabla`;");
     while ($fila = $resultado->fetch_assoc()) {
@@ -58,12 +65,12 @@ if ($id) {
             $selected = explode(",", $valores['secciones'] ?? '');
             echo "
                 <div class='control_formulario secciones-multiples'>
-                    <label>$clave2</label><br>
-                    <input type='checkbox' name='secciones[]' value='colonia' " . (in_array('colonia',$selected)?'checked':'') . "> Colonia
-                    <input type='checkbox' name='secciones[]' value='manada' " . (in_array('manada',$selected)?'checked':'') . "> Manada
-                    <input type='checkbox' name='secciones[]' value='tropa' " . (in_array('tropa',$selected)?'checked':'') . "> Tropa
-                    <input type='checkbox' name='secciones[]' value='posta' " . (in_array('posta',$selected)?'checked':'') . "> Posta
-                    <input type='checkbox' name='secciones[]' value='rutas' " . (in_array('rutas',$selected)?'checked':'') . "> Rutas
+                    <label>$clave2</label>
+                    <label class='check-item seccion-colonia'><input type='checkbox' name='secciones[]' value='colonia' " . (in_array('colonia',$selected)?'checked':'') . "> <span>Colonia</span></label>
+                    <label class='check-item seccion-manada'><input type='checkbox' name='secciones[]' value='manada' " . (in_array('manada',$selected)?'checked':'') . "> <span>Manada</span></label>
+                    <label class='check-item seccion-tropa'><input type='checkbox' name='secciones[]' value='tropa' " . (in_array('tropa',$selected)?'checked':'') . "> <span>Tropa</span></label>
+                    <label class='check-item seccion-posta'><input type='checkbox' name='secciones[]' value='posta' " . (in_array('posta',$selected)?'checked':'') . "> <span>Posta</span></label>
+                    <label class='check-item seccion-rutas'><input type='checkbox' name='secciones[]' value='rutas' " . (in_array('rutas',$selected)?'checked':'') . "> <span>Rutas</span></label>
                 </div>
             ";
         }
@@ -106,6 +113,21 @@ if ($id) {
                     </select>
                 </div>
             ';
+        }
+
+        // PERMISOS (checkboxes de bits, igual que en la tabla)
+        elseif ($clave === 'permisos') {
+            $perm = (int)($valores['permisos'] ?? 0);
+            echo "
+                <input type='hidden' name='permisos' value='0'>
+                <div class='control_formulario secciones-multiples'>
+                    <label>Permisos</label>
+                    <label class='check-item'><input type='checkbox' name='permisos[]' value='1' " . (($perm & 1) ? 'checked' : '') . "> <span>Coche</span></label>
+                    <label class='check-item'><input type='checkbox' name='permisos[]' value='2' " . (($perm & 2) ? 'checked' : '') . "> <span>WhatsApp</span></label>
+                    <label class='check-item'><input type='checkbox' name='permisos[]' value='4' " . (($perm & 4) ? 'checked' : '') . "> <span>Solo</span></label>
+                    <label class='check-item'><input type='checkbox' name='permisos[]' value='8' " . (($perm & 8) ? 'checked' : '') . "> <span>Fotos</span></label>
+                </div>
+            ";
         }
 
         // SELECTS NORMALES
@@ -151,17 +173,26 @@ if ($id) {
         // CAMPOS NORMALES
         else {
             $value = $valores[$clave] ?? '';
-            if ($clave === "contraseña") $value = "";
+            // Limpiar contraseña del formulario (no mostrar el hash)
+            // ★ El campo vacío ahora se detecta en procesaactualizar y se omite
+            $type = 'text';
+            if ($clave === "contraseña") {
+                $value = "";
+                $type = 'password';
+            }
             echo "
             <div class='control_formulario'>
                 <label>$clave2</label>
-                <input type='text' name='$clave' value='" . htmlspecialchars($value) . "'>
+                <input type='{$type}' name='$clave' value='" . htmlspecialchars($value) . "'"
+                . ($clave === 'contraseña' ? " placeholder='Dejar vacío para mantener la actual'" : "")
+                . ">
             </div>";
         }
     }
 ?>
-    <div class="control_formulario">
+    <div class="control_formulario botones-form">
         <input type="submit" value="<?= $id ? 'Actualizar' : 'Insertar' ?>">
+        <a href="?tabla=<?= htmlspecialchars($_GET['tabla']) ?>&seccion=<?= htmlspecialchars($_GET['seccion'] ?? '') ?>&ordenar_por=<?= htmlspecialchars($_GET['ordenar_por'] ?? 'id') ?>&direccion=<?= htmlspecialchars($_GET['direccion'] ?? 'ASC') ?>" class="btn-cancelar">Cancelar</a>
     </div>
 </form>
 

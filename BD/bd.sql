@@ -1,4 +1,13 @@
-sudo mysql -u root -p
+-- ==============================================================
+-- WebScout — Esquema de base de datos
+-- ==============================================================
+-- Ejecutar como administrador de MySQL:
+--   mysql -u root -p < bd.sql
+--
+-- NOTA: telefono debería ser VARCHAR(20) para soportar prefijos
+-- internacionales y ceros iniciales. contraseña debería ser
+-- VARCHAR(255) para cubrir el máximo de password_hash().
+-- ==============================================================
 
 -- Crear y activar la base de datos
 CREATE DATABASE WebScout;

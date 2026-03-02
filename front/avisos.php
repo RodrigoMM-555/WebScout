@@ -1,18 +1,10 @@
 <!-- Avisos -->
 <?php
 session_start();
-include("inc/header.html");
+include("inc/header.php");
 include("inc/conexion_bd.php");
 
-// Funcion para depurar texto
-function limpiarTexto($texto) {
-    $texto = str_replace(' ', '_', $texto);
-    $tmp = @iconv('UTF-8', 'ASCII//TRANSLIT', $texto);
-    if ($tmp !== false) {
-        $texto = $tmp;
-    }
-    return preg_replace('/[^A-Za-z0-9_\-]/', '', $texto);
-}
+// limpiarTexto() ya definida en utils.php (cargado por conexion_bd)
 ?>
 
 <main class="avisos">
@@ -57,8 +49,12 @@ while ($fila = $resultado->fetch_assoc()) {
 // Obtenemos los avisos de la base de datos
 $fechaActual = new DateTime();
 $fechaFormateada = $fechaActual->format("Y-m-d H:i:s");
-$sql = "SELECT * FROM avisos WHERE fecha_hora_inicio >= '$fechaFormateada' ORDER BY fecha_hora_inicio";
-$resultado = $conexion->query($sql);
+// ★ FIX: Prepared statement en vez de interpolación de string (anti-SQLi)
+$sql = "SELECT * FROM avisos WHERE fecha_hora_inicio >= ? ORDER BY fecha_hora_inicio";
+$stmt = $conexion->prepare($sql);
+$stmt->bind_param("s", $fechaFormateada);
+$stmt->execute();
+$resultado = $stmt->get_result();
 
 $avisos_mostrados = [];
 $hayAvisos = false;
@@ -94,30 +90,47 @@ while ($aviso = $resultado->fetch_assoc()) {
         echo "<div class='aviso'>";
         echo "<h3>" . htmlspecialchars($aviso["titulo"]) . "</h3>";
         echo "<p>" . nl2br(htmlspecialchars($aviso["contenido"])) . "</p>";
-        echo "<p style='font-size:14px; color:gray;'>$fecha_inicio_formateada $fecha_fin_formateada</p>";
 
-        if (!empty($aviso["lugar"])) {
-            echo "<p>Lugar: " . htmlspecialchars($aviso["lugar"]) . "</p>";
+        // Fechas en bloque propio
+        echo "<div class='aviso-fechas'>";
+        echo "<span class='aviso-fecha-item'><strong>📅 Inicio</strong>$fecha_inicio_formateada</span>";
+        if (!empty($fecha_fin_formateada)) {
+            $fecha_fin_limpia = ltrim($fecha_fin_formateada, '- ');
+            echo "<span class='aviso-fecha-item'><strong>🏁 Fin</strong>$fecha_fin_limpia</span>";
         }
-        if (!empty($aviso["municipio"])) {
-            echo "<p>Municipio: " . htmlspecialchars($aviso["municipio"]) . "</p>";
+        echo "</div>";
+
+        // Detalles del aviso en tarjeta con iconos
+        $detalles = [];
+        if (!empty($aviso["lugar"]))
+            $detalles[] = "<span class='aviso-detalle'><strong>📍 Lugar</strong>" . htmlspecialchars($aviso["lugar"]) . "</span>";
+        if (!empty($aviso["municipio"]))
+            $detalles[] = "<span class='aviso-detalle'><strong>🏘️ Municipio</strong>" . htmlspecialchars($aviso["municipio"]) . "</span>";
+        if (!empty($aviso["provincia"]))
+            $detalles[] = "<span class='aviso-detalle'><strong>🗺️ Provincia</strong>" . htmlspecialchars($aviso["provincia"]) . "</span>";
+        if (!empty($aviso["responsable"]))
+            $detalles[] = "<span class='aviso-detalle'><strong>👤 Responsable</strong>" . htmlspecialchars($aviso["responsable"]) . "</span>";
+
+        echo "<div class='aviso-detalles" . (empty($detalles) ? " solo-secciones" : "") . "'>";
+        echo implode('', $detalles);
+        // Secciones dentro de la misma tarjeta, en fila completa
+        echo "<div class='aviso-secciones" . (empty($detalles) ? " sin-borde" : "") . "'>";
+        echo "<strong>📋 Secciones</strong> ";
+        $secciones = explode(",", $aviso["secciones"]);
+        foreach ($secciones as $sec) {
+            $sec = trim($sec);
+            echo "<span class='aviso-seccion-chip seccion-$sec'>" . ucfirst($sec) . "</span>";
         }
-        if (!empty($aviso["provincia"])) {
-            echo "<p>Provincia: " . htmlspecialchars($aviso["provincia"]) . "</p>";
-        }
-        if (!empty($aviso["responsable"])) {
-            echo "<p>Responsable de la actividad: " . htmlspecialchars($aviso["responsable"]) . "</p>";
-        }
-        echo "<p>Secciones: " . implode(", ", explode(",", $aviso["secciones"])) . "</p>";
+        echo "</div>";
+        echo "</div>";
 
         // Si no hay circular
         if ($aviso["circular"] == "no") {
 
-            echo "<p>No hay circular adjunta</p>";
             echo "<table class='tabla-archivos'>
                 <tr>
                     <th>Niñ@</th>
-                    <th> - </th> 
+                    <th>No hay circular adjunta</th> 
                     <th>Asistencia</th>
                 </tr>";
 
@@ -209,7 +222,7 @@ while ($aviso = $resultado->fetch_assoc()) {
                     // Comprobar si entregó archivo
                     $nombreCarpeta = limpiarTexto($nombreCompleto);
                     $tituloLimpio  = limpiarTexto($aviso['titulo']);
-                    $ruta = $_SERVER['DOCUMENT_ROOT'] . '/WebScout/circulares/educandos/' . $nombreCarpeta;
+                    $ruta = BASE_PATH . '/circulares/educandos/' . $nombreCarpeta;
                     $entregado = false;
                     if (is_dir($ruta)) {
                         $archivos = array_diff(scandir($ruta), ['.', '..']);
@@ -232,19 +245,22 @@ while ($aviso = $resultado->fetch_assoc()) {
                     <td>$nombreCompleto</td>";
                 
                 if ($puedeSubir) {
+                    $inputId = "archivo_" . (int)$aviso["id"] . "_" . (int)$id_educando;
                     echo "
-                        <td><a href='../circulares/plantillas/6-Autorización participación actividad.pdf' target='_blank'>⬇️</a></td>
-                        <td><form action='contrl/subearchivo.php?ori=avisos' method='post' enctype='multipart/form-data'>
-                        <input type='file' name='archivo' required>
+                        <td><a class='btn-archivo btn-descargar' href='../circulares/plantillas/6-Autorización participación actividad.pdf' target='_blank'>Descargar</a></td>
+                        <td><form class='form-archivo' action='contrl/subearchivo.php?ori=avisos' method='post' enctype='multipart/form-data'>
+                        <label class='btn-archivo btn-archivo-select-emoji' for='".$inputId."' title='Seleccionar archivo'>📎 Elegir</label>
+                        <input class='input-archivo input-archivo-oculto' id='".$inputId."' type='file' name='archivo' required>
+                        <span class='archivo-nombre'>Sin archivo</span>
                         <input type='hidden' name='nombreCompleto' value='".htmlspecialchars($nombreCompleto)."'>
                         <input type='hidden' name='tituloAviso' value='".htmlspecialchars($aviso['titulo'])."'>
-                        <input type='submit' value='⬆️'>
+                        <input class='btn-archivo btn-subir' type='submit' value='Subir'>
                     </form></td>";
                 } else {
                     echo "<td></td>
                     <td>";
                     if ($asis && $asis["asistencia"] === "no") {
-                        echo "<span;'>No asiste</span>";
+                        echo "<span>No asiste</span>";
                     } else {
                         echo "<span style='color: blue; font-weight:bold;'>RESPONDER</span>";
                     }
@@ -288,7 +304,17 @@ if (!$hayAvisos) {
 }
 ?>
 </main>
+<!-- Script para mostrar el nombre del archivo seleccionado -->
+<script>
+document.querySelectorAll('.input-archivo-oculto').forEach(function(input) {
+    input.addEventListener('change', function() {
+        const nombre = this.files && this.files.length ? this.files[0].name : 'Sin archivo';
+        const form = this.closest('form');
+        const target = form ? form.querySelector('.archivo-nombre') : null;
+        if (target) target.textContent = nombre;
+    });
+});
+</script>
 <?php
 include("inc/footer.html");
 ?>
-</main>

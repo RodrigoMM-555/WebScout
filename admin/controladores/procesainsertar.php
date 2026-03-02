@@ -1,85 +1,122 @@
 <?php
-
+/**
+ * procesainsertar.php — Inserta un nuevo registro en la tabla indicada
+ * =====================================================================
+ * Seguridad aplicada:
+ *   - Requiere sesión de admin
+ *   - Valida tabla contra whitelist
+ *   - Usa prepared statements (bind_param)
+ *   - Token CSRF validado
+ *   - Un solo escape (corrige el doble real_escape_string anterior)
+ */
+session_start();
 include('../inc/conexion_bd.php');
-$tabla = $_GET['tabla'];
 
-// Creamos un array con las columnas y otro con los valores
+// Solo admins pueden insertar
+requerirAdmin();
+
+// Validar token CSRF
+validarCSRF();
+
+// Validar tabla
+$tabla = validarTabla($_GET['tabla'] ?? '');
+
+// ── Construir arrays de columnas y valores ──────────────────
 $columnas = [];
-$valores = [];
+$valores  = [];
+$tipos    = '';   // string de tipos para bind_param
+$params   = [];   // valores reales para bind_param
 
-foreach($_POST as $clave=>$valor){
+foreach ($_POST as $clave => $valor) {
 
-    if($clave == "contraseña"){
+    // Saltar el token CSRF (ya validado arriba)
+    if ($clave === 'csrf_token') continue;
+
+    // Hashear contraseña
+    if ($clave === 'contraseña') {
         $valor = password_hash($valor, PASSWORD_DEFAULT);
     }
 
-    if($clave == "año"){
-        $clave = "anio";
+    // Corregir nombre de columna año → anio
+    if ($clave === 'año') {
+        $clave = 'anio';
     }
 
-    // Si es un array (caso de secciones[]), convertir a string
+    // Si es array (caso de secciones[]), unir con comas
     if (is_array($valor)) {
-        $valor = implode(",", $valor); // Convertir a "colonia,manada,tropa"
+        // Permisos: sumar los bits; secciones: unir con comas
+        if ($clave === 'permisos') {
+            $valor = (string)array_sum(array_map('intval', $valor));
+        } else {
+            $valor = implode(',', $valor);
+        }
     }
 
-    // Escapar valor ya seguro
-    $valor = $conexion->real_escape_string($valor);
-
-    $columnas[] = "`$clave`";
-    if ($valor === "" || $valor === null) {
-        $valores[] = "NULL";
-    } else {
-        $valor = $conexion->real_escape_string($valor);
-        $valores[] = "'$valor'";
-    }
+    $columnas[] = "`{$clave}`";
+    $valores[]  = '?';
+    $tipos     .= 's'; // todo como string; MySQL convierte automáticamente
+    $params[]   = ($valor === '' || $valor === null) ? null : $valor;
 }
 
-// Convertimos arrays en cadenas para SQL
-$sql = "INSERT INTO `$tabla` (".implode(",", $columnas).") VALUES (".implode(",", $valores).");";
+// Construir SQL con placeholders
+$sql = "INSERT INTO `{$tabla}` (" . implode(',', $columnas) . ") VALUES (" . implode(',', $valores) . ")";
+$stmt = $conexion->prepare($sql);
 
-// Ejecutamos y comprobamos errores
-$resultado = $conexion->query($sql);
-if(!$resultado){
-    die("Error en la consulta: " . $conexion->error);
+if (!$stmt) {
+    die("Error preparando consulta: " . $conexion->error);
 }
 
+// bind_param requiere referencias
+$bindParams = [$tipos];
+for ($i = 0; $i < count($params); $i++) {
+    $bindParams[] = &$params[$i];
+}
+call_user_func_array([$stmt, 'bind_param'], $bindParams);
 
-if($tabla === "avisos"){
+if (!$stmt->execute()) {
+    die("Error insertando registro: " . $stmt->error);
+}
 
+$stmt->close();
+
+// ── Si se insertó un aviso, crear asistencias automáticas ───
+if ($tabla === 'avisos') {
     $id_aviso = $conexion->insert_id;
 
-    if(isset($_POST['secciones']) && is_array($_POST['secciones'])){
-
+    if (isset($_POST['secciones']) && is_array($_POST['secciones'])) {
         $secciones = $_POST['secciones'];
 
-        // Escapamos y agregamos comillas
-        $secciones_escapadas = array_map(function($s) use ($conexion) {
-            return "'" . $conexion->real_escape_string($s) . "'";
-        }, $secciones);
+        // Preparar placeholders para IN (?)
+        $placeholders = implode(',', array_fill(0, count($secciones), '?'));
+        $tiposSec     = str_repeat('s', count($secciones));
 
-        $lista = implode(",", $secciones_escapadas);
+        $sqlEdu = "SELECT id FROM educandos WHERE seccion IN ({$placeholders})";
+        $stmtEdu = $conexion->prepare($sqlEdu);
+        $stmtEdu->bind_param($tiposSec, ...$secciones);
+        $stmtEdu->execute();
+        $resEdu = $stmtEdu->get_result();
 
-        $sqlEducandos = "SELECT id FROM educandos WHERE seccion IN ($lista)";
-        $resEducandos = $conexion->query($sqlEducandos);
+        // Preparar INSERT de asistencia una sola vez (reutilizable en el bucle)
+        $stmtAsis = $conexion->prepare("INSERT INTO asistencias (id_aviso, id_educando) VALUES (?, ?)");
 
-        if(!$resEducandos){
-            die("Error en consulta educandos: " . $conexion->error);
-        }
-
-        while($fila = $resEducandos->fetch_assoc()){
-            $id_educando = $fila['id'];
-            $sqlAsistencia = "
-                INSERT INTO asistencias (id_aviso, id_educando)
-                VALUES ($id_aviso, $id_educando)
-            ";
-            if(!$conexion->query($sqlAsistencia)){
-                die("Error insertando asistencia: " . $conexion->error);
+        while ($fila = $resEdu->fetch_assoc()) {
+            $stmtAsis->bind_param("ii", $id_aviso, $fila['id']);
+            if (!$stmtAsis->execute()) {
+                error_log("Error insertando asistencia: " . $stmtAsis->error);
             }
         }
+
+        $stmtAsis->close();
+        $stmtEdu->close();
     }
 }
 
-// Redirección
-header("Location: ?tabla=".$tabla."&ordenar_por=".urlencode($_GET['ordenar_por'])."&direccion=".urlencode($_GET['direccion']));
+// Mensaje flash de éxito
+setFlash('exito', 'Registro insertado correctamente.');
+
+// Redirección al listado
+header("Location: ?tabla=" . urlencode($tabla)
+     . "&ordenar_por=" . urlencode($_GET['ordenar_por'] ?? 'id')
+     . "&direccion=" . urlencode($_GET['direccion'] ?? 'ASC'));
 exit;
 ?>
