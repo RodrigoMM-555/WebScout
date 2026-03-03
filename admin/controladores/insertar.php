@@ -173,7 +173,7 @@
     }
 ?>
     <div class="control_formulario botones-form">
-        <input type="submit" value="Insertar">
+        <input type="submit" value="➕ Insertar">
         <a href="?tabla=<?= htmlspecialchars($_GET['tabla']) ?>&seccion=<?= htmlspecialchars($_GET['seccion'] ?? '') ?>&ordenar_por=<?= htmlspecialchars($_GET['ordenar_por'] ?? 'id') ?>&direccion=<?= htmlspecialchars($_GET['direccion'] ?? 'ASC') ?>" class="btn-cancelar">Cancelar</a>
     </div>
 </form>

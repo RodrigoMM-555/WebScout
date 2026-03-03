@@ -27,7 +27,7 @@ require_once __DIR__ . '/../config.php';
             <?php if (isset($_GET['error']) && $_GET['error'] === 'invalid'): ?>
                 <p style="display:block">Usuario o contraseña incorrectos</p>
             <?php endif; ?>
-            <input type="submit" value="Iniciar sesión">
+            <input type="submit" value="🔐 Iniciar sesión">
         </form>
     </main>
 </body>

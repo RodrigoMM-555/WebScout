@@ -216,8 +216,8 @@ if ($resultadoListado) {
             echo "<td><input type='checkbox' class='permiso-check' data-id='{$fila['id']}' data-permiso='1' $checkedCoche></td>";
         }
 
-        echo '<td><a href="?operacion=actualizar&amp;tabla=' . urlencode($tabla) . '&amp;id=' . (int)$fila['id']
-           . '&amp;ordenar_por=' . urlencode($ordenarPor) . '&amp;direccion=' . urlencode($direccion) . '">📝</a></td>';
+          echo '<td><a href="?operacion=actualizar&amp;tabla=' . urlencode($tabla) . '&amp;id=' . (int)$fila['id']
+              . '&amp;ordenar_por=' . urlencode($ordenarPor) . '&amp;direccion=' . urlencode($direccion) . '"></a></td>';
 
         // Enlace de eliminar con CSRF token y confirmación JS
         $urlEliminar = 'controladores/procesaeliminar.php?tabla=' . urlencode($tabla)
@@ -225,9 +225,9 @@ if ($resultadoListado) {
                      . '&ordenar_por=' . urlencode($ordenarPor)
                      . '&direccion=' . urlencode($direccion)
                      . '&csrf_token=' . urlencode($csrfToken);
-        echo '<td><a class="eliminar" href="' . htmlspecialchars($urlEliminar) . '"'
-           . ' onclick="return confirm(\'¿Seguro que quieres eliminar este registro?\')"'
-           . '>❌</a></td>';
+          echo '<td><a class="eliminar" href="' . htmlspecialchars($urlEliminar) . '"'
+              . ' onclick="return confirm(\'¿Seguro que quieres eliminar este registro?\')"'
+              . '></a></td>';
 
         echo "</tr>";
 

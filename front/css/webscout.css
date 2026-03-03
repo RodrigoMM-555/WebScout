@@ -51,6 +51,50 @@ main {
     flex: 1; /* 🔹 AÑADIDO */
 }
 
+/* Iconos automáticos para enlaces y botones sin icono/imagen */
+a:not(:has(img, svg, i, [class*="icon"])):not(.sin-icono-auto)::before {
+    content: "🔗 ";
+}
+
+button:not(:has(img, svg, i, [class*="icon"])):not(.sin-icono-auto)::before {
+    content: "🔹 ";
+}
+
+/* Front: iconos contextuales */
+a.btn-descargar:not(:has(img, svg, i, [class*="icon"]))::before {
+    content: "📥 ";
+}
+
+a.btn-subir:not(:has(img, svg, i, [class*="icon"]))::before,
+a[href*="subearchivo.php"]:not(:has(img, svg, i, [class*="icon"]))::before {
+    content: "⬆️ ";
+}
+
+a.btn-logout:not(:has(img, svg, i, [class*="icon"]))::before,
+a[href*="logout.php"]:not(:has(img, svg, i, [class*="icon"]))::before {
+    content: "🚪 ";
+}
+
+a[href*="inicio.php"]:not(:has(img, svg, i, [class*="icon"]))::before {
+    content: "🏠 ";
+}
+
+a[href*="perfil.php"]:not(:has(img, svg, i, [class*="icon"]))::before {
+    content: "👤 ";
+}
+
+a[href*="educandos.php"]:not(:has(img, svg, i, [class*="icon"]))::before {
+    content: "🧒 ";
+}
+
+a[href*="avisos.php"]:not(:has(img, svg, i, [class*="icon"]))::before {
+    content: "📣 ";
+}
+
+button[onclick*="volver"]:not(:has(img, svg, i, [class*="icon"])):not(.sin-icono-auto)::before {
+    content: "↩️ ";
+}
+
 /* =========================================================
    ========================== LOGIN =========================
    ========================================================= */
@@ -724,10 +768,20 @@ header article:first-child > img {
 }
 
 header article:first-child a {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    min-width: 124px;
     padding: 8px 12px;
     border-radius: 12px;
     background: rgba(255, 255, 255, 0.14);
     transition: background .2s ease;
+    white-space: nowrap;
+}
+
+header article:first-child a h2 {
+    white-space: nowrap;
 }
 
 header article:first-child a:hover {
@@ -783,6 +837,10 @@ body.login {
 .carrusel button {
     border: 1px solid rgba(123, 31, 162, 0.25);
     backdrop-filter: blur(6px);
+}
+
+.carrusel button::before {
+    content: none !important;
 }
 
 ul.paño {
@@ -1365,8 +1423,16 @@ a:hover {
     }
 
     .btn-logout {
-        padding: 6px 12px;
-        font-size: .8rem;
+        min-height: 42px;
+        min-width: 108px;
+        padding: 8px 12px;
+        font-size: 1.08rem;
+    }
+
+    header article:first-child a {
+        min-height: 42px;
+        min-width: 108px;
+        padding: 8px 12px;
     }
 
     header > div {
@@ -1447,10 +1513,14 @@ a:hover {
 .btn-logout {
     display: inline-flex;
     align-items: center;
-    padding: 8px 18px;
-    border-radius: 10px;
-    font-size: .88rem;
+    justify-content: center;
+    min-height: 44px;
+    min-width: 124px;
+    padding: 8px 12px;
+    border-radius: 12px;
+    font-size: 1.05rem;
     font-weight: 700;
+    line-height: 1;
     color: #fff !important;
     text-decoration: none;
     background: rgba(255, 255, 255, 0.18);

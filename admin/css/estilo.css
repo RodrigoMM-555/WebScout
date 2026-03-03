@@ -66,6 +66,42 @@ p {
     color: var(--admin-texto-suave);
 }
 
+/* Iconos automáticos para enlaces y botones sin icono/imagen */
+button:not(:has(img, svg, i, [class*="icon"])):not(.sin-icono-auto)::before {
+    content: "🔹 ";
+}
+
+/* Admin: iconos contextuales */
+a.logout-admin:not(:has(img, svg, i, [class*="icon"]))::before,
+a[href*="logout.php"]:not(:has(img, svg, i, [class*="icon"]))::before {
+    content: "🚪 ";
+}
+
+a[href*="operacion=actualizar"]:not(:has(img, svg, i, [class*="icon"]))::before {
+    content: "✏️ ";
+}
+
+a.eliminar:not(:has(img, svg, i, [class*="icon"]))::before,
+a[href*="operacion=eliminar"]:not(:has(img, svg, i, [class*="icon"]))::before {
+    content: "🗑️ ";
+}
+
+a[href*="operacion=ia_admin"]:not(:has(img, svg, i, [class*="icon"]))::before {
+    content: "🤖 ";
+}
+
+a[href*="asistencia_documentacion.php"]:not(:has(img, svg, i, [class*="icon"]))::before {
+    content: "📋 ";
+}
+
+a.btn-cancelar:not(:has(img, svg, i, [class*="icon"]))::before {
+    content: "❌ ";
+}
+
+button[type="submit"]:not(:has(img, svg, i, [class*="icon"])):not(.sin-icono-auto)::before {
+    content: "✅ ";
+}
+
 /* ===================== 2) Layout ===================== */
 nav {
     background: var(--morado-principal);
@@ -313,6 +349,12 @@ form {
     align-items: center;
 }
 
+.botones-form input[type="submit"],
+.botones-form .btn-cancelar {
+    min-width: 160px;
+    min-height: 46px;
+}
+
 .btn-cancelar {
     display: inline-flex;
     align-items: center;
@@ -380,18 +422,18 @@ textarea:focus {
 input[type="submit"] {
     font-size: 1rem;
     padding: 12px 20px;
-    background: var(--morado-principal);
+    background: #2fa35a;
     color: #fff;
     font-weight: 700;
     border: none;
     border-radius: 12px;
     cursor: pointer;
-    box-shadow: 0 6px 12px rgba(0, 0, 0, .15);
+    box-shadow: 0 8px 16px rgba(28, 94, 57, .26);
     transition: .25s;
 }
 
 input[type="submit"]:hover {
-    background: var(--morado-oscuro);
+    background: #24864a;
     transform: translateY(-2px);
 }
 

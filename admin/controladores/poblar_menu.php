@@ -28,13 +28,20 @@ while ($fila = $resultado->fetch_assoc()) {
     }
 
     $nombre_tabla = ucfirst(str_replace('_',' ',$nombreRealTabla));
+    $icono = '';
+
+    if ($fila['Tables_in_'.$db] === 'avisos') {
+        $icono = '📣 ';
+    } elseif ($fila['Tables_in_'.$db] === 'usuarios') {
+        $icono = '👤 ';
+    }
 
     if ($nombre_tabla == "Educandos") {
         $nombreRealTabla = "educandos&ordenar_por=seccion&direccion=ASC";
 
         echo '
             <a href="?tabla='.$nombreRealTabla.'" class="'.$clase.'">
-                '.$nombre_tabla.'
+                '.$icono.$nombre_tabla.'
             </a>
         ';
 
@@ -42,7 +49,7 @@ while ($fila = $resultado->fetch_assoc()) {
 
         echo '
             <a href="?tabla='.$nombreRealTabla.'" class="'.$clase.'">
-                '.$nombre_tabla.'
+                '.$icono.$nombre_tabla.'
             </a>
             
         ';

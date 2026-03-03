@@ -35,7 +35,7 @@ $paginaActual = basename($_SERVER['PHP_SELF']); // ej: "avisos.php"
             <!-- Logo y navegación principal -->
             <article>
                 <img src="<?= BASE_URL ?>/img/logo.png" alt="Logo">
-                <a href="inicio.php" class="<?= $paginaActual === 'inicio.php' ? 'nav-activa' : '' ?>"><h2>Inicio</h2></a>
+                <a href="inicio.php" class="sin-icono-auto <?= $paginaActual === 'inicio.php' ? 'nav-activa' : '' ?>"><h2>Inicio</h2></a>
             </article>
             <article>
                 <a href="avisos.php" class="<?= $paginaActual === 'avisos.php' ? 'nav-activa' : '' ?>">

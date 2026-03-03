@@ -59,5 +59,4 @@ Hacerlo multigrupo
 
 # Pruebas
 - Poner en marcha el servidor para comprobar rutas
-- Comprobar si los años de las secciones cambian
 

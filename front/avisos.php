@@ -254,7 +254,7 @@ while ($aviso = $resultado->fetch_assoc()) {
                         <span class='archivo-nombre'>Sin archivo</span>
                         <input type='hidden' name='nombreCompleto' value='".htmlspecialchars($nombreCompleto)."'>
                         <input type='hidden' name='tituloAviso' value='".htmlspecialchars($aviso['titulo'])."'>
-                        <input class='btn-archivo btn-subir' type='submit' value='Subir'>
+                        <input class='btn-archivo btn-subir' type='submit' value='⬆️ Subir'>
                     </form></td>";
                 } else {
                     echo "<td></td>

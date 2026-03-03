@@ -77,7 +77,7 @@ function volverAtrasInteligente() {
         <p>Año: <?=$educando['anio']?></p>
         <p>DNI: <?=$educando['dni']?></p>
         <!-- Boton para volver al perfil de los padres -->
-        <button type="button" onclick="volverAtrasInteligente()">&larr; Atrás</button>
+        <button class="sin-icono-auto" type="button" onclick="volverAtrasInteligente()">&larr; Atrás</button>
     </section>
 
     <!-- Apartado de documentación -->
@@ -95,7 +95,7 @@ function volverAtrasInteligente() {
                 <span class="archivo-nombre">Sin archivo</span>
                 <input type='hidden' name='nombreCompleto' value="<?=htmlspecialchars($nombreCompleto)?>">
                 <input type='hidden' name='tituloAviso' value='1-Ficha de inscripción'>
-                <input class="btn-archivo btn-subir" type='submit' value='Subir'>
+                <input class="btn-archivo btn-subir" type='submit' value='⬆️ Subir'>
             </form>
         </div>
 
@@ -108,7 +108,7 @@ function volverAtrasInteligente() {
                 <span class="archivo-nombre">Sin archivo</span>
                 <input type='hidden' name='nombreCompleto' value="<?=htmlspecialchars($nombreCompleto)?>">
                 <input type='hidden' name='tituloAviso' value='2-Ficha sanitaria'>
-                <input class="btn-archivo btn-subir" type='submit' value='Subir'>
+                <input class="btn-archivo btn-subir" type='submit' value='⬆️ Subir'>
             </form>
         </div>
 
@@ -121,7 +121,7 @@ function volverAtrasInteligente() {
                 <span class="archivo-nombre">Sin archivo</span>
                 <input type='hidden' name='nombreCompleto' value="<?=htmlspecialchars($nombreCompleto)?>">
                 <input type='hidden' name='tituloAviso' value='3-Exclusión de responsabilidad'>
-                <input class="btn-archivo btn-subir" type='submit' value='Subir'>
+                <input class="btn-archivo btn-subir" type='submit' value='⬆️ Subir'>
             </form>
         </div>
 
@@ -134,7 +134,7 @@ function volverAtrasInteligente() {
                 <span class="archivo-nombre">Sin archivo</span>
                 <input type='hidden' name='nombreCompleto' value="<?=htmlspecialchars($nombreCompleto)?>">
                 <input type='hidden' name='tituloAviso' value='4-Autorización ausentarse de actividades'>
-                <input class="btn-archivo btn-subir" type='submit' value='Subir'>
+                <input class="btn-archivo btn-subir" type='submit' value='⬆️ Subir'>
             </form>
         </div>
         </article>
