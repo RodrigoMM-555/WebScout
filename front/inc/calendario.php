@@ -105,6 +105,7 @@ date_default_timezone_set("Europe/Madrid");
                 $eventosPorDia[$diaClave]['eventos'][] = [
                     'titulo' => $fila['titulo'],
                     'tipo'   => $fila['tipo'],
+                    'tiene_fin' => !empty($fila['fecha_hora_fin']),
                 ];
             }
 
@@ -113,7 +114,8 @@ date_default_timezone_set("Europe/Madrid");
                 echo "<div class='fecha'>" . $info['fechaTexto'] . "</div>";
 
                 foreach($info['eventos'] as $evento) {
-                    echo "<div class='titulo-evento tipo-".$evento['tipo']."'>" . htmlspecialchars($evento['titulo']) . "</div>";
+                    $claseFin = $evento['tiene_fin'] ? " con-fin" : "";
+                    echo "<div class='titulo-evento tipo-".$evento['tipo'].$claseFin."'>" . htmlspecialchars($evento['titulo']) . "</div>";
                 }
 
                 echo "</div>";

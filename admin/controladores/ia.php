@@ -192,11 +192,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $peticion !== '') {
       . "Reglas obligatorias:\n"
       . "1) Devuelve UNA sola sentencia SQL que empiece por SELECT o SHOW.\n"
       . "2) No uses markdown, explicación ni bloques de código.\n"
-      . "3) Interpreta sinónimos: niños/hijos = educandos.\n"
-      . "4) Si piden pendientes por responder asistencia => s.asistencia = 'pendiente'.\n"
-      . "5) Si piden campamento sin título específico => a.tipo = 'campamento'.\n"
-      . "6) Para asistencia usa JOIN entre asistencias (s), educandos (e), avisos (a).\n"
-      . "7) Si piden nombre, prioriza devolver e.nombre y e.apellidos.";
+      . "3) No incluyas comentarios SQL ni palabras clave de escritura/DDL.\n"
+      . "4) No generes consultas que modifiquen datos (INSERT, UPDATE, DELETE).\n"
+      . "5) No muestres ni el campo contraseña ni ningun campo que tenga id.\n"
+      . "6) Niños o niñas es lo mismo que educandos.\n";
+      
 
     // Payload JSON para la API de Ollama.
     $data = [

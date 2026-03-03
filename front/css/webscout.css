@@ -552,7 +552,7 @@ section.ronda ul h2, section.ronda ul p {
     min-height: 70px;
 }
 
-.calendario-trimestre .evento:has(div.tipo-campamento) {
+.calendario-trimestre .evento:has(div.con-fin) {
     grid-column: span 2;
 }
 
@@ -576,7 +576,6 @@ section.ronda ul h2, section.ronda ul p {
 }
 .titulo-evento.tipo-campamento {
     color: goldenrod;
-    grid-column: span 2;
 }
 .titulo-evento.tipo-reunion {
     color: blue;
