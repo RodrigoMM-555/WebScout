@@ -53,6 +53,9 @@ if (!isset($_SESSION['rol']) || $_SESSION['rol'] !== 'admin') {
                 elseif ($operacion === "procesaactualizar") {
                     include "controladores/procesaactualizar.php";
                 }
+                elseif ($operacion === "ia_admin") {
+                    include "controladores/ia.php";
+                }
                 else {
                     echo "<p>Operación no reconocida.</p>";
                 }

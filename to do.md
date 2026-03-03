@@ -3,14 +3,13 @@
 - Historial de archivos para los padres
 - Historial de archivos para los admins
 - Crear pagina o desplegable para poder ver mas info de los niños
+- Seguridad
 
 
 # SECUNDARIO
 - Tabla para lista de espera
 - Tabla sanitaria
-- Comprobar que el pdf subido es el correcto
 - Restricciones de contraseña
-- Generador de archivos pdf con toda la info para poder descargarlos
 
 
 # TERCIARIO
@@ -24,6 +23,30 @@
 - Tema contraseñas -> como queremos gestionarlas, podemos verlas, solo cambiarlas?
 - Tema proteccion de datos -> como va que puedo mostrar que no hay alguna medida sobre alamcenamiento de datos?
 - Las autorizaciones hay que borrarlas o guardarlas
+
+
+# SEGURIDAD
+DOCUMENTO
+- Quién es el responsable del tratamiento (nombre de la asociación)
+- Qué datos recoges
+- Para qué los usas
+- Durante cuánto tiempo
+- A quién se comunican (federación scout, aseguradora…)
+- Cómo pueden ejercer derechos (acceso, rectificación, supresión, etc.)
+- Cómo contactar contigo
+
+APLICACION
+- Almacenamiento cifrado
+- Acceso con usuario y contraseña segura
+- Control de accesos (los scouters solo ven lo que necesitan)
+- Copias de seguridad
+- Registro de accesos (muy recomendable)
+
+REGISTRO INTERNO
+- Un registro que describa qué datos tratáis
+- Finalidades
+- Base legal
+- Medidas de seguridad
 
 
 # MEJORAS

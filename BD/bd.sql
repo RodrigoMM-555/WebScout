@@ -18,14 +18,14 @@ CREATE TABLE usuarios (
     id INT AUTO_INCREMENT PRIMARY KEY,
     nombre VARCHAR(100) NOT NULL,
     apellidos VARCHAR(100) NOT NULL,
-    contraseña VARCHAR(100) NOT NULL,
+    contraseña VARCHAR(255) NOT NULL,
     email VARCHAR(100) NOT NULL,
-    telefono INT NOT NULL,
+    telefono VARCHAR(20) NOT NULL,
     direccion VARCHAR(100) NOT NULL,
     nombre2 VARCHAR(100),
     apellidos2 VARCHAR(100),
     email2 VARCHAR(100),
-    telefono2 INT ,
+    telefono2 VARCHAR(20),
     rol ENUM('admin','usuario') NOT NULL DEFAULT 'usuario'
 );
 
@@ -102,7 +102,7 @@ ALTER TABLE avisos ADD COLUMN provincia VARCHAR(255);
 ALTER TABLE usuarios ADD COLUMN nombre2 VARCHAR(100);
 ALTER TABLE usuarios ADD COLUMN apellidos2 VARCHAR(100);
 ALTER TABLE usuarios ADD COLUMN email2 VARCHAR(100);
-ALTER TABLE usuarios ADD COLUMN telefono2 INT;
+ALTER TABLE usuarios ADD COLUMN telefono2 VARCHAR(20);
 ALTER TABLE usuarios ADD COLUMN rol ENUM('admin','usuario') NOT NULL DEFAULT 'usuario';
 
 ALTER TABLE educandos ADD permisos INT DEFAULT 0;

@@ -9,10 +9,6 @@ $tabla = $_GET['tabla'];
 $id = $_GET['id'] ?? 0; // Obtenemos el ID del registro a actualizar (nuevo)
 echo "<h1>" . ($id ? "Actualizar" : "Insertar") . " en $tabla</h1>";
 
-if ($tabla == "usuarios") {
-    echo "<p style='color: red;'>ES NECESARIA LA CONTRASEÑA ORIGINAL PARA PODER MODIFICAR EL REGISTRO</p>";
-}
-
 // Si hay ID, cargamos los datos actuales
 $valores = [];
 if ($id) {

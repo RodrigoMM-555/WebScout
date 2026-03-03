@@ -7,6 +7,7 @@
  */
     // Recogemos parámetros
     $tabla = $_GET['tabla'] ?? null;
+    $operacion = $_GET['operacion'] ?? null;
     // Listado de tablas
     $resultado = $conexion->query("SHOW TABLES;");
 
@@ -47,4 +48,11 @@ while ($fila = $resultado->fetch_assoc()) {
         ';
     }
 }
+
+$claseIA = ($operacion === 'ia_admin') ? 'activo' : '';
+echo '
+    <a href="?operacion=ia_admin" class="'.$claseIA.'">
+        IA Admin (Beta)
+    </a>
+';
 ?>
