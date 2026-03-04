@@ -51,24 +51,6 @@ $nombreCompleto = $educando['nombre'] . " " . $educando['apellidos'];
 
 ?>
 
-<script>
-function volverAtrasInteligente() {
-    try {
-        if (document.referrer) {
-            const ref = new URL(document.referrer);
-            if (ref.pathname.endsWith('/front/educandos.php')) {
-                history.go(-2);
-                return;
-            }
-        }
-    } catch (e) {
-        // Si falla el parseo del referrer, usamos comportamiento por defecto.
-    }
-
-    history.back();
-}
-</script>
-
 <main>
     <!-- Pintamos la informacion del educando -->
     <section class="izquierda <?=$clase_color?>">
@@ -77,7 +59,7 @@ function volverAtrasInteligente() {
         <p>Año: <?=$educando['anio']?></p>
         <p>DNI: <?=$educando['dni']?></p>
         <!-- Boton para volver al perfil de los padres -->
-        <button class="sin-icono-auto" type="button" onclick="volverAtrasInteligente()">&larr; Atrás</button>
+        <button class="sin-icono-auto" type="button" onclick="window.location.href='perfil.php'">&larr; Atrás</button>
     </section>
 
     <!-- Apartado de documentación -->

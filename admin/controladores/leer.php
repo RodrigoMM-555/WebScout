@@ -138,7 +138,7 @@ if ($resultado && $resultado->num_rows > 0) {
         echo "<th>Vehiculo privado</th>";
     }
 
-    echo "<th>Editar</th><th>Eliminar</th>";
+    echo "<th>Mas info</th><th>Editar</th><th>Eliminar</th>";
     echo "</tr>";
     $pintoCabecera = true;
 }
@@ -214,6 +214,7 @@ if ($resultadoListado) {
             echo "<td><input type='checkbox' class='permiso-check' data-id='{$fila['id']}' data-permiso='4' $checkedSolo></td>";
             echo "<td><input type='checkbox' class='permiso-check' data-id='{$fila['id']}' data-permiso='8' $checkedFotos></td>";
             echo "<td><input type='checkbox' class='permiso-check' data-id='{$fila['id']}' data-permiso='1' $checkedCoche></td>";
+            echo '<td><a href="info_educandos.php?id_educando=' . (int)$fila['id'] . '">Info</a></td>';
         }
 
           echo '<td><a href="?operacion=actualizar&amp;tabla=' . urlencode($tabla) . '&amp;id=' . (int)$fila['id']
