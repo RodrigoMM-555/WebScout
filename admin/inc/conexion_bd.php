@@ -3,8 +3,8 @@
  * conexion_bd.php (admin) — Conexión a la base de datos
  * Carga la configuración centralizada y crea la conexión mysqli.
  */
-require_once __DIR__ . '/../../config.php';
-require_once __DIR__ . '/../../utils.php';
+require_once __DIR__ . '/../../tools/config.php';
+require_once __DIR__ . '/../../tools/utils.php';
 
 $db = DB_NAME; // Se usa en poblar_menu.php para SHOW TABLES
 

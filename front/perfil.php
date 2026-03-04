@@ -68,6 +68,7 @@ $fila = $resultado->fetch_assoc();
         <div>
             <p><?= htmlspecialchars($fila["direccion"]) ?></p>
         </div>
+        <button class="sin-icono-auto" type="button" onclick="window.location.href='inicio.php'">&larr; Atrás</button>
     </section>
 
     <!-- Tarjetas de los hijos -->

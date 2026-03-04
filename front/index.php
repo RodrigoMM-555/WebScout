@@ -5,7 +5,7 @@
  * ★ FIX: URLs dinámicas con BASE_URL en vez de localhost hardcodeado.
  * ★ FIX: Mensaje de error solo aparece si hay ?error=invalid.
  */
-require_once __DIR__ . '/../config.php';
+require_once __DIR__ . '/../tools/config.php';
 ?>
 <!-- Pagina de login -->
 <!DOCTYPE html>

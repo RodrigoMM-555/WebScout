@@ -1,8 +1,6 @@
 
 # PRIORITARIO
 - Historial de archivos para los padres
-- Historial de archivos para los admins
-- Crear pagina o desplegable para poder ver mas info de los niños
 - Seguridad
 
 
@@ -23,6 +21,9 @@
 - Tema contraseñas -> como queremos gestionarlas, podemos verlas, solo cambiarlas?
 - Tema proteccion de datos -> como va que puedo mostrar que no hay alguna medida sobre alamcenamiento de datos?
 - Las autorizaciones hay que borrarlas o guardarlas
+- Estructura de carpetas docuemntacion -> Año - seccion - niño
+                                       -> Seccion - año - niño
+                                       -> Seccion - niño - año
 
 
 # SEGURIDAD

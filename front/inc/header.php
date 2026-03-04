@@ -14,7 +14,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
 // Cargar config si aún no se cargó (necesitamos BASE_URL)
 if (!defined('BASE_URL')) {
-    require_once __DIR__ . '/../../config.php';
+    require_once __DIR__ . '/../../tools/config.php';
 }
 
 // Detectar la página actual para marcar la nav activa

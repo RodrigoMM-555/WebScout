@@ -18,7 +18,7 @@ if (session_status() === PHP_SESSION_NONE) {
 
 // 2) Cargar configuración global si todavía no existe (BASE_URL, DB_NAME, etc.).
 if (!defined('BASE_URL')) {
-  require_once __DIR__ . '/../../config.php';
+  require_once __DIR__ . '/../../tools/config.php';
 }
 
 // 3) Seguridad de acceso: solo usuarios con rol admin pueden usar esta vista.
