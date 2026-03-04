@@ -11,8 +11,11 @@ include("inc/header.php")
 
     <!-- Carrusel de fotos -->
     <article class="carrusel">
-        <img src="../img/lis.jpg" alt="placeholder">
-        <img src="../img/SCOUT.png" alt="placeholder">
+        <img src="../img/carrusel1.avif" alt="placeholder">
+        <img src="../img/carrusel3.avif" alt="placeholder">
+        <img src="../img/carrusel2.avif" alt="placeholder">
+        <img src="../img/carrusel4.avif" alt="placeholder">
+        <img src="../img/carrusel5.avif" alt="placeholder">
         <!-- Difuminado y texto -->
         <div class="overlay"></div>
         <div class="texto-carrusel">Grupo Scout Seeonee</div>
@@ -49,37 +52,92 @@ contenido.forEach(function(elemento){
 
 let botonatras = document.createElement("button")
 botonatras.textContent = "◀"
+botonatras.className = "carrusel-btn carrusel-btn-atras";
 contenedor.appendChild(botonatras)
 let botondelante = document.createElement("button")
 botondelante.textContent = "▶"
+botondelante.className = "carrusel-btn carrusel-btn-delante";
 contenedor.appendChild(botondelante)
 
-// Contador de slide (let en vez de var para evitar contaminar el scope global)
 let contador = 0;
+
+function obtenerVisibles() {
+    return window.matchMedia('(min-width: 992px)').matches ? 2 : 1;
+}
+
+function obtenerInicios() {
+    const visibles = obtenerVisibles();
+    const maxInicio = Math.max(0, contenido.length - visibles);
+    const inicios = [];
+
+    for (let i = 0; i <= maxInicio; i += visibles) {
+        inicios.push(i);
+    }
+
+    if (inicios.length === 0) {
+        inicios.push(0);
+    }
+
+    if (inicios[inicios.length - 1] !== maxInicio) {
+        inicios.push(maxInicio);
+    }
+
+    return inicios;
+}
+
+function ajustarContador() {
+    const inicios = obtenerInicios();
+    let mejor = inicios[0];
+    let distancia = Math.abs(contador - mejor);
+
+    inicios.forEach(function(i) {
+        const d = Math.abs(contador - i);
+        if (d < distancia) {
+            mejor = i;
+            distancia = d;
+        }
+    });
+
+    contador = mejor;
+}
+
 function actualizarCarrusel() {
-    let ancho = contenedor.offsetWidth;
+    const visibles = obtenerVisibles();
+    contenedor.style.setProperty('--carrusel-visibles', String(visibles));
+    const ancho = contenedor.offsetWidth / visibles;
     nuevo_contenedor.style.left = contador * -ancho + "px";
 }
 
 botondelante.onclick = function(){
-    if (contador === contenido.length - 1) {
-        contador = 0;
+    const inicios = obtenerInicios();
+    const posicionActual = inicios.indexOf(contador);
+    if (posicionActual === -1 || posicionActual === inicios.length - 1) {
+        contador = inicios[0];
     } else {
-        contador++;
+        contador = inicios[posicionActual + 1];
     }
     actualizarCarrusel();
 }
+
 botonatras.onclick = function(){
-    if (contador === 0) {
-        contador = contenido.length - 1;
+    const inicios = obtenerInicios();
+    const posicionActual = inicios.indexOf(contador);
+    if (posicionActual <= 0) {
+        contador = inicios[inicios.length - 1];
     } else {
-        contador--;
+        contador = inicios[posicionActual - 1];
     }
     actualizarCarrusel();
 }
 
 // Ajusta carrusel al cambiar tamaño de pantalla
-window.addEventListener('resize', actualizarCarrusel);
+window.addEventListener('resize', function() {
+    ajustarContador();
+    actualizarCarrusel();
+});
+
+ajustarContador();
+actualizarCarrusel();
 </script>
 
 <?php

@@ -133,6 +133,27 @@ document.querySelectorAll('.input-archivo-oculto').forEach(function(input) {
         if (target) target.textContent = nombre;
     });
 });
+
+(function() {
+    const scrollKey = 'educandos_scroll_y';
+    const savedScroll = sessionStorage.getItem(scrollKey);
+
+    if (savedScroll !== null) {
+        const targetY = parseInt(savedScroll, 10) || 0;
+        requestAnimationFrame(function() {
+            requestAnimationFrame(function() {
+                window.scrollTo(0, targetY);
+            });
+        });
+        sessionStorage.removeItem(scrollKey);
+    }
+
+    document.querySelectorAll('form.form-archivo').forEach(function(form) {
+        form.addEventListener('submit', function() {
+            sessionStorage.setItem(scrollKey, String(window.scrollY || 0));
+        });
+    });
+})();
 </script>
 
 <?php

@@ -236,6 +236,7 @@ footer {
    ========================================================= */
 
 .carrusel {
+    --carrusel-visibles: 1;
     width: 100%;
     height: 450px;
     overflow: hidden;
@@ -271,7 +272,8 @@ ul.paño::after {
 }
 
 .carrusel img {
-    width: 100%;
+    width: calc(100% / var(--carrusel-visibles));
+    flex: 0 0 calc(100% / var(--carrusel-visibles));
     height: 450px;
     object-fit: cover;
 }
@@ -299,19 +301,25 @@ ul.paño::after {
 .carrusel button {
     border: none;
     background: rgba(255,255,255,0.6);
-    width: 50px;
-    height: 50px;
+    width: 54px;
+    height: 54px;
     position: absolute;
     top: 50%;
+    transform: translateY(-50%);
     border-radius: 50%;
-    font-size: 24px;
+    font-size: 22px;
+    line-height: 1;
+    color: var(--morado-oscuro);
+    box-shadow: 0 6px 16px rgba(0,0,0,0.18);
     cursor: pointer;
     z-index: 1000;
-    transition: all 0.3s;
+    transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .carrusel button:hover {
     background: white;
+    transform: translateY(-50%) scale(1.05);
+    box-shadow: 0 8px 18px rgba(0,0,0,0.22);
 }
 
 .carrusel button:first-of-type { left: 2%; }

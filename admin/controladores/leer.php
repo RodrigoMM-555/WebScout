@@ -136,9 +136,10 @@ if ($resultado && $resultado->num_rows > 0) {
         echo "<th>Irse solo</th>";
         echo "<th>Imagen</th>";
         echo "<th>Vehiculo privado</th>";
+        echo "<th>Mas info</th>";
     }
 
-    echo "<th>Mas info</th><th>Editar</th><th>Eliminar</th>";
+    echo "<th>Editar</th><th>Eliminar</th>";
     echo "</tr>";
     $pintoCabecera = true;
 }

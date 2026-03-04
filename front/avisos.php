@@ -87,7 +87,7 @@ while ($aviso = $resultado->fetch_assoc()) {
         }
 
         // Información del aviso
-        echo "<div class='aviso'>";
+        echo "<div class='aviso' id='aviso-" . (int)$aviso["id"] . "'>";
         echo "<h3>" . htmlspecialchars($aviso["titulo"]) . "</h3>";
         echo "<p>" . nl2br(htmlspecialchars($aviso["contenido"])) . "</p>";
 
@@ -174,12 +174,13 @@ while ($aviso = $resultado->fetch_assoc()) {
                     }
                 echo "</td>
                     <td>
-                        <form action='contrl/cambiar_asistencia.php' method='post'>
+                        <form class='form-asistencia' action='contrl/cambiar_asistencia.php' method='post'>
                             <input type='hidden' name='id_aviso' value='".$aviso["id"]."'>
                             <input type='hidden' name='id_educando' value='".$id_educando."'>
+                            <input type='hidden' name='return_anchor' value='aviso-".(int)$aviso["id"]."'>
                             <label class='switch'>
-                                <input type='radio' name='asiste' value='1' $checkedSi onchange='this.form.submit()'> Sí
-                                <input type='radio' name='asiste' value='0' $checkedNo onchange='this.form.submit()'> No
+                                <input class='asistencia-radio' type='radio' name='asiste' value='1' $checkedSi> Sí
+                                <input class='asistencia-radio' type='radio' name='asiste' value='0' $checkedNo> No
                                 <span class='slider'></span>
                             </label>
                         </form>
@@ -275,12 +276,13 @@ while ($aviso = $resultado->fetch_assoc()) {
                 }
                 echo "</td>
                     <td>
-                        <form action='contrl/cambiar_asistencia.php' method='post'>
+                        <form class='form-asistencia' action='contrl/cambiar_asistencia.php' method='post'>
                             <input type='hidden' name='id_aviso' value='".$aviso["id"]."'>
                             <input type='hidden' name='id_educando' value='".$id_educando."'>
+                            <input type='hidden' name='return_anchor' value='aviso-".(int)$aviso["id"]."'>
                             <label class='switch'>
-                                <input type='radio' name='asiste' value='1' $checkedSi onchange='this.form.submit()'> Sí
-                                <input type='radio' name='asiste' value='0' $checkedNo onchange='this.form.submit()'> No
+                                <input class='asistencia-radio' type='radio' name='asiste' value='1' $checkedSi> Sí
+                                <input class='asistencia-radio' type='radio' name='asiste' value='0' $checkedNo> No
                                 <span class='slider'></span>
                             </label>
                         </form>
@@ -306,14 +308,115 @@ if (!$hayAvisos) {
 </main>
 <!-- Script para mostrar el nombre del archivo seleccionado -->
 <script>
-document.querySelectorAll('.input-archivo-oculto').forEach(function(input) {
-    input.addEventListener('change', function() {
-        const nombre = this.files && this.files.length ? this.files[0].name : 'Sin archivo';
-        const form = this.closest('form');
-        const target = form ? form.querySelector('.archivo-nombre') : null;
-        if (target) target.textContent = nombre;
+function enlazarInputsArchivo(scope) {
+    scope.querySelectorAll('.input-archivo-oculto').forEach(function(input) {
+        if (input.dataset.bindArchivo === '1') return;
+        input.dataset.bindArchivo = '1';
+
+        input.addEventListener('change', function() {
+            const nombre = this.files && this.files.length ? this.files[0].name : 'Sin archivo';
+            const form = this.closest('form');
+            const target = form ? form.querySelector('.archivo-nombre') : null;
+            if (target) target.textContent = nombre;
+        });
     });
-});
+}
+
+function recargarAviso(idAviso) {
+    const avisoActual = document.getElementById('aviso-' + idAviso);
+    if (!avisoActual) return Promise.resolve();
+
+    return fetch(window.location.pathname + window.location.search, {
+        method: 'GET',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest'
+        }
+    })
+    .then(function(response) {
+        if (!response.ok) throw new Error('No se pudo recargar el aviso');
+        return response.text();
+    })
+    .then(function(html) {
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(html, 'text/html');
+        const avisoNuevo = doc.getElementById('aviso-' + idAviso);
+
+        if (!avisoNuevo) throw new Error('Aviso no encontrado en la respuesta');
+
+        avisoActual.replaceWith(avisoNuevo);
+        enlazarInputsArchivo(avisoNuevo);
+        enlazarRadiosAsistencia(avisoNuevo);
+    });
+}
+
+function enlazarRadiosAsistencia(scope) {
+    scope.querySelectorAll('form.form-asistencia .asistencia-radio').forEach(function(input) {
+        if (input.dataset.bindAsistencia === '1') return;
+        input.dataset.bindAsistencia = '1';
+
+        input.addEventListener('change', function() {
+            const form = this.closest('form');
+            if (!form) return;
+
+            const payload = new URLSearchParams(new FormData(form));
+            payload.append('ajax', '1');
+
+            const radios = form.querySelectorAll('input[name="asiste"]');
+            radios.forEach(function(radio) { radio.disabled = true; });
+
+            fetch(form.action, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: payload.toString()
+            })
+            .then(function(response) {
+                if (!response.ok) throw new Error('Error de red');
+                return response.json();
+            })
+            .then(function(data) {
+                if (!data || data.ok !== true) throw new Error('Respuesta inválida');
+                return recargarAviso(data.id_aviso);
+            })
+            .catch(function() {
+                form.submit();
+            })
+            .finally(function() {
+                radios.forEach(function(radio) { radio.disabled = false; });
+            });
+        });
+    });
+}
+
+enlazarInputsArchivo(document);
+enlazarRadiosAsistencia(document);
+
+(function() {
+    const scrollKey = 'avisos_archivo_scroll_y';
+    const savedScroll = sessionStorage.getItem(scrollKey);
+
+    if (savedScroll !== null) {
+        const targetY = parseInt(savedScroll, 10) || 0;
+        if ('scrollRestoration' in history) {
+            history.scrollRestoration = 'manual';
+        }
+        window.addEventListener('load', function() {
+            window.scrollTo(0, targetY);
+            if ('scrollRestoration' in history) {
+                history.scrollRestoration = 'auto';
+            }
+        }, { once: true });
+        sessionStorage.removeItem(scrollKey);
+    }
+
+    document.querySelectorAll('form.form-archivo').forEach(function(form) {
+        form.addEventListener('submit', function() {
+            sessionStorage.setItem(scrollKey, String(window.scrollY || 0));
+        });
+    });
+})();
 </script>
 <?php
 include("inc/footer.html");

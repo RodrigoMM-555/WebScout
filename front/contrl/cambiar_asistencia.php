@@ -17,6 +17,13 @@ requerirSesion();
 $id_aviso    = (int)($_POST["id_aviso"] ?? 0);
 $id_educando = (int)($_POST["id_educando"] ?? 0);
 $asistencia  = ($_POST["asiste"] ?? '') === "1" ? 'si' : 'no';
+$return_anchor = $_POST["return_anchor"] ?? '';
+$isAjax = (($_POST['ajax'] ?? '') === '1')
+    || (isset($_SERVER['HTTP_X_REQUESTED_WITH']) && strtolower($_SERVER['HTTP_X_REQUESTED_WITH']) === 'xmlhttprequest');
+
+if (!preg_match('/^aviso-\d+$/', $return_anchor)) {
+    $return_anchor = '';
+}
 
 // Insertar o actualizar asistencia
 $stmt = $conexion->prepare("
@@ -28,5 +35,21 @@ $stmt->bind_param("iis", $id_aviso, $id_educando, $asistencia);
 $stmt->execute();
 $stmt->close();
 
-header("Location: ../avisos.php");
+if ($isAjax) {
+    header('Content-Type: application/json; charset=utf-8');
+    echo json_encode([
+        'ok' => true,
+        'id_aviso' => $id_aviso,
+        'id_educando' => $id_educando,
+        'asistencia' => $asistencia,
+    ]);
+    exit;
+}
+
+$url = "../avisos.php";
+if ($return_anchor !== '') {
+    $url .= "#" . $return_anchor;
+}
+
+header("Location: " . $url);
 exit;
