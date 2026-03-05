@@ -199,7 +199,11 @@ if ($resultadoListado) {
                 $valor = date("d/m/Y", strtotime($valor)) . " " . date("H:i", strtotime($valor));
             }
 
-            echo "<td>" . ucfirst(htmlspecialchars($valor ?: '-')) . "</td>";
+            $valorCelda = htmlspecialchars($valor ?: '-');
+            if (!in_array($clave, ['email', 'email2'], true)) {
+                $valorCelda = ucfirst($valorCelda);
+            }
+            echo "<td>" . $valorCelda . "</td>";
         }
 
         if ($tabla === "educandos") {

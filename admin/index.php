@@ -9,7 +9,7 @@ session_start();
 
 if (!isset($_SESSION['rol']) || $_SESSION['rol'] !== 'admin') {
     // Redirigir al login si no es admin (antes era un rickroll)
-    header("Location: ../front/index.php");
+    header("Location: ../index.php");
     exit;
 }
 ?>

@@ -70,8 +70,8 @@ function requerirSesion(): void {
     if (session_status() === PHP_SESSION_NONE) {
         session_start();
     }
-    if (empty($_SESSION['nombre'])) {
-        header('Location: ' . BASE_URL . '/front/index.php');
+    if (empty($_SESSION['id_usuario'])) {
+        header('Location: ' . BASE_URL . '/index.php');
         exit;
     }
 }
@@ -85,7 +85,7 @@ function requerirAdmin(): void {
         session_start();
     }
     if (empty($_SESSION['rol']) || $_SESSION['rol'] !== 'admin') {
-        header('Location: ' . BASE_URL . '/front/index.php');
+        header('Location: ' . BASE_URL . '/index.php');
         exit;
     }
 }

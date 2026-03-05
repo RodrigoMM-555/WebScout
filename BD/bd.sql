@@ -19,7 +19,7 @@ CREATE TABLE usuarios (
     nombre VARCHAR(100) NOT NULL,
     apellidos VARCHAR(100) NOT NULL,
     contraseña VARCHAR(255) NOT NULL,
-    email VARCHAR(100) NOT NULL,
+    email VARCHAR(100) NOT NULL UNIQUE,
     telefono VARCHAR(20) NOT NULL,
     direccion VARCHAR(100) NOT NULL,
     nombre2 VARCHAR(100),
@@ -104,5 +104,6 @@ ALTER TABLE usuarios ADD COLUMN apellidos2 VARCHAR(100);
 ALTER TABLE usuarios ADD COLUMN email2 VARCHAR(100);
 ALTER TABLE usuarios ADD COLUMN telefono2 VARCHAR(20);
 ALTER TABLE usuarios ADD COLUMN rol ENUM('admin','usuario') NOT NULL DEFAULT 'usuario';
+ALTER TABLE usuarios ADD CONSTRAINT uq_usuarios_email UNIQUE (email);
 
 ALTER TABLE educandos ADD permisos INT DEFAULT 0;

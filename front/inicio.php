@@ -9,13 +9,17 @@ include("inc/header.php")
 <main>
     <ul class="paño" aria-hidden="true"></ul>
 
+    <!-- Cogemos als imagenes del carrusel -->
+    <?php
+    $imagenesCarrusel = glob(__DIR__ . '/../img/carrusel/*.{avif,webp,jpg,jpeg,png,gif}', GLOB_BRACE);
+    natsort($imagenesCarrusel);
+    $imagenesCarrusel = array_values($imagenesCarrusel);
+    ?>
     <!-- Carrusel de fotos -->
     <article class="carrusel">
-        <img src="../img/carrusel1.avif" alt="placeholder">
-        <img src="../img/carrusel3.avif" alt="placeholder">
-        <img src="../img/carrusel2.avif" alt="placeholder">
-        <img src="../img/carrusel4.avif" alt="placeholder">
-        <img src="../img/carrusel5.avif" alt="placeholder">
+        <?php foreach ($imagenesCarrusel as $rutaImagen): ?>
+            <img src="../img/carrusel/<?= htmlspecialchars(basename($rutaImagen), ENT_QUOTES, 'UTF-8') ?>" alt="Imagen del carrusel">
+        <?php endforeach; ?>
         <!-- Difuminado y texto -->
         <div class="overlay"></div>
         <div class="texto-carrusel">Grupo Scout Seeonee</div>

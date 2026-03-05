@@ -11,12 +11,10 @@
 session_start();
 
 // Comprobar que hay sesión activa
-if (empty($_SESSION["nombre"])) {
-    header("Location: index.php");
+if (empty($_SESSION["id_usuario"])) {
+    header("Location: ../index.php");
     exit;
 }
-
-$nombre = $_SESSION["nombre"];
 ?>
 <!-- Perfil de los padres -->
 <?php
@@ -24,12 +22,19 @@ include("inc/header.php");
 include("inc/conexion_bd.php");
 
 // Preparar y ejecutar la consulta para el usuario
-$sql = "SELECT * FROM usuarios WHERE nombre = ?";
+$idUsuarioSesion = (int)$_SESSION["id_usuario"];
+$sql = "SELECT * FROM usuarios WHERE id = ?";
 $stmt = $conexion->prepare($sql);
-$stmt->bind_param("s", $nombre);
+$stmt->bind_param("i", $idUsuarioSesion);
+
 $stmt->execute();
 $resultado = $stmt->get_result();
 $fila = $resultado->fetch_assoc();
+
+if (!$fila) {
+    header("Location: ../index.php");
+    exit;
+}
 ?>
 <main>
     <!-- Datos del usuario -->
@@ -55,7 +60,7 @@ $fila = $resultado->fetch_assoc();
             </p>
             <?php endif; ?>
         </div>
-        <div>
+        <div class="perfil-emails">
             <p>
                 <?= htmlspecialchars($fila["email"]) ?>
             </p>

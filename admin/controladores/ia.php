@@ -23,7 +23,7 @@ if (!defined('BASE_URL')) {
 
 // 3) Seguridad de acceso: solo usuarios con rol admin pueden usar esta vista.
 if (!isset($_SESSION['rol']) || $_SESSION['rol'] !== 'admin') {
-  header("Location: " . BASE_URL . "/front/index.php");
+  header("Location: " . BASE_URL . "/index.php");
   exit;
 }
 

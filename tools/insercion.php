@@ -19,7 +19,7 @@ $stmt = $conexion->prepare($sql);
 $nombre = 'r';
 $apellidos = 'r';
 $hash = password_hash('r', PASSWORD_DEFAULT);
-$email = 'r';
+$email = 'r@gmail.com';
 $telefono = 1;
 $direccion = 'r';
 $stmt->bind_param("ssssis", $nombre, $apellidos, $hash, $email, $telefono, $direccion);

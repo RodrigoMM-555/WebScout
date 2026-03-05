@@ -14,24 +14,13 @@ include("inc/conexion_bd.php");
 
 <?php
 // Por si se entra sin sesion
-if (!isset($_SESSION["nombre"])) {
+if (!isset($_SESSION["id_usuario"])) {
     echo '<div class="sin-avisos">No se ha iniciado sesión.</div>';
     exit;
 }
 
-// Nombre del usuario
-$nombre = $_SESSION["nombre"];
-
-// Obtener ID del usuario
-$sql = "SELECT id FROM usuarios WHERE nombre = ?";
-$stmt = $conexion->prepare($sql);
-$stmt->bind_param("s", $nombre);
-$stmt->execute();
-$resultado = $stmt->get_result();
-$usuario = $resultado->fetch_assoc();
-
 // Guardamos el id del usuario
-$id_usuario = $usuario["id"];
+$id_usuario = (int)$_SESSION["id_usuario"];
 
 // Obtener educandos del usuario
 $sql = "SELECT id, nombre, apellidos, seccion FROM educandos WHERE id_usuario = ?";
@@ -62,11 +51,17 @@ $hayAvisos = false;
 // Recorremos los avisos
 while ($aviso = $resultado->fetch_assoc()) {
 
+    $seccionesAviso = array_filter(array_map(function ($seccion) {
+        return strtolower(trim((string)$seccion));
+    }, explode(',', (string)$aviso['secciones'])));
+
     // Lista de educandos que pertenecen a las secciones del aviso
     $lista_nombres = [];
     foreach ($educandos as $edu) {
+        $seccionEducando = strtolower(trim((string)$edu['seccion']));
+
         // Compara las secciones del aviso con la sección del educando
-        if (strpos($aviso['secciones'], $edu['seccion']) !== false) {
+        if ($seccionEducando !== '' && in_array($seccionEducando, $seccionesAviso, true)) {
             $lista_nombres[] = [
                 "id" => $edu["id"],
                 "nombreCompleto" => $edu['nombre'] . " " . $edu['apellidos']
@@ -116,9 +111,7 @@ while ($aviso = $resultado->fetch_assoc()) {
         // Secciones dentro de la misma tarjeta, en fila completa
         echo "<div class='aviso-secciones" . (empty($detalles) ? " sin-borde" : "") . "'>";
         echo "<strong>📋 Secciones</strong> ";
-        $secciones = explode(",", $aviso["secciones"]);
-        foreach ($secciones as $sec) {
-            $sec = trim($sec);
+        foreach ($seccionesAviso as $sec) {
             echo "<span class='aviso-seccion-chip seccion-$sec'>" . ucfirst($sec) . "</span>";
         }
         echo "</div>";
