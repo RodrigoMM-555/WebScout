@@ -1,6 +1,6 @@
 <?php
 require_once __DIR__ . '/../tools/config.php';
-include 'inc/conexion_bd.php';
+include '../inc/conexion_bd.php';
 ?>
 <!DOCTYPE html>
 <html lang="es">

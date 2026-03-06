@@ -3,7 +3,7 @@
  * inicio.php — Página de inicio (landing tras login)
  * Muestra el carrusel de fotos, calendario trimestral e info de contacto.
  */
-include("inc/header.php")
+include("../inc/header.php")
 ?>
 
 <main>
@@ -27,7 +27,7 @@ include("inc/header.php")
 
      <article class="info">
         <!-- Imagen del calendario -->
-        <?php include("inc/calendario.php") ?>
+        <?php include("../inc/calendario.php") ?>
 
         <!-- Info varia -->
         <div>
@@ -145,6 +145,6 @@ actualizarCarrusel();
 </script>
 
 <?php
-include("inc/footer.html")
+include("../inc/footer.html")
 ?>
 

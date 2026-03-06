@@ -6,7 +6,7 @@
  * Protegido con sesión de admin y prepared statements.
  */
 session_start();
-include_once "../inc/conexion_bd.php";
+include_once "../../inc/conexion_bd.php";
 
 // Solo admins pueden modificar permisos
 requerirAdmin();

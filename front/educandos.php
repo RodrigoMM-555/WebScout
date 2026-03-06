@@ -1,7 +1,7 @@
 <!-- Perfil de los hijos -->
 <?php 
-include("inc/header.php");
-include("inc/conexion_bd.php");
+include("../inc/header.php");
+include("../inc/conexion_bd.php");
 
 // limpiarTexto() ya definida en utils.php (cargado por conexion_bd)
 
@@ -196,7 +196,7 @@ if (is_dir($ruta)) {
     }
 }
 
-include("inc/footer.html");
+include("../inc/footer.html");
 
 if ($subidaAviso === 'ocr_conversion_fallida') {
     echo "<script>alert('El PDF se ha subido correctamente, pero no se pudo convertir temporalmente para leer las casillas. Revisa los permisos manualmente.');</script>";

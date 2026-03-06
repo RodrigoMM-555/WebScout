@@ -1,8 +1,8 @@
 <!-- Avisos -->
 <?php
 session_start();
-include("inc/header.php");
-include("inc/conexion_bd.php");
+include("../inc/header.php");
+include("../inc/conexion_bd.php");
 
 // limpiarTexto() ya definida en utils.php (cargado por conexion_bd)
 ?>
@@ -120,7 +120,7 @@ while ($aviso = $resultado->fetch_assoc()) {
         // Si no hay circular
         if ($aviso["circular"] == "no") {
 
-            echo "<table class='tabla-archivos'>
+            echo "<table class='tabla-archivos tabla-sin-circular'>
                 <tr>
                     <th>Niñ@</th>
                     <th>No hay circular adjunta</th> 
@@ -185,7 +185,7 @@ while ($aviso = $resultado->fetch_assoc()) {
         }
         // Si hay circualr
         if ($aviso["circular"] == "si") {
-            echo "<table class='tabla-archivos'>
+            echo "<table class='tabla-archivos tabla-con-circular'>
                 <tr>
                     <th>Niñ@</th>
                     <th>Descargar archivo</th>
@@ -412,5 +412,5 @@ enlazarRadiosAsistencia(document);
 })();
 </script>
 <?php
-include("inc/footer.html");
+include("../inc/footer.html");
 ?>

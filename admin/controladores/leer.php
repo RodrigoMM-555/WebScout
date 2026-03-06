@@ -6,7 +6,7 @@
 -->
 <?php
 // conexion_bd.php ya carga config.php (con las constantes PERM_*)
-include_once "../inc/conexion_bd.php";
+include_once "../../inc/conexion_bd.php";
 
 // Necesitamos el token CSRF para los enlaces de eliminar
 if (session_status() === PHP_SESSION_NONE) session_start();

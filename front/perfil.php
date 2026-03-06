@@ -18,8 +18,8 @@ if (empty($_SESSION["id_usuario"])) {
 ?>
 <!-- Perfil de los padres -->
 <?php
-include("inc/header.php");
-include("inc/conexion_bd.php");
+include("../inc/header.php");
+include("../inc/conexion_bd.php");
 
 // Preparar y ejecutar la consulta para el usuario
 $idUsuarioSesion = (int)$_SESSION["id_usuario"];
@@ -120,5 +120,5 @@ while($educando = $resultado_educandos->fetch_assoc()) {
 </main>
 
 <?php 
-include("inc/footer.html");
+include("../inc/footer.html");
 ?>

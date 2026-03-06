@@ -13,7 +13,7 @@ session_start();
 <main>
 <link rel="stylesheet" href="css/estilo.css">
 <?php
-include "inc/conexion_bd.php";
+include "../inc/conexion_bd.php";
 
 // Solo admins pueden ver esta página
 requerirAdmin();

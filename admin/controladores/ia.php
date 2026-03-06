@@ -30,7 +30,7 @@ if (!isset($_SESSION['rol']) || $_SESSION['rol'] !== 'admin') {
 // 4) Cargar conexión cuando el archivo se ejecuta de forma aislada.
 // Si se incluye desde admin/index.php, normalmente $conexion ya existe.
 if (!isset($conexion) || !($conexion instanceof mysqli)) {
-  require_once __DIR__ . '/../inc/conexion_bd.php';
+  require_once __DIR__ . '/../../inc/conexion_bd.php';
 }
 
 /**

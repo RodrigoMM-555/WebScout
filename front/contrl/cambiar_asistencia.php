@@ -8,7 +8,7 @@
 session_start();
 
 // Cargar config y utils
-include("../inc/conexion_bd.php");
+include("../../inc/conexion_bd.php");
 
 // Requiere sesión de usuario (padres o admin)
 requerirSesion();

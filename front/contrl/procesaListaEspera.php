@@ -1,5 +1,5 @@
 <?php
-include '../inc/conexion_bd.php';
+include '../../inc/conexion_bd.php';
 
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 	http_response_code(405);

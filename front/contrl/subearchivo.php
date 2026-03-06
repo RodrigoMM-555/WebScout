@@ -9,7 +9,7 @@
  * ★ FIX: Validación de tipo y tamaño de archivo
  */
 session_start();
-include("../inc/conexion_bd.php");
+include("../../inc/conexion_bd.php");
 
 // Solo usuarios autenticados pueden subir archivos
 requerirSesion();

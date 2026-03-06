@@ -10,7 +10,7 @@
  *   - Contraseña vacía → se omite (no hashea cadena vacía)
  */
 session_start();
-include('../inc/conexion_bd.php');
+include('../../inc/conexion_bd.php');
 
 // Solo admins pueden actualizar
 requerirAdmin();

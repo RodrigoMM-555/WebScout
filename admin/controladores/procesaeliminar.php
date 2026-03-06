@@ -9,7 +9,7 @@
  *   - Token CSRF validado
  */
 session_start();
-include "../inc/conexion_bd.php";
+include "../../inc/conexion_bd.php";
 
 // Solo admins pueden eliminar
 requerirAdmin();

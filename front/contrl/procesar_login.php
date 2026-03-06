@@ -5,7 +5,7 @@
  * Verifica correo/contraseña contra la BD.
  * Crea sesión con id, nombre y rol; redirige según el tipo de usuario.
  */
-include '../inc/conexion_bd.php';
+include '../../inc/conexion_bd.php';
 
 // Recogemos la información de login
 $email = trim($_POST['email'] ?? '');

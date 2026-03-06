@@ -10,7 +10,7 @@
  *   - Un solo escape (corrige el doble real_escape_string anterior)
  */
 session_start();
-include('../inc/conexion_bd.php');
+include('../../inc/conexion_bd.php');
 
 // Solo admins pueden insertar
 requerirAdmin();
