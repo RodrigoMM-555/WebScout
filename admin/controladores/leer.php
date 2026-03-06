@@ -24,6 +24,58 @@ $seccionFiltro = $_GET['seccion'] ?? null;
 $tabla = preg_replace('/[^a-zA-Z0-9_]/', '', $tabla);
 $direccion = strtoupper($direccion) === 'DESC' ? 'DESC' : 'ASC';
 
+$normalizarEtiqueta = static function (string $texto): string {
+    return str_ireplace(['nino', 'ninio'], 'niño', $texto);
+};
+
+$columnasOcultasOrden = [
+    'email2', 'telefono2', 'nombre2', 'apellidos2',
+    'apellidos', 'id_usuario', 'permisos', 'id'
+];
+
+$columnasOcultasTabla = [
+    'email2', 'telefono2', 'nombre2', 'apellidos2',
+    'apellidos', 'id_usuario', 'permisos', 'id'
+];
+
+if ($tabla === 'lista_espera') {
+    $columnasOcultasOrden[] = 'apellidos_nino';
+    $columnasOcultasOrden[] = 'comentarios';
+    $columnasOcultasOrden[] = 'explicacion_relacion';
+    $columnasOcultasOrden[] = 'hermano_en_grupo';
+    $columnasOcultasOrden[] = 'relacion_con_miembro';
+    $columnasOcultasOrden[] = 'familia_antiguo_scouter';
+    $columnasOcultasOrden[] = 'estuvo_en_grupo';
+
+    $columnasOcultasTabla[] = 'apellidos_nino';
+    $columnasOcultasTabla[] = 'comentarios';
+    $columnasOcultasTabla[] = 'explicacion_relacion';
+}
+
+$ordenColumnasListaEspera = [
+    'nombre_nino',
+    'fecha_nacimiento',
+    'nombre_contacto',
+    'telefono_contacto',
+    'correo_contacto',
+    'hermano_en_grupo',
+    'relacion_con_miembro',
+    'familia_antiguo_scouter',
+    'estuvo_en_grupo'
+];
+
+$etiquetasListaEspera = [
+    'nombre_nino' => 'Niño',
+    'fecha_nacimiento' => 'Nacimiento',
+    'nombre_contacto' => 'Contacto',
+    'telefono_contacto' => 'Teléfono',
+    'correo_contacto' => 'Correo',
+    'hermano_en_grupo' => 'Hermano',
+    'relacion_con_miembro' => 'Relación',
+    'familia_antiguo_scouter' => 'Familia scout',
+    'estuvo_en_grupo' => 'Estuvo antes'
+];
+
 $opcionesOrden = [];
 $columnas_result = $conexion->query("SHOW COLUMNS FROM `{$tabla}`");
 
@@ -31,15 +83,16 @@ if ($columnas_result) {
     while ($col = $columnas_result->fetch_assoc()) {
 
         // olumnas ocultas
-        if (in_array($col['Field'], [
-            'email2', 'telefono2', 'nombre2', 'apellidos2',
-            'apellidos', 'id_usuario', 'permisos', 'id'
-        ])) {
+        if (in_array($col['Field'], $columnasOcultasOrden, true)) {
             continue;
         }
 
         $nombre = $col['Field'];
-        $label = ucfirst(str_replace('_', ' ', $nombre));
+        $label = ucfirst($normalizarEtiqueta(str_replace('_', ' ', $nombre)));
+
+        if ($tabla === 'lista_espera' && $nombre === 'nombre_nino') {
+            $label = 'Niño';
+        }
 
         if ($nombre === "anio") {
             $label = "Año";
@@ -105,29 +158,38 @@ if (!array_key_exists($ordenarPor, $opcionesOrden)) {
 </div>
 <?php endif; ?>
 
-<table>
+<table class="<?= $tabla === 'lista_espera' ? 'tabla-lista-espera' : '' ?>">
 <?php
 
 $resultado = $conexion->query("SELECT * FROM `{$tabla}` LIMIT 1;");
 $pintoCabecera = false;
+$totalColumnasCabecera = 0;
 
 if ($resultado && $resultado->num_rows > 0) {
     $filaEjemplo = $resultado->fetch_assoc();
     echo "<tr>";
 
-    foreach ($filaEjemplo as $clave => $valor) {
-
-        if (in_array($clave, [
-            'email2', 'telefono2', 'nombre2', 'apellidos2',
-            'apellidos', 'permisos', 'id_usuario', 'id'
-        ])) {
-            continue;
+    if ($tabla === 'lista_espera') {
+        foreach ($ordenColumnasListaEspera as $clave) {
+            if (!array_key_exists($clave, $filaEjemplo)) {
+                continue;
+            }
+            echo "<th>" . htmlspecialchars($etiquetasListaEspera[$clave] ?? ucfirst($normalizarEtiqueta(str_replace('_', ' ', $clave)))) . "</th>";
+            $totalColumnasCabecera++;
         }
+    } else {
+        foreach ($filaEjemplo as $clave => $valor) {
 
-        if ($clave === "anio") {
-            echo "<th>Año</th>";
-        } else {
-            echo "<th>" . htmlspecialchars(ucfirst(str_replace('_', ' ', $clave))) . "</th>";
+            if (in_array($clave, $columnasOcultasTabla, true)) {
+                continue;
+            }
+
+            if ($clave === "anio") {
+                echo "<th>Año</th>";
+            } else {
+                echo "<th>" . htmlspecialchars(ucfirst($normalizarEtiqueta(str_replace('_', ' ', $clave)))) . "</th>";
+            }
+            $totalColumnasCabecera++;
         }
     }
 
@@ -137,9 +199,16 @@ if ($resultado && $resultado->num_rows > 0) {
         echo "<th>Imagen</th>";
         echo "<th>Vehiculo privado</th>";
         echo "<th>Mas info</th>";
+        $totalColumnasCabecera += 5;
+    }
+
+    if ($tabla === 'lista_espera') {
+        echo "<th>Detalle</th>";
+        $totalColumnasCabecera++;
     }
 
     echo "<th>Editar</th><th>Eliminar</th>";
+    $totalColumnasCabecera += 2;
     echo "</tr>";
     $pintoCabecera = true;
 }
@@ -181,29 +250,72 @@ if ($resultadoListado) {
 
         echo "<tr class='" . htmlspecialchars($claseFila) . "'>";
 
-        foreach ($fila as $clave => $valor) {
+        if ($tabla === 'lista_espera') {
+            $comentariosDetalle = trim((string)($fila['comentarios'] ?? ''));
+            $explicacionDetalle = trim((string)($fila['explicacion_relacion'] ?? ''));
+            $tieneDetalle = ($comentariosDetalle !== '' || $explicacionDetalle !== '');
 
-            if (in_array($clave, [
-                'email2', 'telefono2', 'nombre2', 'apellidos2',
-                'apellidos', 'id_usuario', 'permisos', 'id'
-            ])) {
-                continue;
+            foreach ($ordenColumnasListaEspera as $clave) {
+                if (!array_key_exists($clave, $fila)) {
+                    continue;
+                }
+
+                $valor = $fila[$clave];
+
+                if ($clave === 'nombre_nino') {
+                    $apellidosNinio = trim((string)($fila['apellidos_nino'] ?? ''));
+                    $nombreNinio = trim((string)($fila['nombre_nino'] ?? ''));
+                    $valor = trim($nombreNinio . ' ' . $apellidosNinio);
+                }
+
+                if ($clave === 'fecha_nacimiento' && !empty($valor)) {
+                    $timestampNacimiento = strtotime((string)$valor);
+                    if ($timestampNacimiento !== false) {
+                        $valor = date('d/m/Y', $timestampNacimiento);
+                    }
+                }
+
+                if (in_array($clave, ['hermano_en_grupo', 'relacion_con_miembro', 'familia_antiguo_scouter', 'estuvo_en_grupo'], true)) {
+                    $checked = ((int)$valor === 1) ? 'checked' : '';
+                    echo "<td><input type='checkbox' class='estado-check' $checked disabled></td>";
+                    continue;
+                }
+
+                $valorCelda = htmlspecialchars((string)($valor ?: '-'));
+                if (!in_array($clave, ['correo_contacto'], true)) {
+                    $valorCelda = ucfirst($valorCelda);
+                }
+
+                echo "<td>" . $valorCelda . "</td>";
             }
 
-            elseif ($clave === "nombre") {
-                $valor = htmlspecialchars($valor) . (isset($fila['apellidos']) ? " " . ucfirst(htmlspecialchars($fila['apellidos'])) : "");
+            if ($tieneDetalle) {
+                echo "<td><button type='button' class='btn-detalle-lista sin-icono-auto' data-detalle-id='" . (int)$fila['id'] . "' aria-expanded='false' title='Ver detalle'>⏬</button></td>";
+            } else {
+                echo "<td></td>";
             }
+        } else {
+            foreach ($fila as $clave => $valor) {
 
-            // ★ FIX: paréntesis para evaluar ambas condiciones correctamente
-        else if (($clave === "fecha_hora_inicio" || $clave === "fecha_hora_fin") && !empty($valor)) {
-                $valor = date("d/m/Y", strtotime($valor)) . " " . date("H:i", strtotime($valor));
-            }
+                if (in_array($clave, $columnasOcultasTabla, true)) {
+                    continue;
+                }
 
-            $valorCelda = htmlspecialchars($valor ?: '-');
-            if (!in_array($clave, ['email', 'email2'], true)) {
-                $valorCelda = ucfirst($valorCelda);
+                elseif ($clave === "nombre") {
+                    $valor = htmlspecialchars($valor) . (isset($fila['apellidos']) ? " " . ucfirst(htmlspecialchars($fila['apellidos'])) : "");
+                }
+
+                // ★ FIX: paréntesis para evaluar ambas condiciones correctamente
+            else if (($clave === "fecha_hora_inicio" || $clave === "fecha_hora_fin") && !empty($valor)) {
+                    $valor = date("d/m/Y", strtotime($valor)) . " " . date("H:i", strtotime($valor));
+                }
+
+                $valorCelda = htmlspecialchars($valor ?: '-');
+                if (!in_array($clave, ['email', 'email2'], true)) {
+                    $valorCelda = ucfirst($valorCelda);
+                }
+                echo "<td>" . $valorCelda . "</td>";
             }
-            echo "<td>" . $valorCelda . "</td>";
         }
 
         if ($tabla === "educandos") {
@@ -237,6 +349,24 @@ if ($resultadoListado) {
 
         echo "</tr>";
 
+        if ($tabla === 'lista_espera' && $tieneDetalle) {
+            echo "<tr id='detalle-fila-" . (int)$fila['id'] . "' class='detalle-lista-fila' style='display:none;'>";
+            echo "<td colspan='" . (int)$totalColumnasCabecera . "'>";
+            echo "<div class='detalle-lista-contenido'>";
+
+            if ($explicacionDetalle !== '') {
+                echo "<p><strong>Explicación de la relación:</strong> " . nl2br(htmlspecialchars($explicacionDetalle)) . "</p>";
+            }
+
+            if ($comentariosDetalle !== '') {
+                echo "<p><strong>Comentarios:</strong> " . nl2br(htmlspecialchars($comentariosDetalle)) . "</p>";
+            }
+
+            echo "</div>";
+            echo "</td>";
+            echo "</tr>";
+        }
+
         if ($tabla === "avisos") {
             echo "<tr><td colspan='100%'><a href='asistencia_documentacion.php?id_aviso=" . (int)$fila['id'] . "'>Ver asistencia y documentación</a></td></tr>";
         }
@@ -264,5 +394,18 @@ document.querySelectorAll(".permiso-check").forEach(function(checkbox){
 
     });
 
+});
+
+document.querySelectorAll('.btn-detalle-lista').forEach(function(boton) {
+    boton.addEventListener('click', function() {
+        const id = this.dataset.detalleId;
+        const filaDetalle = document.getElementById('detalle-fila-' + id);
+        if (!filaDetalle) return;
+
+        const visible = filaDetalle.style.display !== 'none';
+        filaDetalle.style.display = visible ? 'none' : 'table-row';
+        this.setAttribute('aria-expanded', visible ? 'false' : 'true');
+        this.textContent = visible ? '⏬' : '⏫';
+    });
 });
 </script>

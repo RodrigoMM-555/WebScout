@@ -7,7 +7,15 @@
 // Sacamos el nombre de la tabla (validado contra whitelist)
 $tabla = $_GET['tabla'];
 $id = $_GET['id'] ?? 0; // Obtenemos el ID del registro a actualizar (nuevo)
-echo "<h1>" . ($id ? "Actualizar" : "Insertar") . " en $tabla</h1>";
+$esListaEspera = ($tabla === 'lista_espera');
+$camposCheckboxListaEspera = ['hermano_en_grupo', 'relacion_con_miembro', 'familia_antiguo_scouter', 'estuvo_en_grupo'];
+
+$normalizarTexto = static function (string $texto): string {
+    return str_ireplace(['ninio', 'nino'], 'niño', $texto);
+};
+
+$nombreTablaBonito = ucfirst($normalizarTexto(str_replace('_', ' ', $tabla)));
+echo "<h1 class='titulo-form-admin'>" . ($id ? "Actualizar" : "Insertar") . " en " . htmlspecialchars($nombreTablaBonito) . "</h1>";
 
 // Si hay ID, cargamos los datos actuales
 $valores = [];
@@ -29,7 +37,8 @@ if ($id) {
     $resultado = $conexion->query("DESCRIBE `$tabla`;");
     while ($fila = $resultado->fetch_assoc()) {
         $clave = $fila['Field'];
-        $clave2 = ucfirst(str_replace('_', ' ', $clave));
+        $tipoColumna = strtolower((string)$fila['Type']);
+        $clave2 = ucfirst($normalizarTexto(str_replace('_', ' ', $clave)));
 
         // ID
         if ($fila['Extra'] === 'auto_increment') {
@@ -126,6 +135,79 @@ if ($id) {
             ";
         }
 
+        // CHECKBOXES LISTA DE ESPERA (agrupados y ordenados)
+        elseif ($esListaEspera && in_array($clave, $camposCheckboxListaEspera, true)) {
+            if ($clave !== 'hermano_en_grupo') {
+                continue;
+            }
+
+            $checkedHermano = ((int)($valores['hermano_en_grupo'] ?? 0) === 1) ? 'checked' : '';
+            $checkedRelacion = ((int)($valores['relacion_con_miembro'] ?? 0) === 1) ? 'checked' : '';
+            $checkedFamilia = ((int)($valores['familia_antiguo_scouter'] ?? 0) === 1) ? 'checked' : '';
+            $checkedEstuvo = ((int)($valores['estuvo_en_grupo'] ?? 0) === 1) ? 'checked' : '';
+
+            echo "
+                <div class='control_formulario secciones-multiples'>
+                    <label>Relación con el grupo</label>
+                    <label class='check-item'>
+                        <input type='hidden' name='hermano_en_grupo' value='0'>
+                        <input type='checkbox' name='hermano_en_grupo' value='1' $checkedHermano>
+                        <span>Hermano en el grupo</span>
+                    </label>
+                    <label class='check-item'>
+                        <input type='hidden' name='relacion_con_miembro' value='0'>
+                        <input type='checkbox' name='relacion_con_miembro' value='1' $checkedRelacion>
+                        <span>Relación con miembro</span>
+                    </label>
+                    <label class='check-item'>
+                        <input type='hidden' name='familia_antiguo_scouter' value='0'>
+                        <input type='checkbox' name='familia_antiguo_scouter' value='1' $checkedFamilia>
+                        <span>Familia de antiguo scouter</span>
+                    </label>
+                    <label class='check-item'>
+                        <input type='hidden' name='estuvo_en_grupo' value='0'>
+                        <input type='checkbox' name='estuvo_en_grupo' value='1' $checkedEstuvo>
+                        <span>Estuvo en el grupo antes</span>
+                    </label>
+                </div>
+            ";
+        }
+
+        // BOOLEAN / TINYINT(1)
+        elseif (preg_match('/^(tinyint\(1\)|boolean|bool)/', $tipoColumna)) {
+            $checked = ((int)($valores[$clave] ?? 0) === 1) ? 'checked' : '';
+            echo "
+                <div class='control_formulario'>
+                    <label class='check-item'>
+                        <input type='hidden' name='$clave' value='0'>
+                        <input type='checkbox' name='$clave' value='1' $checked>
+                        <span>$clave2</span>
+                    </label>
+                </div>
+            ";
+        }
+
+        // DATE
+        elseif ($tipoColumna === 'date') {
+            echo "
+                <div class='control_formulario'>
+                    <label>$clave2</label>
+                    <input type='date' name='$clave' value='" . htmlspecialchars($valores[$clave] ?? '') . "'>
+                </div>
+            ";
+        }
+
+        // TEXT/LONGTEXT
+        elseif (str_contains($tipoColumna, 'text')) {
+            $value = $valores[$clave] ?? '';
+            echo "
+                <div class='control_formulario'>
+                    <label>$clave2</label>
+                    <textarea name='$clave'>" . htmlspecialchars($value) . "</textarea>
+                </div>
+            ";
+        }
+
         // SELECTS NORMALES
         elseif ($clave === "circular") {
             $sel = $valores['circular'] ?? '';
@@ -176,10 +258,17 @@ if ($id) {
                 $value = "";
                 $type = 'password';
             }
+            elseif (str_contains($clave, 'email') || str_contains($clave, 'correo')) {
+                $type = 'email';
+            }
+            elseif (str_contains($clave, 'telefono')) {
+                $type = 'tel';
+            }
             echo "
             <div class='control_formulario'>
                 <label>$clave2</label>
                 <input type='{$type}' name='$clave' value='" . htmlspecialchars($value) . "'"
+                . (str_contains($clave, 'telefono') ? " maxlength='20' inputmode='tel'" : "")
                 . ($clave === 'contraseña' ? " placeholder='Dejar vacío para mantener la actual'" : "")
                 . ">
             </div>";

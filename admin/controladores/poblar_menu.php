@@ -34,6 +34,10 @@ while ($fila = $resultado->fetch_assoc()) {
         $icono = '📣 ';
     } elseif ($fila['Tables_in_'.$db] === 'usuarios') {
         $icono = '👤 ';
+    } elseif ($fila['Tables_in_'.$db] === 'educandos') {
+        $icono = '🎒 ';
+    } elseif ($fila['Tables_in_'.$db] === 'lista_espera') {
+        $icono = '⏳ ';
     }
 
     if ($nombre_tabla == "Educandos") {

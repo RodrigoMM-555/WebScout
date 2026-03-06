@@ -43,7 +43,7 @@ $paginaActual = basename($_SERVER['PHP_SELF']); // ej: "avisos.php"
                 </a>
                 <a href="perfil.php" class="<?= $paginaActual === 'perfil.php' ? 'nav-activa' : '' ?>">
                     <img src="<?= BASE_URL ?>/img/perfil.png" alt="Perfil e hijos">
-                </a>
+                </a>                
                 <!-- Botón de cerrar sesión -->
                 <a href="contrl/logout.php" class="btn-logout" title="Cerrar sesión">
                     Salir

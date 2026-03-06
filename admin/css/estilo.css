@@ -66,6 +66,13 @@ p {
     color: var(--admin-texto-suave);
 }
 
+.titulo-form-admin {
+    width: 100%;
+    max-width: 980px;
+    margin: 6px auto 18px;
+    text-align: left;
+}
+
 /* Iconos automáticos para enlaces y botones sin icono/imagen */
 button:not(:has(img, svg, i, [class*="icon"])):not(.sin-icono-auto)::before {
     content: "🔹 ";
@@ -210,6 +217,79 @@ tr.seccion-tropa:hover td,
 tr.seccion-posta:hover td,
 tr.seccion-rutas:hover td {
     background-color: #ede7f6 !important;
+}
+
+/* Tabla específica: lista de espera */
+.tabla-lista-espera th,
+.tabla-lista-espera td {
+    padding: 10px 12px;
+    font-size: .95rem;
+}
+
+.tabla-lista-espera td:first-child,
+.tabla-lista-espera th:first-child {
+    text-align: left;
+    min-width: 210px;
+}
+
+.tabla-lista-espera th:nth-child(4),
+.tabla-lista-espera td:nth-child(4) {
+    white-space: nowrap;
+    min-width: 130px;
+    font-variant-numeric: tabular-nums;
+}
+
+.tabla-lista-espera th:nth-child(6),
+.tabla-lista-espera th:nth-child(7),
+.tabla-lista-espera th:nth-child(8),
+.tabla-lista-espera th:nth-child(9),
+.tabla-lista-espera td:nth-child(6),
+.tabla-lista-espera td:nth-child(7),
+.tabla-lista-espera td:nth-child(8),
+.tabla-lista-espera td:nth-child(9) {
+    width: 90px;
+    text-align: center;
+}
+
+.tabla-lista-espera td input.estado-check {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--morado-principal);
+    cursor: default;
+}
+
+.btn-detalle-lista {
+    border: 1px solid #d9c2ee;
+    background: #f6effd;
+    color: var(--morado-oscuro);
+    border-radius: 10px;
+    padding: 4px 10px;
+    font-size: 1rem;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.btn-detalle-lista:hover {
+    background: #eadcf8;
+}
+
+.detalle-lista-fila td {
+    background: #f9f4ff !important;
+    text-align: left;
+}
+
+.detalle-lista-contenido {
+    border: 1px solid #e5d7f3;
+    background: #fff;
+    border-radius: 10px;
+    padding: 10px 12px;
+    display: grid;
+    gap: 8px;
+}
+
+.detalle-lista-contenido p {
+    margin: 0;
+    color: var(--admin-texto);
 }
 
 /* ===================== 4) Controles ===================== */
@@ -396,6 +476,7 @@ label {
 
 input[type="text"],
 input[type="email"],
+input[type="tel"],
 input[type="password"],
 input[type="date"],
 input[type="number"],

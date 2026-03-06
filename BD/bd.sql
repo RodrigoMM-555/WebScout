@@ -32,9 +32,9 @@ CREATE TABLE usuarios (
 -- Tabla de educandos, foreign key a usuarios n a 1
 CREATE TABLE educandos (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    nombre VARCHAR(100),
-    apellidos VARCHAR(100),
-    anio INT,
+    nombre VARCHAR(100) NOT NULL,
+    apellidos VARCHAR(100) NOT NULL,
+    anio INT NOT NULL,
     seccion VARCHAR(100),
     dni VARCHAR(9),
     permisos INT DEFAULT 0,
@@ -46,8 +46,8 @@ CREATE TABLE educandos (
 -- Tabla de avisos
 CREATE TABLE avisos (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    titulo VARCHAR(255),
-    secciones VARCHAR(255),
+    titulo VARCHAR(255) NOT NULL,
+    secciones VARCHAR(255) NOT NULL,
     fecha_hora_inicio DATETIME,
     fecha_hora_fin DATETIME,
     circular VARCHAR(255),
@@ -69,6 +69,28 @@ CREATE TABLE asistencias (
     FOREIGN KEY (id_aviso) REFERENCES avisos(id) ON DELETE CASCADE,
     FOREIGN KEY (id_educando) REFERENCES educandos(id) ON DELETE CASCADE
 );
+
+
+CREATE TABLE lista_espera (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    nombre_nino VARCHAR(150) NOT NULL,
+    apellidos_nino VARCHAR(150) NOT NULL,
+    fecha_nacimiento DATE NOT NULL,
+    nombre_contacto VARCHAR(150) NOT NULL,
+    telefono_contacto VARCHAR(20) NOT NULL,
+    correo_contacto VARCHAR(150) NOT NULL,
+
+    hermano_en_grupo BOOLEAN DEFAULT FALSE,
+    relacion_con_miembro BOOLEAN DEFAULT FALSE,
+    familia_antiguo_scouter BOOLEAN DEFAULT FALSE,
+    estuvo_en_grupo BOOLEAN DEFAULT FALSE,
+
+    explicacion_relacion TEXT,
+    comentarios TEXT,
+
+    fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 
 -- Crear el usuario y asignar permisos
 CREATE USER 
@@ -107,3 +129,5 @@ ALTER TABLE usuarios ADD COLUMN rol ENUM('admin','usuario') NOT NULL DEFAULT 'us
 ALTER TABLE usuarios ADD CONSTRAINT uq_usuarios_email UNIQUE (email);
 
 ALTER TABLE educandos ADD permisos INT DEFAULT 0;
+
+ALTER TABLE lista_espera ADD COLUMN apellidos_nino VARCHAR(150) NOT NULL;

@@ -27,4 +27,4 @@ define('PERM_SOLO',      4);   // Irse solo
 define('PERM_FOTOS',     8);   // Publicación de imágenes/fotos
 
 // ── Tablas permitidas (whitelist para evitar SQL injection) ─
-define('TABLAS_PERMITIDAS', ['usuarios', 'educandos', 'avisos', 'asistencias']);
+define('TABLAS_PERMITIDAS', ['usuarios', 'educandos', 'avisos', 'asistencias', 'lista_espera']);

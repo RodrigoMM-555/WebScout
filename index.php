@@ -29,6 +29,8 @@ require_once __DIR__ . '/tools/config.php';
             <?php endif; ?>
             <input type="submit" value="🔐 Iniciar sesión">
         </form>
+        <a href="<?= BASE_URL ?>/front/formListaEspera.php" class="btn-lista-espera sin-icono-auto" title="Lista de espera">
+        Lista de espera</a>
     </main>
 </body>
 </html>

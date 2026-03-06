@@ -5,10 +5,10 @@
 
 
 # SECUNDARIO
-- Tabla para lista de espera
 - Tabla sanitaria
 - Restricciones de contraseña
-
+- Poder pasar de lista de espera a educando con un boton, incluir el usuario
+- Boton para subir todos los educandos un año
 
 # TERCIARIO
 - Añadir comprobaciones para evitar errores fatales o warnings
@@ -17,13 +17,25 @@
 
 # CONSULTAS AL GRUPO
 - Cuenta bancaria, acceso con contraseña -> consultar con el grupo
+No voy a poner nada de eso
 - Año de subida de la ficha -> consultar si se tieen que reentregar cada año
+No se tiene que reentregar cada año, se teiene que guardar los ultimos 5 años
 - Tema contraseñas -> como queremos gestionarlas, podemos verlas, solo cambiarlas?
+?
 - Tema proteccion de datos -> como va que puedo mostrar que no hay alguna medida sobre alamcenamiento de datos?
-- Las autorizaciones hay que borrarlas o guardarlas
+Apartado de seguridad
 - Estructura de carpetas docuemntacion -> Año - seccion - niño
-                                       -> Seccion - año - niño
-                                       -> Seccion - niño - año
+Hay que hacer que automaticamente se cree una neuva cada año
+- Puntuacion lista de espera
+?
+
+
+# MEJORAS
+Hacerlo multigrupo
+
+
+# Pruebas
+- Poner en marcha el servidor para comprobar rutas
 
 
 # SEGURIDAD
@@ -49,15 +61,4 @@ REGISTRO INTERNO
 - Base legal
 - Medidas de seguridad
 
-
-# MEJORAS
-Boton para subir todos los educandos un año
-Necesario -> hacer que el campo seccion sea insertado segun el año
-          -> rehacer la logica de varios archivos
-          -> pruebas de compatibilidad
-Hacerlo multigrupo
-
-
-# Pruebas
-- Poner en marcha el servidor para comprobar rutas
-
+- LSSI

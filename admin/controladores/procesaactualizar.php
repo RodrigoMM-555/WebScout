@@ -15,15 +15,74 @@ include('../inc/conexion_bd.php');
 // Solo admins pueden actualizar
 requerirAdmin();
 
-// Validar token CSRF
-validarCSRF();
+// URL de fallback inicial (por si falla antes de conocer la tabla válida)
+$urlFallback = '?tabla=educandos&ordenar_por=id&direccion=ASC';
 
-// Validar tabla e id
-$tabla = validarTabla($_GET['tabla'] ?? '');
+// Validar token CSRF (sin cortar con die)
+$token = (string)($_POST['csrf_token'] ?? '');
+if (!hash_equals($_SESSION['csrf_token'] ?? '', $token)) {
+    setFlash('error', 'Error al actualizar: token CSRF inválido. Recarga e inténtalo de nuevo.');
+    header("Location: {$urlFallback}");
+    exit;
+}
+
+// Validar tabla e id (sin cortar con die)
+$tabla = preg_replace('/[^a-zA-Z0-9_]/', '', (string)($_GET['tabla'] ?? ''));
+if (!in_array($tabla, TABLAS_PERMITIDAS, true)) {
+    setFlash('error', 'Error al actualizar: tabla no permitida.');
+    header("Location: {$urlFallback}");
+    exit;
+}
+
 $id    = (int)($_POST['id'] ?? 0);
 
+$urlVuelta = "?tabla=" . urlencode($tabla)
+          . "&ordenar_por=" . urlencode($_GET['ordenar_por'] ?? 'id')
+          . "&direccion=" . urlencode($_GET['direccion'] ?? 'ASC');
+
+$urlEditar = "?operacion=actualizar"
+          . "&tabla=" . urlencode($tabla)
+          . "&id=" . urlencode((string)$id)
+          . "&seccion=" . urlencode($_GET['seccion'] ?? '')
+          . "&ordenar_por=" . urlencode($_GET['ordenar_por'] ?? 'id')
+          . "&direccion=" . urlencode($_GET['direccion'] ?? 'ASC');
+
+$mensajeErrorDB = static function (string $operacion, int $errno, string $error): string {
+    if (in_array($errno, [1048, 1364], true)) {
+        if (preg_match("/column '([^']+)'/i", $error, $coincidencia)) {
+            $campo = ucfirst(str_replace('_', ' ', $coincidencia[1]));
+            return "Error al {$operacion}: falta un campo obligatorio ({$campo}).";
+        }
+        return "Error al {$operacion}: faltan campos obligatorios.";
+    }
+
+    return "Error al {$operacion}: " . $error;
+};
+
 if ($id <= 0) {
-    die('ID de registro no válido.');
+    setFlash('error', 'Error al actualizar: ID de registro no válido.');
+    header("Location: {$urlEditar}");
+    exit;
+}
+
+if ($tabla === 'lista_espera') {
+    $camposObligatoriosLista = [
+        'nombre_nino',
+        'apellidos_nino',
+        'fecha_nacimiento',
+        'nombre_contacto',
+        'telefono_contacto',
+        'correo_contacto'
+    ];
+
+    foreach ($camposObligatoriosLista as $campoObligatorio) {
+        $valorCampo = trim((string)($_POST[$campoObligatorio] ?? ''));
+        if ($valorCampo === '') {
+            setFlash('error', 'Error al actualizar: faltan campos obligatorios en la lista de espera.');
+            header("Location: {$urlEditar}");
+            exit;
+        }
+    }
 }
 
 // ── Construir asignaciones SET col=? ────────────────────────
@@ -67,32 +126,46 @@ foreach ($_POST as $clave => $valor) {
 $tipos   .= 'i';
 $params[] = $id;
 
-// Construir UPDATE con placeholders
-$sql  = "UPDATE `{$tabla}` SET " . implode(', ', $asignaciones) . " WHERE id = ?";
-$stmt = $conexion->prepare($sql);
-
-if (!$stmt) {
-    die("Error preparando consulta: " . $conexion->error);
+if (empty($asignaciones)) {
+    setFlash('error', 'Error al actualizar: no hay campos para actualizar.');
+    header("Location: {$urlEditar}");
+    exit;
 }
 
-// bind_param requiere referencias
-$bindParams = [$tipos];
-for ($i = 0; $i < count($params); $i++) {
-    $bindParams[] = &$params[$i];
-}
-call_user_func_array([$stmt, 'bind_param'], $bindParams);
+$huboError = false;
 
-if (!$stmt->execute()) {
-    setFlash('error', 'Error al actualizar: ' . $stmt->error);
-} else {
-    setFlash('exito', 'Registro actualizado correctamente.');
-}
+try {
+    // Construir UPDATE con placeholders
+    $sql  = "UPDATE `{$tabla}` SET " . implode(', ', $asignaciones) . " WHERE id = ?";
+    $stmt = $conexion->prepare($sql);
 
-$stmt->close();
+    if (!$stmt) {
+        setFlash('error', 'Error al actualizar: no se pudo preparar la consulta.');
+        header("Location: {$urlEditar}");
+        exit;
+    }
+
+    // bind_param requiere referencias
+    $bindParams = [$tipos];
+    for ($i = 0; $i < count($params); $i++) {
+        $bindParams[] = &$params[$i];
+    }
+    call_user_func_array([$stmt, 'bind_param'], $bindParams);
+
+    if (!$stmt->execute()) {
+        $huboError = true;
+        setFlash('error', $mensajeErrorDB('actualizar', (int)$stmt->errno, (string)$stmt->error));
+    } else {
+        setFlash('exito', 'Registro actualizado correctamente.');
+    }
+
+    $stmt->close();
+} catch (Throwable $e) {
+    $huboError = true;
+    setFlash('error', 'Error al actualizar: ' . $e->getMessage());
+}
 
 // Redirección al listado
-header("Location: ?tabla=" . urlencode($tabla)
-     . "&ordenar_por=" . urlencode($_GET['ordenar_por'] ?? 'id')
-     . "&direccion=" . urlencode($_GET['direccion'] ?? 'ASC'));
+header("Location: " . ($huboError ? $urlEditar : $urlVuelta));
 exit;
 ?>

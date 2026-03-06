@@ -318,6 +318,154 @@ ul.paño::after {
     transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
 }
 
+/* =========================================================
+   ==================== LISTA DE ESPERA ====================
+   ========================================================= */
+
+.lista-espera-wrap {
+    max-width: 760px;
+    margin: 32px auto;
+    padding: 0 16px;
+}
+
+html:has(body.lista-espera-page),
+body.lista-espera-page,
+body:has(main.lista-espera-wrap) {
+    background: linear-gradient(var(--morado-claro), var(--morado-medio));
+}
+
+body.lista-espera-page {
+    height: auto;
+    min-height: 100vh;
+}
+
+.lista-espera-form {
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: var(--sombra);
+    padding: 24px;
+    border: 1px solid var(--morado-claro);
+}
+
+.lista-espera-form h1 {
+    margin: 0 0 18px;
+    font-size: 1.6rem;
+    color: #333;
+}
+
+.lista-espera-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+}
+
+.campo-completo {
+    grid-column: 1 / -1;
+}
+
+.lista-espera-form label {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+    color: #333;
+}
+
+.lista-espera-form input[type="text"],
+.lista-espera-form input[type="email"],
+.lista-espera-form input[type="date"],
+.lista-espera-form textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--morado-claro);
+    border-radius: 10px;
+    background: #fff;
+    font-size: 0.98rem;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.lista-espera-form input[type="text"]:focus,
+.lista-espera-form input[type="email"]:focus,
+.lista-espera-form input[type="date"]:focus,
+.lista-espera-form textarea:focus {
+    outline: none;
+    border-color: var(--morado-principal);
+    box-shadow: 0 0 0 3px rgba(123, 31, 162, 0.15);
+}
+
+.checks-wrap {
+    grid-column: 1 / -1;
+    background: #f8f3ff;
+    border: 1px solid var(--morado-claro);
+    border-radius: 12px;
+    padding: 12px;
+    display: grid;
+    gap: 8px;
+    margin-top: 6px;
+}
+
+.check-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.check-item label {
+    margin-bottom: 0;
+    font-weight: 500;
+}
+
+.lista-espera-form textarea {
+    min-height: 90px;
+    resize: vertical;
+}
+
+.lista-espera-form button[type="submit"] {
+    border: none;
+    border-radius: 999px;
+    background: var(--morado-principal);
+    color: #fff;
+    padding: 11px 20px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.lista-espera-form button[type="submit"]:hover {
+    background: var(--morado-oscuro);
+}
+
+.acciones-formulario {
+    display: flex;
+    gap: 10px;
+    justify-content: space-between;
+    margin-top: 10px;
+}
+
+.acciones-formulario button[type="submit"] {
+    order: 1;
+}
+
+.acciones-formulario .btn-secundario {
+    order: 2;
+    border: 1px solid var(--morado-claro);
+    border-radius: 999px;
+    background: #fff;
+    color: #333;
+    padding: 11px 18px;
+    font-size: 1rem;
+    cursor: pointer;
+}
+
+.acciones-formulario .btn-secundario:hover {
+    background: #f7f2fc;
+}
+
+@media (max-width: 700px) {
+    .lista-espera-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
 .carrusel button:hover {
     background: white;
     transform: translateY(-50%) scale(1.05);
@@ -742,7 +890,7 @@ header article:last-child {
 }
 
 /* Iconos de navegación del header: solo el icono, sin contenedor */
-header article:last-child a:not(.btn-logout) {
+header article:last-child a:not(.btn-logout):not(.btn-lista-espera) {
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -754,13 +902,13 @@ header article:last-child a:not(.btn-logout) {
 }
 
 /* La imagen dentro del enlace: tamaño visible sin recorte */
-header article:last-child a:not(.btn-logout) img {
+header article:last-child a:not(.btn-logout):not(.btn-lista-espera) img {
     width: 52px;
     height: 52px;
     object-fit: contain;
 }
 
-header article:last-child a:not(.btn-logout):hover {
+header article:last-child a:not(.btn-logout):not(.btn-lista-espera):hover {
     opacity: .75;
     transform: scale(1.1);
 }
@@ -1548,6 +1696,57 @@ a:hover {
     background: rgba(255, 70, 70, 0.85);
     border-color: rgba(255, 100, 100, 0.6);
     color: #fff !important;
+}
+
+.btn-lista-espera {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 8px 12px;
+    border-radius: 12px;
+    font-size: 0.98rem;
+    font-weight: 700;
+    line-height: 1;
+    color: #fff !important;
+    text-decoration: none;
+    background: rgba(255, 255, 255, 0.14);
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    white-space: nowrap;
+}
+
+.btn-lista-espera:hover {
+    background: rgba(255, 255, 255, 0.24);
+    border-color: rgba(255, 255, 255, 0.4);
+    color: #fff !important;
+}
+
+.login .btn-lista-espera {
+    width: auto;
+    min-height: auto;
+    margin-top: 10px;
+    padding: 2px 0;
+    justify-content: center;
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    color: var(--morado-oscuro) !important;
+    font-size: .92rem;
+    font-weight: 600;
+    opacity: .85;
+}
+
+.login .btn-lista-espera:hover {
+    background: transparent;
+    border: none;
+    color: var(--morado-principal) !important;
+    text-decoration: underline;
+    opacity: 1;
+}
+
+body.lista-espera-page main {
+    width: min(760px, 96%);
+    margin: 24px auto 40px;
 }
 
 /* ── Navegación activa: sin efecto visual (sin subrayado ni fondo) ── */

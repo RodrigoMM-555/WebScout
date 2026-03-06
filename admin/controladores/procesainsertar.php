@@ -21,6 +21,22 @@ validarCSRF();
 // Validar tabla
 $tabla = validarTabla($_GET['tabla'] ?? '');
 
+$urlVuelta = "?tabla=" . urlencode($tabla)
+          . "&ordenar_por=" . urlencode($_GET['ordenar_por'] ?? 'id')
+          . "&direccion=" . urlencode($_GET['direccion'] ?? 'ASC');
+
+$mensajeErrorDB = static function (string $operacion, int $errno, string $error): string {
+    if (in_array($errno, [1048, 1364], true)) {
+        if (preg_match("/column '([^']+)'/i", $error, $coincidencia)) {
+            $campo = ucfirst(str_replace('_', ' ', $coincidencia[1]));
+            return "Error al {$operacion}: falta un campo obligatorio ({$campo}).";
+        }
+        return "Error al {$operacion}: faltan campos obligatorios.";
+    }
+
+    return "Error al {$operacion}: " . $error;
+};
+
 // ── Construir arrays de columnas y valores ──────────────────
 $columnas = [];
 $valores  = [];
@@ -63,7 +79,9 @@ $sql = "INSERT INTO `{$tabla}` (" . implode(',', $columnas) . ") VALUES (" . imp
 $stmt = $conexion->prepare($sql);
 
 if (!$stmt) {
-    die("Error preparando consulta: " . $conexion->error);
+    setFlash('error', 'Error al insertar: no se pudo preparar la consulta.');
+    header("Location: {$urlVuelta}");
+    exit;
 }
 
 // bind_param requiere referencias
@@ -74,7 +92,10 @@ for ($i = 0; $i < count($params); $i++) {
 call_user_func_array([$stmt, 'bind_param'], $bindParams);
 
 if (!$stmt->execute()) {
-    die("Error insertando registro: " . $stmt->error);
+    setFlash('error', $mensajeErrorDB('insertar', (int)$stmt->errno, (string)$stmt->error));
+    $stmt->close();
+    header("Location: {$urlVuelta}");
+    exit;
 }
 
 $stmt->close();
@@ -115,8 +136,6 @@ if ($tabla === 'avisos') {
 setFlash('exito', 'Registro insertado correctamente.');
 
 // Redirección al listado
-header("Location: ?tabla=" . urlencode($tabla)
-     . "&ordenar_por=" . urlencode($_GET['ordenar_por'] ?? 'id')
-     . "&direccion=" . urlencode($_GET['direccion'] ?? 'ASC'));
+header("Location: {$urlVuelta}");
 exit;
 ?>
