@@ -12,7 +12,7 @@ $email = trim($_POST['email'] ?? '');
 $contraseña = $_POST['password'];
 
 // Obtener usuario por correo (insensible a mayúsculas/minúsculas)
-$sql = "SELECT id, nombre, contraseña, rol FROM usuarios WHERE LOWER(email) = LOWER(?) LIMIT 1";
+$sql = "SELECT id, nombre, contraseña, rol, cambio_contraseña FROM usuarios WHERE LOWER(email) = LOWER(?) LIMIT 1";
 $stmt = $conexion->prepare($sql);
 $stmt->bind_param("s", $email);
 $stmt->execute();
@@ -40,9 +40,15 @@ $_SESSION["nombre"] = $usuario['nombre'];
 $_SESSION["email"] = $email;
 $_SESSION["rol"] = $usuario['rol'];
 
+// MySQL suele devolver BOOLEAN como 0/1 (int o string), no como bool puro.
+$debeCambiarContrasena = ((int)($usuario['cambio_contraseña'] ?? 0) === 1);
+
 // 🔹 Redirección según rol
 if ($usuario['rol'] === 'admin') {
     header("Location: ../../admin/index.php?tabla=educandos&ordenar_por=seccion&direccion=ASC");
+
+} elseif ($debeCambiarContrasena) {
+    header("Location: ../cambioContraseña.php");
 } else {
     header("Location: ../inicio.php");
 }

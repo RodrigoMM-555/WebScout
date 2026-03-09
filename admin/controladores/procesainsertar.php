@@ -57,6 +57,11 @@ foreach ($_POST as $clave => $valor) {
         $clave = 'anio';
     }
 
+    // Regla de negocio: usuarios nuevos deben cambiar contraseña en primer acceso.
+    if ($tabla === 'usuarios' && $clave === 'cambio_contraseña') {
+        $valor = '1';
+    }
+
     // Si es array (caso de secciones[]), unir con comas
     if (is_array($valor)) {
         // Permisos: sumar los bits; secciones: unir con comas
@@ -71,6 +76,14 @@ foreach ($_POST as $clave => $valor) {
     $valores[]  = '?';
     $tipos     .= 's'; // todo como string; MySQL convierte automáticamente
     $params[]   = ($valor === '' || $valor === null) ? null : $valor;
+}
+
+// Regla de negocio: al crear usuarios se fuerza cambio de contraseña.
+if ($tabla === 'usuarios' && !in_array('`cambio_contraseña`', $columnas, true)) {
+    $columnas[] = '`cambio_contraseña`';
+    $valores[] = '?';
+    $tipos .= 's';
+    $params[] = '1';
 }
 
 // Construir SQL con placeholders

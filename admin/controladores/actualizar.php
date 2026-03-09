@@ -173,11 +173,25 @@ if ($id) {
             ";
         }
 
+        // USUARIOS: mostrar estado real de cambio_contraseña según BD.
+        elseif ($tabla === 'usuarios' && $clave === 'cambio_contraseña') {
+            $checked = ((int)($valores[$clave] ?? 0) === 1) ? 'checked' : '';
+            echo "
+                <div class='control_formulario booleano'>
+                    <label class='check-item'>
+                        <input type='hidden' name='$clave' value='0'>
+                        <input type='checkbox' name='$clave' value='1' $checked>
+                        <span>$clave2</span>
+                    </label>
+                </div>
+            ";
+        }
+
         // BOOLEAN / TINYINT(1)
         elseif (preg_match('/^(tinyint\(1\)|boolean|bool)/', $tipoColumna)) {
             $checked = ((int)($valores[$clave] ?? 0) === 1) ? 'checked' : '';
             echo "
-                <div class='control_formulario'>
+                <div class='control_formulario booleano'>
                     <label class='check-item'>
                         <input type='hidden' name='$clave' value='0'>
                         <input type='checkbox' name='$clave' value='1' $checked>

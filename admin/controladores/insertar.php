@@ -204,10 +204,23 @@
             ";
         }
 
+        // USUARIOS: al crear, forzar cambio de contraseña activado.
+        elseif ($tabla === 'usuarios' && $clave === 'cambio_contraseña') {
+            echo "
+                <div class='control_formulario booleano'>
+                    <label class='check-item'>
+                        <input type='hidden' name='cambio_contraseña' value='1'>
+                        <input type='checkbox' name='cambio_contraseña_visual' value='1' checked disabled>
+                        <span>$clave2 (obligatorio al crear)</span>
+                    </label>
+                </div>
+            ";
+        }
+
         // BOOLEAN / TINYINT(1)
         elseif (preg_match('/^(tinyint\(1\)|boolean|bool)/', $tipoColumna)) {
             echo "
-                <div class='control_formulario'>
+                <div class='control_formulario booleano'>
                     <label class='check-item'>
                         <input type='hidden' name='$clave' value='0'>
                         <input type='checkbox' name='$clave' value='1'>

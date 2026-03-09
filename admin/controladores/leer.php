@@ -30,12 +30,12 @@ $normalizarEtiqueta = static function (string $texto): string {
 
 $columnasOcultasOrden = [
     'email2', 'telefono2', 'nombre2', 'apellidos2',
-    'apellidos', 'id_usuario', 'permisos', 'id'
+    'apellidos', 'id_usuario', 'permisos', 'cambio_contraseña', 'id'
 ];
 
 $columnasOcultasTabla = [
     'email2', 'telefono2', 'nombre2', 'apellidos2',
-    'apellidos', 'id_usuario', 'permisos', 'id'
+    'apellidos', 'id_usuario', 'permisos', 'cambio_contraseña', 'id'
 ];
 
 if ($tabla === 'lista_espera') {

@@ -1,14 +1,14 @@
 
 # PRIORITARIO
-- Historial de archivos para los padres
 - Seguridad
+- Poder pasar de lista de espera a educando con un boton, incluir el usuario
+- Boton para subir todos los educandos un año
 
 
 # SECUNDARIO
 - Tabla sanitaria
-- Restricciones de contraseña
-- Poder pasar de lista de espera a educando con un boton, incluir el usuario
-- Boton para subir todos los educandos un año
+- Historial de archivos para los padres
+
 
 # TERCIARIO
 - Añadir comprobaciones para evitar errores fatales o warnings

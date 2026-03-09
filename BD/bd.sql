@@ -26,7 +26,8 @@ CREATE TABLE usuarios (
     apellidos2 VARCHAR(100),
     email2 VARCHAR(100),
     telefono2 VARCHAR(20),
-    rol ENUM('admin','usuario') NOT NULL DEFAULT 'usuario'
+    rol ENUM('admin','usuario') NOT NULL DEFAULT 'usuario',
+    cambio_contraseña BOOLEAN DEFAULT TRUE
 );
 
 -- Tabla de educandos, foreign key a usuarios n a 1
@@ -131,3 +132,5 @@ ALTER TABLE usuarios ADD CONSTRAINT uq_usuarios_email UNIQUE (email);
 ALTER TABLE educandos ADD permisos INT DEFAULT 0;
 
 ALTER TABLE lista_espera ADD COLUMN apellidos_nino VARCHAR(150) NOT NULL;
+
+ALTER TABLE usuarios ADD COLUMN cambio_contraseña BOOLEAN DEFAULT TRUE;

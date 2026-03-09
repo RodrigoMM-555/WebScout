@@ -469,6 +469,30 @@ form .control_formulario:last-child {
     grid-column: 1 / -1;
 }
 
+form .control_formulario.booleano {
+    grid-column: 1 / -1;
+    background: #faf5ff;
+    border: 1px solid #e4d5f4;
+    border-radius: 12px;
+    padding: 10px 12px;
+}
+
+form .control_formulario.booleano .check-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    font-weight: 600;
+    color: var(--admin-texto);
+}
+
+form .control_formulario.booleano .check-item input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    accent-color: var(--morado-principal);
+}
+
 label {
     font-weight: 700;
     color: var(--admin-texto);
