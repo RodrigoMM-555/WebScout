@@ -1,13 +1,17 @@
 
 # PRIORITARIO
 - Seguridad
-- Poder pasar de lista de espera a educando con un boton, incluir el usuario
-- Boton para subir todos los educandos un año
+- Cambio de idioma
+- Modo oscuro
+- Modo mobil
 
 
 # SECUNDARIO
 - Tabla sanitaria
 - Historial de archivos para los padres
+- Que los padres puedan modificar su perfil
+- Panel de estadisticas
+- Poder escoger fotos que salen en el carrusel
 
 
 # TERCIARIO
@@ -16,8 +20,6 @@
 
 
 # CONSULTAS AL GRUPO
-- Cuenta bancaria, acceso con contraseña -> consultar con el grupo
-No voy a poner nada de eso
 - Año de subida de la ficha -> consultar si se tieen que reentregar cada año
 No se tiene que reentregar cada año, se teiene que guardar los ultimos 5 años
 - Tema contraseñas -> como queremos gestionarlas, podemos verlas, solo cambiarlas?

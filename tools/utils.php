@@ -148,3 +148,99 @@ function validarTabla(string $tabla): string {
     }
     return $tabla;
 }
+
+// ─────────────────────────────────────────────────────────────
+// LÓGICA SCOUT: RONDA Y SECCIONES POR AÑO DE NACIMIENTO
+// ─────────────────────────────────────────────────────────────
+
+/**
+ * Devuelve el curso scout actual.
+ * - De enero a agosto: año actual (ej. marzo 2026 => curso 2026)
+ * - Desde septiembre: año siguiente (ej. octubre 2026 => curso 2027)
+ */
+function obtenerCursoScoutActual(?DateTimeInterface $fecha = null): int {
+    $fechaBase = $fecha ?? new DateTimeImmutable('now');
+    $anio = (int)$fechaBase->format('Y');
+    $mes = (int)$fechaBase->format('n');
+    return ($mes >= 9) ? $anio + 1 : $anio;
+}
+
+/**
+ * Reglas de sección según diferencia "cursoScout - anioNacimiento".
+ */
+function obtenerReglasSeccionScout(): array {
+    return [
+        ['min' => 6,  'max' => 7,  'seccion' => 'colonia'],
+        ['min' => 8,  'max' => 10, 'seccion' => 'manada'],
+        ['min' => 11, 'max' => 13, 'seccion' => 'tropa'],
+        ['min' => 14, 'max' => 16, 'seccion' => 'posta'],
+        ['min' => 17, 'max' => 19, 'seccion' => 'rutas'],
+    ];
+}
+
+/**
+ * Calcula la sección scout de un educando según su año de nacimiento.
+ * Devuelve null si queda fuera de los rangos definidos.
+ */
+function calcularSeccionScoutPorAnio(int $anioNacimiento, ?int $cursoScout = null): ?string {
+    $curso = $cursoScout ?? obtenerCursoScoutActual();
+    $diferencia = $curso - $anioNacimiento;
+
+    foreach (obtenerReglasSeccionScout() as $regla) {
+        if ($diferencia >= $regla['min'] && $diferencia <= $regla['max']) {
+            return $regla['seccion'];
+        }
+    }
+
+    return null;
+}
+
+/**
+ * Devuelve el rango de años de nacimiento mostrado en formularios scout.
+ */
+function obtenerRangoAniosScout(?int $cursoScout = null): array {
+    $curso = $cursoScout ?? obtenerCursoScoutActual();
+    return [
+        'max' => $curso - 6,
+        'min' => $curso - 19,
+    ];
+}
+
+/**
+ * Sincroniza la columna educandos.seccion con el año de nacimiento actual.
+ * Devuelve el número de registros modificados.
+ */
+function sincronizarSeccionesEducandos(mysqli $conexion, ?int $cursoScout = null): int {
+    $curso = $cursoScout ?? obtenerCursoScoutActual();
+    $modificados = 0;
+
+    $sql = "SELECT id, anio, seccion FROM educandos";
+    $res = $conexion->query($sql);
+    if (!$res) {
+        return 0;
+    }
+
+    $stmtUpdate = $conexion->prepare("UPDATE educandos SET seccion = ? WHERE id = ?");
+    if (!$stmtUpdate) {
+        return 0;
+    }
+
+    while ($fila = $res->fetch_assoc()) {
+        $id = (int)$fila['id'];
+        $anio = (int)$fila['anio'];
+        $seccionActual = strtolower(trim((string)($fila['seccion'] ?? '')));
+        $seccionEsperada = calcularSeccionScoutPorAnio($anio, $curso);
+
+        if ($seccionEsperada === null || $seccionEsperada === $seccionActual) {
+            continue;
+        }
+
+        $stmtUpdate->bind_param('si', $seccionEsperada, $id);
+        if ($stmtUpdate->execute()) {
+            $modificados++;
+        }
+    }
+
+    $stmtUpdate->close();
+    return $modificados;
+}

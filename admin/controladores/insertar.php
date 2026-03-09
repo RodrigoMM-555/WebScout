@@ -4,11 +4,7 @@
      Genera campos según la estructura de la tabla (DESCRIBE).
      Incluye lógica especial para secciones, fechas, año, rol, etc.
 -->
-<form action="?operacion=procesainsertar&tabla=<?= htmlspecialchars($_GET['tabla']) ?>&seccion=<?= htmlspecialchars($_GET['seccion'] ?? '') ?>&ordenar_por=<?= htmlspecialchars($_GET['ordenar_por'] ?? 'id') ?>&direccion=<?= htmlspecialchars($_GET['direccion'] ?? 'ASC') ?>" method="POST">
 <?php
-    // Token CSRF para proteger el formulario
-    echo campoCSRF();
-
     // Sacamos el nombre de la tabla (validado)
     $tabla = $_GET['tabla'];
     $seccion = $_GET['seccion'] ?? "colonia";
@@ -21,6 +17,10 @@
 
     $nombreTablaBonito = ucfirst($normalizarTexto(str_replace('_', ' ', $tabla)));
     echo "<h1 class='titulo-form-admin'>Insertar en " . htmlspecialchars($nombreTablaBonito) . "</h1>";
+    echo "<form action=?operacion=procesainsertar&tabla=" . htmlspecialchars($_GET['tabla']) . "&seccion=" . htmlspecialchars($_GET['seccion'] ?? '') . "&ordenar_por=" . htmlspecialchars($_GET['ordenar_por'] ?? 'id') . "&direccion=" . htmlspecialchars($_GET['direccion'] ?? 'ASC') . "\" method=\"POST\">";
+    // Token CSRF para proteger el formulario
+    echo campoCSRF();
+
 
     // Pedimos la estructura de la tabla
     $resultado = $conexion->query("DESCRIBE `$tabla`;");
@@ -40,6 +40,22 @@
 
         // SECCIÓN
         elseif ($fila['Field'] === 'seccion') {
+            if ($tabla === 'educandos') {
+                echo '
+                <div class="control_formulario">
+                    <label>'.$clave2.' <small>(automática por año)</small></label>
+                    <select id="select-seccion" disabled>
+                        <option value="colonia">Colonia</option>
+                        <option value="manada">Manada</option>
+                        <option value="tropa">Tropa</option>
+                        <option value="posta">Posta</option>
+                        <option value="rutas">Rutas</option>
+                    </select>
+                </div>
+                ';
+                continue;
+            }
+
             echo '
             <div class="control_formulario">
                 <label>'.$clave2.'</label>
@@ -99,6 +115,16 @@
                     <input type='datetime-local'
                            name='$clave'
                            step='60'>
+                </div>
+            ";
+        }
+
+        // FECHA DE REGISTRO (solo fecha)
+        elseif ($fila['Field'] === 'fecha_registro') {
+            echo "
+                <div class='control_formulario'>
+                    <label>$clave2</label>
+                    <input type='date' name='$clave' value='" . date('Y-m-d') . "'>
                 </div>
             ";
         }
@@ -301,34 +327,23 @@
 
 <!-- JS: año → sección automática -->
 <script>
+const cursoScout = <?= json_encode(obtenerCursoScoutActual()) ?>;
+const rangoAniosScout = <?= json_encode(obtenerRangoAniosScout()) ?>;
+const reglasSeccionScout = <?= json_encode(obtenerReglasSeccionScout(), JSON_UNESCAPED_UNICODE) ?>;
+
 // Bloque 1: Autocompletar sección scout desde año de nacimiento.
 document.addEventListener("DOMContentLoaded", function () {
 
     const anio = document.getElementById("select-anio");
     const seccion = document.getElementById("select-seccion");
 
-    // Determinar año scout (septiembre -> curso del año siguiente).
-    const ahora = new Date();
-    const año = ahora.getFullYear();
-    const mes = ahora.getMonth() + 1;
-    const cursoScout = (mes >= 9) ? año + 1 : año;
-
-    // Definir reglas de mapeo por diferencia de edad en curso scout:
-    // - 2 años más jóvenes → colonia
-    // - siguientes 3 → manada
-    // - siguientes 3 → tropa
-    // - siguientes 3 → posta
-    // - siguientes 3 → rutas
-
     function calcularSeccion(añoNacido) {
+        if (!Number.isFinite(añoNacido)) return null;
         const dif = cursoScout - añoNacido; // edad scout relativa
-
-        if (dif === 6 || dif === 7) return "colonia";  // 2 años
-
-        if (dif >= 8 && dif <= 10) return "manada";    // 3 años
-        if (dif >= 11 && dif <= 13) return "tropa";     // 3 años
-        if (dif >= 14 && dif <= 16) return "posta";     // 3 años
-        if (dif >= 17 && dif <= 19) return "rutas";     // 3 años
+        const regla = reglasSeccionScout.find(function (item) {
+            return dif >= item.min && dif <= item.max;
+        });
+        if (regla) return regla.seccion;
 
         return null;
     }
@@ -349,15 +364,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const selectAnio = document.getElementById("select-anio");
 
-    const ahora = new Date();
-    const añoActual = ahora.getFullYear();
+    if (!selectAnio) return;
 
-    // Generamos edades entre 6 y 20 años
-    const edadMin = 6;
-    const edadMax = 19;
-
-    const añoMax = añoActual - edadMin; // más joven = 6 años
-    const añoMin = añoActual - edadMax; // mayor = 20 años
+    const añoMax = Number(rangoAniosScout.max);
+    const añoMin = Number(rangoAniosScout.min);
 
     for (let y = añoMax; y >= añoMin; y--) {
         const option = document.createElement("option");

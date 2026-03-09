@@ -78,6 +78,148 @@ echo "<div class='asi'>
         <a href='index.php?tabla=avisos'>Volver a avisos</a>
       </div>";
 
+$ordenSecciones = ['colonia', 'manada', 'tropa', 'posta', 'rutas'];
+$seccionesResumen = !empty($secciones)
+    ? array_values(array_intersect($ordenSecciones, $secciones))
+    : $ordenSecciones;
+
+// Normalizamos el título para construir el prefijo del archivo de circular.
+// Se reutiliza tanto en la tabla como en los donuts, evitando duplicar lógica.
+$tituloLimpioAviso = limpiarTexto($tituloAviso);
+
+// Caché en memoria por petición: id_educando => true/false (entregó circular).
+// Así no repetimos escaneos de carpeta para el mismo educando.
+$cacheEntregasCircular = [];
+
+// Función auxiliar para comprobar si un educando entregó circular de ESTE aviso.
+// Criterio: existe un archivo en su carpeta con prefijo "<tituloAviso>_<nombreEdu>."
+$educandoHaEntregadoCircular = static function (array $edu) use (&$cacheEntregasCircular, $tituloLimpioAviso): bool {
+    $idEdu = (int)($edu['id'] ?? 0);
+    if ($idEdu > 0 && array_key_exists($idEdu, $cacheEntregasCircular)) {
+        return $cacheEntregasCircular[$idEdu];
+    }
+
+    $nombreCompleto = ($edu['nombre'] ?? '') . ' ' . ($edu['apellidos'] ?? '');
+    $nombreCarpeta = limpiarTexto($nombreCompleto);
+    $ruta = BASE_PATH . '/circulares/educandos/' . $nombreCarpeta;
+    $prefijo = $tituloLimpioAviso . '_' . $nombreCarpeta . '.';
+
+    $entregado = false;
+    if (is_dir($ruta)) {
+        $archivos = array_diff(scandir($ruta), ['.', '..']);
+        foreach ($archivos as $archivo) {
+            if (strpos($archivo, $prefijo) === 0) {
+                $entregado = true;
+                break;
+            }
+        }
+    }
+
+    if ($idEdu > 0) {
+        $cacheEntregasCircular[$idEdu] = $entregado;
+    }
+
+    return $entregado;
+};
+
+// Base de conteo por sección (incluye 0 explícitos para mantener consistencia visual).
+$conteoBase = array_fill_keys($seccionesResumen, 0);
+
+// Series base para donuts comunes.
+$donutSeries = [
+    'no' => $conteoBase,
+    'pendiente' => $conteoBase,
+    'si' => $conteoBase
+];
+
+// Rellenamos conteos por estado y sección a partir de $grupos.
+foreach ($grupos as $estado => $listaEducandos) {
+    if (!isset($donutSeries[$estado])) {
+        continue;
+    }
+    foreach ($listaEducandos as $edu) {
+        $sec = $edu['seccion'];
+        if (!array_key_exists($sec, $donutSeries[$estado])) {
+            $donutSeries[$estado][$sec] = 0;
+        }
+        $donutSeries[$estado][$sec]++;
+    }
+}
+
+// Si el aviso tiene circular, partimos "si" en dos donuts:
+// - sí con circular
+// - sí sin circular
+// Esto se basa en la comprobación real de archivos subidos.
+if ($tieneCircular) {
+    $donutSeries['si_con_circular'] = $conteoBase;
+    $donutSeries['si_sin_circular'] = $conteoBase;
+
+    foreach ($grupos['si'] as $edu) {
+        $sec = $edu['seccion'];
+        if (!array_key_exists($sec, $donutSeries['si_con_circular'])) {
+            $donutSeries['si_con_circular'][$sec] = 0;
+            $donutSeries['si_sin_circular'][$sec] = 0;
+        }
+
+        if ($educandoHaEntregadoCircular($edu)) {
+            $donutSeries['si_con_circular'][$sec]++;
+        } else {
+            $donutSeries['si_sin_circular'][$sec]++;
+        }
+    }
+}
+
+// Configuración final de tarjetas a dibujar (3 o 4 según $tieneCircular).
+$donutCharts = [
+    ['id' => 'donut-no', 'titulo' => 'No asisten', 'series' => $donutSeries['no']],
+    ['id' => 'donut-pendiente', 'titulo' => 'Pendientes', 'series' => $donutSeries['pendiente']]
+];
+
+if ($tieneCircular) {
+    $donutCharts[] = ['id' => 'donut-si-sin-circular', 'titulo' => 'Sí (Sin circular)', 'series' => $donutSeries['si_sin_circular']];
+    $donutCharts[] = ['id' => 'donut-si-con-circular', 'titulo' => 'Sí (Con circular)  ', 'series' => $donutSeries['si_con_circular']];
+} else {
+    $donutCharts[] = ['id' => 'donut-si', 'titulo' => 'Asisten', 'series' => $donutSeries['si']];
+}
+
+// Payload que viaja de PHP a JS.
+// "keys" conserva las claves técnicas para resolver colores por sección.
+// "labels" son los textos visibles para leyenda/tooltip.
+// "values" son las cantidades por sección para cada donut.
+$donutPayload = [
+    'colores' => [
+        'colonia' => '#ffe5b4',
+        'manada' => '#fff9c4',
+        'tropa' => '#bbdefb',
+        'posta' => '#ffcdd2',
+        'rutas' => '#c8e6c9'
+    ],
+    'charts' => array_map(static function (array $chart): array {
+        return [
+            'id' => $chart['id'],
+            'titulo' => $chart['titulo'],
+            'labels' => array_map('ucfirst', array_keys($chart['series'])),
+            'keys' => array_keys($chart['series']),
+            'values' => array_values($chart['series']),
+            'total' => array_sum($chart['series'])
+        ];
+    }, $donutCharts)
+];
+
+// Render del contenedor de donuts.
+// El total central se pinta en HTML/CSS y el anillo de datos en Chart.js.
+echo "<section class='resumen-donuts' aria-label='Resumen gráfico de asistencia'>";
+foreach ($donutPayload['charts'] as $chart) {
+    echo "<article class='donut-card'>
+            <h3>" . htmlspecialchars($chart['titulo']) . "</h3>
+            <div class='donut-wrap'>
+                <canvas id='" . htmlspecialchars($chart['id']) . "'></canvas>
+                <div class='donut-total'>" . (int)$chart['total'] . "</div>
+            </div>
+          </article>";
+}
+echo "</section>";
+
 foreach (['si','pendiente','no'] as $key) {
 
     $label = $key==='si' ? 'Asisten' : ($key==='no' ? 'No asisten' : 'Pendientes');
@@ -117,22 +259,7 @@ foreach (['si','pendiente','no'] as $key) {
 
         // Solo comprobamos archivos si hay circular
         if ($key==='si' && $tieneCircular) {
-
-            $nombreCarpeta = limpiarTexto($nombre);
-            $tituloLimpio  = limpiarTexto($tituloAviso);
-            $ruta = BASE_PATH . '/circulares/educandos/' . $nombreCarpeta;
-            $entregado = false;
-
-            if (is_dir($ruta)) {
-                $archivos = array_diff(scandir($ruta), ['.', '..']);
-                $prefijo = $tituloLimpio . '_' . $nombreCarpeta . '.';
-                foreach ($archivos as $f) {
-                    if (strpos($f, $prefijo) === 0) {
-                        $entregado = true;
-                        break;
-                    }
-                }
-            }
+            $entregado = $educandoHaEntregadoCircular($edu);
 
             $color = $entregado ? 'green' : 'red';
             $txt = $entregado ? 'Sí' : 'No';
@@ -145,5 +272,11 @@ foreach (['si','pendiente','no'] as $key) {
 
     echo "</table>";
 }
+
+echo "<script src='https://cdn.jsdelivr.net/npm/chart.js'></script>";
+// Inyectamos el payload serializado para que donuts.js lo consuma.
+echo "<script>window.webScoutDonutData = " . json_encode($donutPayload, JSON_UNESCAPED_UNICODE) . ";</script>";
+// Script externo: inicializa y pinta cada donut.
+echo "<script src='js/donuts.js'></script>";
 ?>
 </main>

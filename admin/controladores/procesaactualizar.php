@@ -107,6 +107,11 @@ foreach ($_POST as $clave => $valor) {
         $clave = 'anio';
     }
 
+    // Educandos: la sección se calcula automáticamente desde anio.
+    if ($tabla === 'educandos' && $clave === 'seccion') {
+        continue;
+    }
+
     // Arrays (secciones[] → cadena, permisos[] → suma de bits)
     if (is_array($valor)) {
         if ($clave === 'permisos') {
@@ -119,6 +124,18 @@ foreach ($_POST as $clave => $valor) {
     $asignaciones[] = "`{$clave}` = ?";
     $tipos         .= 's';
     $params[]       = ($valor === '' || $valor === null) ? null : $valor;
+}
+
+if ($tabla === 'educandos') {
+    $anioRecibido = $_POST['anio'] ?? $_POST['año'] ?? null;
+    if (is_numeric($anioRecibido)) {
+        $seccionCalculada = calcularSeccionScoutPorAnio((int)$anioRecibido);
+        if ($seccionCalculada !== null) {
+            $asignaciones[] = "`seccion` = ?";
+            $tipos .= 's';
+            $params[] = $seccionCalculada;
+        }
+    }
 }
 
 // Añadir el id al final del bind

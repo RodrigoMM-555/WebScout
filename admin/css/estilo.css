@@ -70,6 +70,7 @@ p {
     width: 100%;
     max-width: 980px;
     margin: 6px auto 18px;
+    grid-column: span 2;
     text-align: left;
 }
 
@@ -226,11 +227,6 @@ tr.seccion-rutas:hover td {
     font-size: .95rem;
 }
 
-.tabla-lista-espera td:first-child,
-.tabla-lista-espera th:first-child {
-    text-align: left;
-    min-width: 210px;
-}
 
 .tabla-lista-espera th:nth-child(4),
 .tabla-lista-espera td:nth-child(4) {
@@ -357,12 +353,25 @@ tr.seccion-rutas:hover td {
     display: flex;
     flex-wrap: wrap;
     gap: 8px;
+    align-items: center;
     margin: 0 0 14px;
     padding: 10px 12px;
     background: #fff;
     border: 1px solid var(--admin-borde);
     border-radius: 12px;
     box-shadow: var(--admin-sombra-suave);
+}
+
+.subtablas-seccion-izq {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+}
+
+.sync-secciones-btn {
+    margin-left: auto;
+    white-space: nowrap;
 }
 
 .chip-seccion {
@@ -514,7 +523,11 @@ textarea {
     border-radius: 12px;
     outline: none;
     background: #fdfaff;
-    transition: .25s;
+    transition: .15s;
+    resize: vertical;
+    font-family: var(--font);
+    font-size: 0.85rem;
+    
 }
 
 input:focus,
@@ -663,6 +676,48 @@ div.asi a {
     cursor: pointer;
     touch-action: manipulation;
     -webkit-tap-highlight-color: transparent;
+}
+
+.resumen-donuts {
+    /* Rejilla responsive de tarjetas donut (3 o 4 según el aviso). */
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+    gap: 14px;
+    margin-bottom: 18px;
+}
+
+.donut-card {
+    /* Tarjeta visual de cada gráfico (título + donut + leyenda). */
+    background: #fff;
+    border: 1px solid var(--admin-borde);
+    border-radius: 14px;
+    box-shadow: var(--admin-sombra-suave);
+    padding: 12px;
+}
+
+.donut-card h3 {
+    margin: 0 0 8px;
+    font-size: 1rem;
+    text-align: center;
+}
+
+.donut-wrap {
+    /* Contenedor del canvas para que Chart.js tome alto fijo y sea estable. */
+    position: relative;
+    width: 100%;
+    height: 220px;
+}
+
+.donut-total {
+    /* Número total en el centro del donut (overlay encima del canvas). */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -55%);
+    font-weight: 700;
+    font-size: 1.4rem;
+    color: var(--admin-texto);
+    pointer-events: none;
 }
 
 /* Vista detalle educando: dos paneles independientes */
@@ -875,6 +930,10 @@ a, button, input[type="submit"], .orden-link, .chip-seccion, .boton_insertar {
 
     .subtablas-seccion {
         padding: 8px;
+    }
+
+    .sync-secciones-btn {
+        margin-left: 0;
     }
 
     form {

@@ -24,6 +24,15 @@ $seccionFiltro = $_GET['seccion'] ?? null;
 $tabla = preg_replace('/[^a-zA-Z0-9_]/', '', $tabla);
 $direccion = strtoupper($direccion) === 'DESC' ? 'DESC' : 'ASC';
 
+if ($tabla === 'educandos') {
+    $cursoScoutActual = obtenerCursoScoutActual();
+    $cursoSincronizadoSesion = (int)($_SESSION['curso_scout_sincronizado'] ?? 0);
+    if ($cursoSincronizadoSesion !== $cursoScoutActual) {
+        sincronizarSeccionesEducandos($conexion, $cursoScoutActual);
+        $_SESSION['curso_scout_sincronizado'] = $cursoScoutActual;
+    }
+}
+
 $normalizarEtiqueta = static function (string $texto): string {
     return str_ireplace(['nino', 'ninio'], 'niño', $texto);
 };
@@ -130,7 +139,15 @@ if (!array_key_exists($ordenarPor, $opcionesOrden)) {
 </div>
 
 <?php if ($tabla === 'educandos'): ?>
+<?php
+    $urlSync = "?operacion=sincronizar_secciones"
+             . "&csrf_token=" . urlencode($csrfToken)
+             . "&tabla=" . urlencode($tabla)
+             . "&ordenar_por=" . urlencode($ordenarPor)
+             . "&direccion=" . urlencode($direccion);
+?>
 <div class="subtablas-seccion">
+    <div class="subtablas-seccion-izq">
     <?php
         $secciones = [
             'colonia' => 'Colonia',
@@ -155,6 +172,8 @@ if (!array_key_exists($ordenarPor, $opcionesOrden)) {
     ?>
         <a href="<?= htmlspecialchars($hrefSeccion) ?>" class="<?= htmlspecialchars($clases) ?>"><?= htmlspecialchars($nombreSeccion) ?></a>
     <?php endforeach; ?>
+    </div>
+    <a href="<?= htmlspecialchars($urlSync) ?>" class="orden-link sync-secciones-btn" title="Recalcular secciones scout">Sincronizar secciones</a>
 </div>
 <?php endif; ?>
 

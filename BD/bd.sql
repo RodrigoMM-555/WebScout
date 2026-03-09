@@ -80,6 +80,7 @@ CREATE TABLE lista_espera (
     nombre_contacto VARCHAR(150) NOT NULL,
     telefono_contacto VARCHAR(20) NOT NULL,
     correo_contacto VARCHAR(150) NOT NULL,
+    direccion_contacto VARCHAR(255) NOT NULL,
 
     hermano_en_grupo BOOLEAN DEFAULT FALSE,
     relacion_con_miembro BOOLEAN DEFAULT FALSE,
@@ -134,3 +135,4 @@ ALTER TABLE educandos ADD permisos INT DEFAULT 0;
 ALTER TABLE lista_espera ADD COLUMN apellidos_nino VARCHAR(150) NOT NULL;
 
 ALTER TABLE usuarios ADD COLUMN cambio_contraseña BOOLEAN DEFAULT TRUE;
+ALTER TABLE lista_espera ADD COLUMN direccion_contacto VARCHAR(255) NOT NULL;

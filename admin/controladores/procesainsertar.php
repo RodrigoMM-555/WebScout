@@ -57,6 +57,11 @@ foreach ($_POST as $clave => $valor) {
         $clave = 'anio';
     }
 
+    // Educandos: la sección se calcula automáticamente desde anio.
+    if ($tabla === 'educandos' && $clave === 'seccion') {
+        continue;
+    }
+
     // Regla de negocio: usuarios nuevos deben cambiar contraseña en primer acceso.
     if ($tabla === 'usuarios' && $clave === 'cambio_contraseña') {
         $valor = '1';
@@ -76,6 +81,24 @@ foreach ($_POST as $clave => $valor) {
     $valores[]  = '?';
     $tipos     .= 's'; // todo como string; MySQL convierte automáticamente
     $params[]   = ($valor === '' || $valor === null) ? null : $valor;
+}
+
+if ($tabla === 'educandos') {
+    $anioRecibido = $_POST['anio'] ?? $_POST['año'] ?? null;
+    if (is_numeric($anioRecibido)) {
+        $seccionCalculada = calcularSeccionScoutPorAnio((int)$anioRecibido);
+        if ($seccionCalculada !== null) {
+            $indiceSeccion = array_search('`seccion`', $columnas, true);
+            if ($indiceSeccion !== false) {
+                $params[$indiceSeccion] = $seccionCalculada;
+            } else {
+                $columnas[] = '`seccion`';
+                $valores[] = '?';
+                $tipos .= 's';
+                $params[] = $seccionCalculada;
+            }
+        }
+    }
 }
 
 // Regla de negocio: al crear usuarios se fuerza cambio de contraseña.

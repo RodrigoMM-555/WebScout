@@ -51,6 +51,22 @@ if ($id) {
         // SELECT SECCIÓN (añadido id='select-seccion')
         elseif ($clave === 'seccion') {
             $selected = $valores['seccion'] ?? '';
+            if ($tabla === 'educandos') {
+                echo "
+                    <div class='control_formulario'>
+                        <label>$clave2 <small>(automática por año)</small></label>
+                        <select id='select-seccion' disabled>
+                            <option value='colonia' " . ($selected=='colonia'?'selected':'') . ">Colonia</option>
+                            <option value='manada' " . ($selected=='manada'?'selected':'') . ">Manada</option>
+                            <option value='tropa' " . ($selected=='tropa'?'selected':'') . ">Tropa</option>
+                            <option value='posta' " . ($selected=='posta'?'selected':'') . ">Posta</option>
+                            <option value='rutas' " . ($selected=='rutas'?'selected':'') . ">Rutas</option>
+                        </select>
+                    </div>
+                ";
+                continue;
+            }
+
             echo "
                 <div class='control_formulario'>
                     <label>$clave2</label>
@@ -104,6 +120,16 @@ if ($id) {
                            name='$clave'
                            value='" . (isset($valores[$clave]) ? date('Y-m-d\TH:i', strtotime($valores[$clave])) : '') . "'
                            step='60'>
+                </div>
+            ";
+        }
+
+        // FECHA DE REGISTRO (solo fecha)
+        elseif ($clave === 'fecha_registro') {
+            echo "
+                <div class='control_formulario'>
+                    <label>$clave2</label>
+                    <input type='date' name='$clave' value='" . (isset($valores[$clave]) && $valores[$clave] !== null ? date('Y-m-d', strtotime($valores[$clave])) : '') . "'>
                 </div>
             ";
         }
@@ -303,27 +329,22 @@ if ($id) {
 <script>
 // Valor existente en BD (si estamos editando un educando).
 const anioGuardado = <?= isset($valores["anio"]) ? json_encode((int)$valores["anio"]) : 'null' ?>;
+const cursoScout = <?= json_encode(obtenerCursoScoutActual()) ?>;
+const rangoAniosScout = <?= json_encode(obtenerRangoAniosScout()) ?>;
+const reglasSeccionScout = <?= json_encode(obtenerReglasSeccionScout(), JSON_UNESCAPED_UNICODE) ?>;
 
 document.addEventListener("DOMContentLoaded", function () {
 
     const selectAnio = document.getElementById("select-anio");
     const selectSeccion = document.getElementById("select-seccion");
 
-    // Curso scout: a partir de septiembre se considera el curso del año siguiente.
-    const ahora = new Date();
-    const actual = ahora.getFullYear();
-    const mes = ahora.getMonth() + 1;
-    const cursoScout = (mes >= 9) ? actual + 1 : actual;
-
     function calcularSeccion(añoNacido) {
+        if (!Number.isFinite(añoNacido)) return null;
         const dif = cursoScout - añoNacido;
-
-        if (dif === 6 || dif === 7) return "colonia";
-        if (dif >= 8 && dif <= 10) return "manada";
-        if (dif >= 11 && dif <= 13) return "tropa";
-        if (dif >= 14 && dif <= 16) return "posta";
-        if (dif >= 17 && dif <= 19) return "rutas";
-        return null;
+        const regla = reglasSeccionScout.find(function (item) {
+            return dif >= item.min && dif <= item.max;
+        });
+        return regla ? regla.seccion : null;
     }
 
     function actualizarSeccion() {
@@ -337,11 +358,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // === Generar años dinámicos ===
     if (selectAnio) {
-        const edadMin = 6;
-        const edadMax = 19;
-
-        const max = actual - edadMin;
-        const min = actual - edadMax;
+        const max = Number(rangoAniosScout.max);
+        const min = Number(rangoAniosScout.min);
 
         for (let y = max; y >= min; y--) {
             const option = document.createElement("option");
