@@ -288,18 +288,19 @@
 
 <!-- JS: año → sección automática -->
 <script>
+// Bloque 1: Autocompletar sección scout desde año de nacimiento.
 document.addEventListener("DOMContentLoaded", function () {
 
     const anio = document.getElementById("select-anio");
     const seccion = document.getElementById("select-seccion");
 
-    // Determinar año scout (septiembre → año next)
+    // Determinar año scout (septiembre -> curso del año siguiente).
     const ahora = new Date();
     const año = ahora.getFullYear();
     const mes = ahora.getMonth() + 1;
     const cursoScout = (mes >= 9) ? año + 1 : año;
 
-    // Definir reglas:
+    // Definir reglas de mapeo por diferencia de edad en curso scout:
     // - 2 años más jóvenes → colonia
     // - siguientes 3 → manada
     // - siguientes 3 → tropa
@@ -330,9 +331,7 @@ document.addEventListener("DOMContentLoaded", function () {
     anio.addEventListener("change", actualizarSeccion);
 });
 
-// ---------------------------
-// GENERAR AÑOS AUTOMÁTICOS
-// ---------------------------
+// Bloque 2: Generar automáticamente las opciones del select de año.
 document.addEventListener("DOMContentLoaded", function () {
 
     const selectAnio = document.getElementById("select-anio");
@@ -355,7 +354,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 
-// Evitar que se mezclen "Todas las secciones" con individuales
+// Bloque 3: Evitar combinación incoherente "Todas" + individuales.
 document.addEventListener("DOMContentLoaded", function(){
 
     // Todos los checkboxes dentro del div de secciones múltiples

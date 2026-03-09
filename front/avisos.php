@@ -299,8 +299,18 @@ if (!$hayAvisos) {
 }
 ?>
 </main>
-<!-- Script para mostrar el nombre del archivo seleccionado -->
+
+<!--
+    JavaScript de la vista de avisos
+    ================================
+    1) Muestra nombre del archivo elegido.
+    2) Actualiza asistencia por AJAX sin recargar toda la página.
+    3) Re-renderiza solo el aviso afectado para reflejar estado real del servidor.
+    4) Conserva posición de scroll al subir documentos.
+-->
 <script>
+// Enlaza inputs de archivo dentro de un scope (document completo o aviso reemplazado).
+// Se usa un data-flag para no registrar listeners duplicados tras recargas parciales.
 function enlazarInputsArchivo(scope) {
     scope.querySelectorAll('.input-archivo-oculto').forEach(function(input) {
         if (input.dataset.bindArchivo === '1') return;
@@ -315,6 +325,8 @@ function enlazarInputsArchivo(scope) {
     });
 }
 
+// Recarga únicamente el bloque #aviso-{id} desde el HTML servido por PHP.
+// Esto evita recargar toda la página y mantiene la UI sincronizada con BD.
 function recargarAviso(idAviso) {
     const avisoActual = document.getElementById('aviso-' + idAviso);
     if (!avisoActual) return Promise.resolve();
@@ -337,11 +349,20 @@ function recargarAviso(idAviso) {
         if (!avisoNuevo) throw new Error('Aviso no encontrado en la respuesta');
 
         avisoActual.replaceWith(avisoNuevo);
+
+        // Muy importante: al reemplazar nodos, se pierden listeners previos.
+        // Por eso re-enlazamos los eventos en el nuevo bloque insertado.
         enlazarInputsArchivo(avisoNuevo);
         enlazarRadiosAsistencia(avisoNuevo);
     });
 }
 
+    // Enlaza radios "Sí/No" de asistencia.
+    // Flujo:
+    // - Dispara POST por fetch con ajax=1.
+    // - Backend responde JSON.
+    // - Se recarga solo el aviso afectado.
+    // - Si algo falla, fallback a submit clásico para no bloquear al usuario.
 function enlazarRadiosAsistencia(scope) {
     scope.querySelectorAll('form.form-asistencia .asistencia-radio').forEach(function(input) {
         if (input.dataset.bindAsistencia === '1') return;
@@ -354,6 +375,7 @@ function enlazarRadiosAsistencia(scope) {
             const payload = new URLSearchParams(new FormData(form));
             payload.append('ajax', '1');
 
+            // Bloquear radios durante la petición para evitar doble envío rápido.
             const radios = form.querySelectorAll('input[name="asiste"]');
             radios.forEach(function(radio) { radio.disabled = true; });
 
@@ -374,6 +396,7 @@ function enlazarRadiosAsistencia(scope) {
                 return recargarAviso(data.id_aviso);
             })
             .catch(function() {
+                // Degradación elegante: mantener compatibilidad sin JS/AJAX estable.
                 form.submit();
             })
             .finally(function() {
@@ -387,6 +410,8 @@ enlazarInputsArchivo(document);
 enlazarRadiosAsistencia(document);
 
 (function() {
+    // Guarda y restaura scroll cuando se envía un formulario de subida.
+    // Sin esto, al volver de la subida el usuario perdería contexto.
     const scrollKey = 'avisos_archivo_scroll_y';
     const savedScroll = sessionStorage.getItem(scrollKey);
 

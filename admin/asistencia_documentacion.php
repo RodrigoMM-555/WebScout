@@ -3,10 +3,9 @@
  * asistencia_documentacion.php — Vista de asistencia y documentación por aviso
  * ===============================================================================
  * Muestra educandos agrupados por estado de asistencia (asisten/pendientes/no)
- * y comprueba si han entregado la circular (si aplica).
- *
- * ★ FIX: Requiere sesión de admin
- * ★ FIX: limpiarTexto() ya no se duplica (viene de utils.php)
+ * y comprueba si han entregado la circular asociada (cuando existe).
+ * Contiene consultas de cruce entre avisos, asistencias y archivos subidos,
+ * además del renderizado de tablas de seguimiento para administración.
  */
 session_start();
 ?>

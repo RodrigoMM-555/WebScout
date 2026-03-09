@@ -125,6 +125,7 @@ $nombreCompleto = $educando['nombre'] . " " . $educando['apellidos'];
 </main>
 
 <script>
+// Muestra el nombre del archivo seleccionado junto a cada botón "Elegir".
 document.querySelectorAll('.input-archivo-oculto').forEach(function(input) {
     input.addEventListener('change', function() {
         const nombre = this.files && this.files.length ? this.files[0].name : 'Sin archivo';
@@ -135,11 +136,15 @@ document.querySelectorAll('.input-archivo-oculto').forEach(function(input) {
 });
 
 (function() {
+    // Persistencia de scroll:
+    // al enviar un formulario de subida se guarda posición,
+    // al recargar la página se restaura para mantener contexto.
     const scrollKey = 'educandos_scroll_y';
     const savedScroll = sessionStorage.getItem(scrollKey);
 
     if (savedScroll !== null) {
         const targetY = parseInt(savedScroll, 10) || 0;
+        // Doble RAF para esperar a que el layout esté completamente pintado.
         requestAnimationFrame(function() {
             requestAnimationFrame(function() {
                 window.scrollTo(0, targetY);
@@ -187,6 +192,7 @@ if (is_dir($ruta)) {
         // Buscamos el archivo igual al prefijo para marcar que si se ha entregado
         foreach ($archivos as $f) {
             if (strpos($f, $prefijo) === 0) {
+                                // Marca visualmente el bloque de documento como "entregado".
                 echo "<script>
                         document.getElementById('doc$num').classList.add('entregado');
                       </script>";

@@ -40,6 +40,9 @@ include("../inc/header.php")
 
 <!-- Script del carrusel de fotos -->
 <script>
+// Estructura dinámica del carrusel:
+// - Se mueven las imágenes a un <section> interno desplazable.
+// - Se crean botones de navegación en runtime.
 let contenedor = document.querySelector(".carrusel");
 let contenido = document.querySelectorAll(".carrusel img")
 contenido.forEach(function(elemento){
@@ -65,10 +68,13 @@ contenedor.appendChild(botondelante)
 
 let contador = 0;
 
+// En escritorio se muestran 2 imágenes, en móvil 1.
 function obtenerVisibles() {
     return window.matchMedia('(min-width: 992px)').matches ? 2 : 1;
 }
 
+// Calcula posiciones de inicio válidas para navegar por "bloques".
+// Ejemplo: con 5 imágenes y visibles=2 => [0,2,3].
 function obtenerInicios() {
     const visibles = obtenerVisibles();
     const maxInicio = Math.max(0, contenido.length - visibles);
@@ -89,6 +95,7 @@ function obtenerInicios() {
     return inicios;
 }
 
+// Si cambia el tamaño de pantalla, ajusta el contador al inicio válido más cercano.
 function ajustarContador() {
     const inicios = obtenerInicios();
     let mejor = inicios[0];
@@ -105,6 +112,7 @@ function ajustarContador() {
     contador = mejor;
 }
 
+// Aplica estado visual actual (número de visibles + desplazamiento horizontal).
 function actualizarCarrusel() {
     const visibles = obtenerVisibles();
     contenedor.style.setProperty('--carrusel-visibles', String(visibles));
@@ -112,6 +120,7 @@ function actualizarCarrusel() {
     nuevo_contenedor.style.left = contador * -ancho + "px";
 }
 
+// Navegación circular hacia delante.
 botondelante.onclick = function(){
     const inicios = obtenerInicios();
     const posicionActual = inicios.indexOf(contador);
@@ -123,6 +132,7 @@ botondelante.onclick = function(){
     actualizarCarrusel();
 }
 
+// Navegación circular hacia atrás.
 botonatras.onclick = function(){
     const inicios = obtenerInicios();
     const posicionActual = inicios.indexOf(contador);

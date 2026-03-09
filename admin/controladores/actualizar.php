@@ -287,6 +287,7 @@ if ($id) {
      SCRIPTS (UNIFICADOS Y CORREGIDOS)
 ============================= -->
 <script>
+// Valor existente en BD (si estamos editando un educando).
 const anioGuardado = <?= isset($valores["anio"]) ? json_encode((int)$valores["anio"]) : 'null' ?>;
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -294,6 +295,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const selectAnio = document.getElementById("select-anio");
     const selectSeccion = document.getElementById("select-seccion");
 
+    // Curso scout: a partir de septiembre se considera el curso del año siguiente.
     const ahora = new Date();
     const actual = ahora.getFullYear();
     const mes = ahora.getMonth() + 1;
@@ -314,6 +316,8 @@ document.addEventListener("DOMContentLoaded", function () {
         if (!selectAnio || !selectSeccion) return;
         const y = Number(selectAnio.value);
         const sec = calcularSeccion(y);
+
+        // Solo autocompleta cuando existe un mapeo válido.
         if (sec) selectSeccion.value = sec;
     }
 
@@ -337,7 +341,7 @@ document.addEventListener("DOMContentLoaded", function () {
             selectAnio.appendChild(option);
         }
 
-        // Si había año guardado → actualizar sección automáticamente
+        // Si había año guardado, sincronizamos sección al cargar.
         if (anioGuardado) actualizarSeccion();
 
         // Cambios manuales

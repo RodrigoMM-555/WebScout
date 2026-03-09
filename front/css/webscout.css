@@ -1441,6 +1441,12 @@ table {
     padding: 8px 10px;
 }
 
+/* Altura homogénea de filas en avisos:
+   mantiene el tamaño visual del caso con formulario de subida/documento. */
+.aviso .tabla-archivos tr td {
+    height: 60px;
+}
+
 .tabla-archivos th,
 .tabla-archivos td,
 table th,

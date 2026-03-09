@@ -2,8 +2,9 @@
 /**
  * cambiar_asistencia.php — Cambia la asistencia de un educando a un aviso
  * =========================================================================
- * Inserta o actualiza (ON DUPLICATE KEY) el registro de asistencia.
- * ★ FIX: Requiere sesión activa para evitar acceso no autenticado.
+ * Endpoint de escritura para registrar asistencia desde la vista de avisos.
+ * Inserta o actualiza (ON DUPLICATE KEY) el estado Sí/No de asistencia,
+ * devuelve JSON en modo AJAX y redirige en modo formulario tradicional.
  */
 session_start();
 

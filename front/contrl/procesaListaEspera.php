@@ -1,6 +1,12 @@
 <?php
+/**
+ * procesaListaEspera.php — Persistencia de solicitudes de lista de espera
+ * =======================================================================
+ * Valida entrada del formulario público y guarda el registro en BD.
+ */
 include '../../inc/conexion_bd.php';
 
+// Solo se acepta envío por POST para evitar inserciones vía URL.
 if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
 	http_response_code(405);
 	exit('Método no permitido.');
@@ -20,6 +26,7 @@ $explicacion_relacion = trim($_POST['explicacion_relacion'] ?? '');
 $comentarios = trim($_POST['comentarios'] ?? '');
 
 
+// Validación de campos obligatorios.
 if (
 	$nombre_nino === '' ||
 	$apellido_ninio === '' ||
@@ -32,17 +39,20 @@ if (
 	exit('Faltan campos obligatorios.');
 }
 
+// Validación estricta de formato de fecha.
 $fecha = DateTime::createFromFormat('Y-m-d', $fecha_nacimiento);
 if (!$fecha || $fecha->format('Y-m-d') !== $fecha_nacimiento) {
 	http_response_code(400);
 	exit('Fecha de nacimiento no válida.');
 }
 
+// Validación básica de email.
 if (!filter_var($correo_contacto, FILTER_VALIDATE_EMAIL)) {
 	http_response_code(400);
 	exit('Correo electrónico no válido.');
 }
 
+// Recorte defensivo para respetar tamaños esperados en BD.
 $cortarTexto = static function ($texto, $longitud) {
 	if (function_exists('mb_substr')) {
 		return mb_substr($texto, 0, $longitud);
@@ -59,6 +69,7 @@ $correo_contacto = $cortarTexto($correo_contacto, 150);
 $explicacion_relacion = $cortarTexto($explicacion_relacion, 65535);
 $comentarios = $cortarTexto($comentarios, 65535);
 
+// Inserción con prepared statement para evitar SQL injection.
 $sql = 'INSERT INTO lista_espera (nombre_nino, apellidos_nino, fecha_nacimiento, nombre_contacto, telefono_contacto, correo_contacto, hermano_en_grupo, relacion_con_miembro, familia_antiguo_scouter, estuvo_en_grupo, explicacion_relacion, comentarios) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
 $stmt = $conexion->prepare($sql);
 
@@ -88,6 +99,7 @@ if (!$stmt->execute()) {
 	exit('No se pudo guardar la solicitud: ' . $stmt->error);
 }
 
+// Cierre y redirección de confirmación.
 $stmt->close();
 header('Location: ../formListaEspera.php?estado=ok');
 exit;

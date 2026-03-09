@@ -2,12 +2,11 @@
 /**
  * procesainsertar.php — Inserta un nuevo registro en la tabla indicada
  * =====================================================================
- * Seguridad aplicada:
- *   - Requiere sesión de admin
- *   - Valida tabla contra whitelist
- *   - Usa prepared statements (bind_param)
- *   - Token CSRF validado
- *   - Un solo escape (corrige el doble real_escape_string anterior)
+ * Procesa los formularios de alta del panel admin.
+ * Lee dinámicamente los campos enviados, adapta formatos por tipo de dato
+ * (fechas, booleanos, contraseñas, permisos/secciones) y ejecuta el INSERT
+ * sobre la tabla activa.
+ * Incluye construcción de mensajes de error/éxito y redirección al listado.
  */
 session_start();
 include('../../inc/conexion_bd.php');

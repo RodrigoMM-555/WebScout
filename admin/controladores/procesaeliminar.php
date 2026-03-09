@@ -2,11 +2,10 @@
 /**
  * procesaeliminar.php — Elimina un registro de cualquier tabla CRUD
  * ==================================================================
- * Seguridad aplicada:
- *   - Requiere sesión de admin
- *   - Valida tabla contra whitelist
- *   - Usa prepared statement para el id
- *   - Token CSRF validado
+ * Endpoint de borrado del panel admin.
+ * Recibe tabla e id desde los enlaces de la vista de listado,
+ * ejecuta la eliminación del registro y redirige al listado conservando
+ * contexto de ordenación/navegación.
  */
 session_start();
 include "../../inc/conexion_bd.php";

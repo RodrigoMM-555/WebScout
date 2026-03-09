@@ -2,11 +2,11 @@
 /**
  * subearchivo.php — Gestiona la subida de archivos (documentos y circulares)
  * ===========================================================================
- * Para "1-Ficha de inscripción" convierte el PDF a PNG y analiza las casillas
- * de permisos (OCR por coordenadas).
- *
- * ★ FIX: Requiere sesión activa
- * ★ FIX: Validación de tipo y tamaño de archivo
+ * Recibe ficheros desde formularios de avisos y documentación de educandos,
+ * valida el archivo, lo mueve a almacenamiento final y mantiene copia temporal
+ * para procesado cuando aplica.
+ * Para "1-Ficha de inscripción" convierte PDF a PNG y calcula permisos de
+ * forma automática mediante análisis por coordenadas y densidad de píxeles.
  */
 session_start();
 include("../../inc/conexion_bd.php");
@@ -266,6 +266,8 @@ function esRegionMarcada($imagen, $x, $y, $w, $h) {
         return false;
     }
 
+    // Se descarta borde exterior de la casilla (marco impreso), porque
+    // aporta negro "fijo" incluso cuando la casilla está vacía.
     $margen = 4;
     if ($w > ($margen * 2) && $h > ($margen * 2)) {
         $pixelesInterior = [];
@@ -279,6 +281,9 @@ function esRegionMarcada($imagen, $x, $y, $w, $h) {
         }
     }
 
+    // Heurística de marcado:
+    // - Pixel oscuro: intensidad < 150 (en escala 0..255)
+    // - Casilla marcada: al menos 2% de oscuros en el área analizada
     $total = count($pixeles);
     $oscuros = 0;
     foreach ($pixeles as $v) {
@@ -312,6 +317,8 @@ function obtenerPuntuacionRegion($imagen, $x, $y, $w, $h) {
         return 0.0;
     }
 
+    // Misma lógica de recorte interior que en esRegionMarcada(), pero aquí
+    // no devolvemos bool: devolvemos un ratio continuo para comparar opciones.
     $margen = 4;
     if ($w > ($margen * 2) && $h > ($margen * 2)) {
         $pixelesInterior = [];
@@ -346,6 +353,8 @@ function evaluarMapaPermisos($imagen, $imgW, $imgH, $escalaX, $escalaY, $wCaja, 
     $contrasteTotal = 0.0;
 
     foreach ($mapa as $item) {
+        // Conversión de coordenadas de plantilla base -> coordenadas reales
+        // según escala de la imagen renderizada por Imagick.
         $xSi = (int)round($item['si']['x'] * $escalaX);
         $ySi = (int)round($item['si']['y'] * $escalaY);
         $xNo = (int)round($item['no']['x'] * $escalaX);
@@ -356,6 +365,7 @@ function evaluarMapaPermisos($imagen, $imgW, $imgH, $escalaX, $escalaY, $wCaja, 
         $xNo = max(0, min($xNo, $imgW - $wCaja));
         $yNo = max(0, min($yNo, $imgH - $hCaja));
 
+        // Puntuaciones de densidad de marca para ambas casillas de la misma fila.
         $scoreSi = obtenerPuntuacionRegion($imagen, $xSi, $ySi, $wCaja, $hCaja);
         $scoreNo = obtenerPuntuacionRegion($imagen, $xNo, $yNo, $wCaja, $hCaja);
 
@@ -363,6 +373,7 @@ function evaluarMapaPermisos($imagen, $imgW, $imgH, $escalaX, $escalaY, $wCaja, 
         $siMarcado = ($scoreSi >= 0.008) && ($scoreSi > ($scoreNo + 0.0015));
         $noMarcado = ($scoreNo >= 0.008) && ($scoreNo > ($scoreSi + 0.0015));
 
+        // Regla de negocio: solo se concede permiso cuando "Sí" gana claramente.
         if ($siMarcado && !$noMarcado) {
             $permisos += (int)$item['permiso'];
         }
@@ -424,7 +435,8 @@ function calcularPermisosDesdeCoordenadasPlantilla($rutaPng) {
     $wCaja = max(10, (int)round($tamCajaBase * $escalaX));
     $hCaja = max(10, (int)round($tamCajaBase * $escalaY));
 
-    // Coordenadas validadas sobre la salida real de Imagick (esquina superior izquierda).
+    // Coordenadas validadas sobre la salida real de Imagick (origen superior-izquierdo).
+    // Cada bloque contiene 2 regiones por permiso: casilla "si" y casilla "no".
     $mapa = [
         [
             'permiso' => PERM_WHATSAPP,
@@ -604,7 +616,7 @@ if ($tmpDir === '') {
     die("Error: no hay una carpeta temporal con permisos de escritura para subir archivos.");
 }
 
-// Flujo actual:
+// Flujo de guardado de documentos:
 // 1) El archivo SIEMPRE entra primero a temporal.
 // 2) Si es PDF de ficha 1, se crea PNG temporal para leer casillas.
 // 3) El archivo final guardado para el usuario es el PDF original.
@@ -639,7 +651,8 @@ if ($extension === 'pdf' && $esFichaInscripcion) {
         error_log('No se pudo generar PNG temporal para OCR de permisos: ' . $errorConv);
     }
 
-    // Se guarda el PDF original como archivo definitivo.
+    // Persistencia final: se guarda SIEMPRE el PDF original firmado/subido.
+    // El PNG se usa únicamente como insumo técnico de análisis automático.
     $nuevoNombre = $tituloAviso . "_" . $nombreEducando . ".pdf";
     $rutaFinal = $baseDir . '/' . $nuevoNombre;
     if (!moverArchivoSeguro($rutaTemporal, $rutaFinal)) {

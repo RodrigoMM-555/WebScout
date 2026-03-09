@@ -1,9 +1,11 @@
 <?php
 /**
  * index.php — Página de login
- * ====================================
- * ★ FIX: URLs dinámicas con BASE_URL en vez de localhost hardcodeado.
- * ★ FIX: Mensaje de error solo aparece si hay ?error=invalid.
+ * ============================
+ * Punto de entrada público de la aplicación.
+ * Muestra el formulario de acceso, carga estilos globales y redirige
+ * el envío de credenciales a `front/contrl/procesar_login.php`.
+ * También pinta mensajes de error de autenticación cuando corresponde.
  */
 require_once __DIR__ . '/tools/config.php';
 ?>

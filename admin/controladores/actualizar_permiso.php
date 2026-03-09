@@ -2,8 +2,10 @@
 /**
  * actualizar_permiso.php — Alterna un bit de permiso vía AJAX (fetch)
  * =====================================================================
- * Recibe id y permiso por POST. Usa XOR para toggle del bit.
- * Protegido con sesión de admin y prepared statements.
+ * Endpoint llamado desde la tabla de admin para activar/desactivar permisos
+ * individuales de un educando en tiempo real.
+ * Recibe `id` y `permiso`, lee el valor actual y aplica operación XOR para
+ * conmutar el bit solicitado sin editar manualmente el resto de permisos.
  */
 session_start();
 include_once "../../inc/conexion_bd.php";

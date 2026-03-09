@@ -2,12 +2,11 @@
 /**
  * procesaactualizar.php — Actualiza un registro existente
  * =========================================================
- * Seguridad aplicada:
- *   - Requiere sesión de admin
- *   - Valida tabla contra whitelist
- *   - Usa prepared statements (bind_param)
- *   - Token CSRF validado
- *   - Contraseña vacía → se omite (no hashea cadena vacía)
+ * Procesa el formulario de edición del panel admin.
+ * Construye dinámicamente el UPDATE según los campos recibidos,
+ * normaliza casos especiales (checkboxes, fechas, contraseñas) y guarda
+ * cambios en la tabla seleccionada.
+ * También prepara mensajes de resultado y redirección de vuelta al listado.
  */
 session_start();
 include('../../inc/conexion_bd.php');

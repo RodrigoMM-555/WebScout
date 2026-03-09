@@ -2,11 +2,10 @@
 /**
  * perfil.php — Perfil del padre/madre y listado de hijos
  * ========================================================
- * Muestra datos personales del usuario y tarjetas de sus
- * educandos con color por sección.
- *
- * ★ FIX: session_start() ANTES de cualquier salida HTML
- * ★ FIX: htmlspecialchars() en todos los datos del usuario (anti-XSS)
+ * Vista privada para familias.
+ * Muestra datos personales del usuario autenticado y las tarjetas de
+ * sus educandos, incluyendo enlaces al detalle y color por sección.
+ * Contiene consultas a usuarios/educandos y renderizado HTML de perfil.
  */
 session_start();
 

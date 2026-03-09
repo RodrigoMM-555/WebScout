@@ -375,8 +375,15 @@ if ($resultadoListado) {
 ?>
 </table>
 
-<!-- QActualizacion automatica por medio de fetch -->
+<!--
+    JavaScript de tabla admin
+    =========================
+    - Toggle de permisos por fetch (actualización instantánea).
+    - Mostrar/ocultar detalle extendido en filas de lista de espera.
+-->
 <script>
+// Cada checkbox representa un bit de permiso (1,2,4,8).
+// El backend hace XOR para activar/desactivar ese bit sin recargar.
 document.querySelectorAll(".permiso-check").forEach(function(checkbox){
 
     checkbox.addEventListener("change", function(){
@@ -396,6 +403,7 @@ document.querySelectorAll(".permiso-check").forEach(function(checkbox){
 
 });
 
+// Expande o contrae fila de detalle para campos largos (explicación/comentarios).
 document.querySelectorAll('.btn-detalle-lista').forEach(function(boton) {
     boton.addEventListener('click', function() {
         const id = this.dataset.detalleId;

@@ -1,4 +1,10 @@
 <?php
+/**
+ * formListaEspera.php — Formulario público de preinscripción
+ * ============================================================
+ * Muestra el formulario de lista de espera y permite enviarlo
+ * a `contrl/procesaListaEspera.php`.
+ */
 require_once __DIR__ . '/../tools/config.php';
 include '../inc/conexion_bd.php';
 ?>
@@ -17,6 +23,7 @@ include '../inc/conexion_bd.php';
     <p class="flash flash-exito">La solicitud ha sido procesada correctamente.</p>
 <?php endif; ?>
 
+<!-- Formulario principal de solicitud -->
 <form class="lista-espera-form" action="contrl/procesaListaEspera.php" method="POST">
     <h1>Formulario de lista de espera</h1>
 
@@ -85,19 +92,26 @@ include '../inc/conexion_bd.php';
     </div>
 
     <script>
+        // Referencias a checks y bloque de explicación condicional.
         const checkboxes = document.querySelectorAll('input[type="checkbox"]');
         const explicacionLabel = document.querySelector('label[for="explicacion_relacion"]');
         const explicacionTextarea = document.getElementById('explicacion_relacion');
 
+        // Regla UX:
+        // - Si se marca cualquier condición especial, se pide explicación.
+        // - Si no hay ninguna marcada, se oculta para simplificar el formulario.
         function actualizarVisibilidadExplicacion() {
             const algunoMarcado = Array.from(checkboxes).some(checkbox => checkbox.checked);
             explicacionLabel.style.display = algunoMarcado ? 'block' : 'none';
             explicacionTextarea.style.display = algunoMarcado ? 'block' : 'none';
         }
+
+        // Enlazar la lógica a todos los checks de prioridad.
         checkboxes.forEach(checkbox => {
             checkbox.addEventListener('change', actualizarVisibilidadExplicacion);
         });
 
+        // Ejecutar una vez al cargar para dejar estado inicial correcto.
         actualizarVisibilidadExplicacion();
     </script>
 
