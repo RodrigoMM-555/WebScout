@@ -228,10 +228,12 @@ function sincronizarSeccionesEducandos(mysqli $conexion, ?int $cursoScout = null
     while ($fila = $res->fetch_assoc()) {
         $id = (int)$fila['id'];
         $anio = (int)$fila['anio'];
-        $seccionActual = strtolower(trim((string)($fila['seccion'] ?? '')));
+        $seccionActualRaw = (string)($fila['seccion'] ?? '');
+        $seccionActual = strtolower(trim($seccionActualRaw));
         $seccionEsperada = calcularSeccionScoutPorAnio($anio, $curso);
 
-        if ($seccionEsperada === null || $seccionEsperada === $seccionActual) {
+        $esFormatoCanonico = ($seccionActualRaw === $seccionActual);
+        if ($seccionEsperada === null || ($seccionEsperada === $seccionActual && $esFormatoCanonico)) {
             continue;
         }
 

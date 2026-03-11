@@ -14,17 +14,58 @@ include('../../inc/conexion_bd.php');
 // Solo admins pueden insertar
 requerirAdmin();
 
-// Validar token CSRF
-validarCSRF();
+// URL de fallback inicial (por si falla antes de conocer la tabla válida)
+$urlFallback = '?tabla=educandos&ordenar_por=id&direccion=ASC';
 
-// Validar tabla
-$tabla = validarTabla($_GET['tabla'] ?? '');
+// Validar token CSRF (sin cortar con die)
+$token = (string)($_POST['csrf_token'] ?? '');
+if (!hash_equals($_SESSION['csrf_token'] ?? '', $token)) {
+    setFlash('error', 'Error al insertar: token CSRF inválido. Recarga e inténtalo de nuevo.');
+    header("Location: {$urlFallback}");
+    exit;
+}
+
+// Validar tabla (sin cortar con die)
+$tabla = preg_replace('/[^a-zA-Z0-9_]/', '', (string)($_GET['tabla'] ?? ''));
+if (!in_array($tabla, TABLAS_PERMITIDAS, true)) {
+    setFlash('error', 'Error al insertar: tabla no permitida.');
+    header("Location: {$urlFallback}");
+    exit;
+}
 
 $urlVuelta = "?tabla=" . urlencode($tabla)
+          . "&seccion=" . urlencode($_GET['seccion'] ?? '')
           . "&ordenar_por=" . urlencode($_GET['ordenar_por'] ?? 'id')
           . "&direccion=" . urlencode($_GET['direccion'] ?? 'ASC');
 
+$urlInsertar = "?operacion=insertar"
+             . "&tabla=" . urlencode($tabla)
+             . "&seccion=" . urlencode($_GET['seccion'] ?? '')
+             . "&ordenar_por=" . urlencode($_GET['ordenar_por'] ?? 'id')
+             . "&direccion=" . urlencode($_GET['direccion'] ?? 'ASC');
+
+$redirigir = static function (string $url): void {
+    if (!headers_sent()) {
+        header("Location: {$url}");
+    } else {
+        echo "<script>window.location.href=" . json_encode($url) . ";</script>";
+    }
+    exit;
+};
+
 $mensajeErrorDB = static function (string $operacion, int $errno, string $error): string {
+    if ($errno === 1062) {
+        return "Error al {$operacion}: ya existe un registro con ese valor único (duplicado).";
+    }
+
+    if ($errno === 1452) {
+        return "Error al {$operacion}: referencia no válida en un campo relacionado (clave foránea).";
+    }
+
+    if (in_array($errno, [1264, 1292], true)) {
+        return "Error al {$operacion}: uno de los valores tiene formato inválido.";
+    }
+
     if (in_array($errno, [1048, 1364], true)) {
         if (preg_match("/column '([^']+)'/i", $error, $coincidencia)) {
             $campo = ucfirst(str_replace('_', ' ', $coincidencia[1]));
@@ -84,6 +125,23 @@ foreach ($_POST as $clave => $valor) {
 }
 
 if ($tabla === 'educandos') {
+    $camposObligatoriosEducando = [
+        'nombre' => 'Nombre',
+        'apellidos' => 'Apellidos',
+        'anio' => 'Año',
+        'id_usuario' => 'Madre/Padre'
+    ];
+
+    foreach ($camposObligatoriosEducando as $campo => $etiqueta) {
+        $valorCampo = trim((string)($_POST[$campo] ?? ''));
+        if ($valorCampo === '') {
+            setFlash('error', "Error al insertar: el campo {$etiqueta} es obligatorio.");
+            $redirigir($urlInsertar);
+        }
+    }
+}
+
+if ($tabla === 'educandos') {
     $anioRecibido = $_POST['anio'] ?? $_POST['año'] ?? null;
     if (is_numeric($anioRecibido)) {
         $seccionCalculada = calcularSeccionScoutPorAnio((int)$anioRecibido);
@@ -109,31 +167,34 @@ if ($tabla === 'usuarios' && !in_array('`cambio_contraseña`', $columnas, true))
     $params[] = '1';
 }
 
-// Construir SQL con placeholders
-$sql = "INSERT INTO `{$tabla}` (" . implode(',', $columnas) . ") VALUES (" . implode(',', $valores) . ")";
-$stmt = $conexion->prepare($sql);
+try {
+    // Construir SQL con placeholders
+    $sql = "INSERT INTO `{$tabla}` (" . implode(',', $columnas) . ") VALUES (" . implode(',', $valores) . ")";
+    $stmt = $conexion->prepare($sql);
 
-if (!$stmt) {
-    setFlash('error', 'Error al insertar: no se pudo preparar la consulta.');
-    header("Location: {$urlVuelta}");
-    exit;
-}
+    if (!$stmt) {
+        setFlash('error', 'Error al insertar: no se pudo preparar la consulta.');
+        $redirigir($urlInsertar);
+    }
 
-// bind_param requiere referencias
-$bindParams = [$tipos];
-for ($i = 0; $i < count($params); $i++) {
-    $bindParams[] = &$params[$i];
-}
-call_user_func_array([$stmt, 'bind_param'], $bindParams);
+    // bind_param requiere referencias
+    $bindParams = [$tipos];
+    for ($i = 0; $i < count($params); $i++) {
+        $bindParams[] = &$params[$i];
+    }
+    call_user_func_array([$stmt, 'bind_param'], $bindParams);
 
-if (!$stmt->execute()) {
-    setFlash('error', $mensajeErrorDB('insertar', (int)$stmt->errno, (string)$stmt->error));
+    if (!$stmt->execute()) {
+        setFlash('error', $mensajeErrorDB('insertar', (int)$stmt->errno, (string)$stmt->error));
+        $stmt->close();
+        $redirigir($urlInsertar);
+    }
+
     $stmt->close();
-    header("Location: {$urlVuelta}");
-    exit;
+} catch (Throwable $e) {
+    setFlash('error', 'Error al insertar: ' . $e->getMessage());
+    $redirigir($urlInsertar);
 }
-
-$stmt->close();
 
 // ── Si se insertó un aviso, crear asistencias automáticas ───
 if ($tabla === 'avisos') {
@@ -171,6 +232,5 @@ if ($tabla === 'avisos') {
 setFlash('exito', 'Registro insertado correctamente.');
 
 // Redirección al listado
-header("Location: {$urlVuelta}");
-exit;
+$redirigir($urlVuelta);
 ?>

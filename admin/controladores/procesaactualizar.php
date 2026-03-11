@@ -36,6 +36,7 @@ if (!in_array($tabla, TABLAS_PERMITIDAS, true)) {
 $id    = (int)($_POST['id'] ?? 0);
 
 $urlVuelta = "?tabla=" . urlencode($tabla)
+          . "&seccion=" . urlencode($_GET['seccion'] ?? '')
           . "&ordenar_por=" . urlencode($_GET['ordenar_por'] ?? 'id')
           . "&direccion=" . urlencode($_GET['direccion'] ?? 'ASC');
 
@@ -46,22 +47,51 @@ $urlEditar = "?operacion=actualizar"
           . "&ordenar_por=" . urlencode($_GET['ordenar_por'] ?? 'id')
           . "&direccion=" . urlencode($_GET['direccion'] ?? 'ASC');
 
+$redirigir = static function (string $url): void {
+    if (!headers_sent()) {
+        header("Location: {$url}");
+    } else {
+        echo "<script>window.location.href=" . json_encode($url) . ";</script>";
+    }
+    exit;
+};
+
 $mensajeErrorDB = static function (string $operacion, int $errno, string $error): string {
+    if ($errno === 1062) {
+        if (preg_match("/for key '([^']+)'/i", $error, $coincidencia)) {
+            $indice = $coincidencia[1];
+            $partes = preg_split('/[._]/', $indice);
+            $ultimo = end($partes);
+            if ($ultimo !== false && $ultimo !== '') {
+                $campo = ucfirst(str_replace('_', ' ', (string)$ultimo));
+                return "No se pudo actualizar: ya existe otro registro con el mismo valor en {$campo}.";
+            }
+        }
+        return "No se pudo actualizar: ya existe otro registro con un valor que debe ser único.";
+    }
+
+    if ($errno === 1452) {
+        return "No se pudo actualizar: uno de los datos relacionados no existe o no es válido.";
+    }
+
+    if (in_array($errno, [1264, 1292], true)) {
+        return "No se pudo actualizar: revisa el formato de los datos introducidos (fecha, número o texto).";
+    }
+
     if (in_array($errno, [1048, 1364], true)) {
         if (preg_match("/column '([^']+)'/i", $error, $coincidencia)) {
             $campo = ucfirst(str_replace('_', ' ', $coincidencia[1]));
-            return "Error al {$operacion}: falta un campo obligatorio ({$campo}).";
+            return "No se pudo actualizar: el campo {$campo} es obligatorio.";
         }
-        return "Error al {$operacion}: faltan campos obligatorios.";
+        return "No se pudo actualizar: faltan campos obligatorios.";
     }
 
-    return "Error al {$operacion}: " . $error;
+    return "No se pudo actualizar el registro. Si el problema continúa, contacta con administración.";
 };
 
 if ($id <= 0) {
-    setFlash('error', 'Error al actualizar: ID de registro no válido.');
-    header("Location: {$urlEditar}");
-    exit;
+    setFlash('error', 'No se pudo actualizar: identificador de registro no válido.');
+    $redirigir($urlEditar);
 }
 
 if ($tabla === 'lista_espera') {
@@ -77,9 +107,8 @@ if ($tabla === 'lista_espera') {
     foreach ($camposObligatoriosLista as $campoObligatorio) {
         $valorCampo = trim((string)($_POST[$campoObligatorio] ?? ''));
         if ($valorCampo === '') {
-            setFlash('error', 'Error al actualizar: faltan campos obligatorios en la lista de espera.');
-            header("Location: {$urlEditar}");
-            exit;
+            setFlash('error', 'No se pudo actualizar: faltan campos obligatorios en la lista de espera.');
+            $redirigir($urlEditar);
         }
     }
 }
@@ -143,9 +172,8 @@ $tipos   .= 'i';
 $params[] = $id;
 
 if (empty($asignaciones)) {
-    setFlash('error', 'Error al actualizar: no hay campos para actualizar.');
-    header("Location: {$urlEditar}");
-    exit;
+    setFlash('error', 'No se pudo actualizar: no hay cambios para guardar.');
+    $redirigir($urlEditar);
 }
 
 $huboError = false;
@@ -156,9 +184,8 @@ try {
     $stmt = $conexion->prepare($sql);
 
     if (!$stmt) {
-        setFlash('error', 'Error al actualizar: no se pudo preparar la consulta.');
-        header("Location: {$urlEditar}");
-        exit;
+        setFlash('error', 'No se pudo actualizar: error interno al preparar la operación.');
+        $redirigir($urlEditar);
     }
 
     // bind_param requiere referencias
@@ -178,10 +205,9 @@ try {
     $stmt->close();
 } catch (Throwable $e) {
     $huboError = true;
-    setFlash('error', 'Error al actualizar: ' . $e->getMessage());
+    setFlash('error', 'No se pudo actualizar por un error inesperado. Inténtalo de nuevo.');
 }
 
 // Redirección al listado
-header("Location: " . ($huboError ? $urlEditar : $urlVuelta));
-exit;
+$redirigir($huboError ? $urlEditar : $urlVuelta);
 ?>

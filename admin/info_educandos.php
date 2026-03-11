@@ -45,7 +45,7 @@ $apellidoEducando = $educando['apellido'] ?? ($educando['apellidos'] ?? '');
 // Cabecera de la vista
 echo "<div class='asi'>
         <h1>Info: " . htmlspecialchars($educando['nombre']) . " " . htmlspecialchars($apellidoEducando) . "</h1>
-        <a href='index.php?tabla=educandos&ordenar_por=seccion&direccion=ASC'>Volver a educandos</a>
+        <a href='#' onclick='history.back(); return false;'>Volver</a>
       </div>";
 
 echo "<div class='info-educandos-layout'>";
@@ -60,11 +60,26 @@ echo "<p><strong>Sección:</strong> " . htmlspecialchars($educando['seccion']) .
 echo "<p><strong>DNI:</strong> " . htmlspecialchars($educando['dni']) . "</p>";
 
 echo "<h2>Información de tutores</h2>";
-echo "<p><strong>Tutor 1:</strong> " . htmlspecialchars($usuario['nombre'] ?? '') . " " . htmlspecialchars($usuario['apellidos'] ?? '') . "</p>";
-echo "<p><strong>Tutor 2:</strong> " . htmlspecialchars($usuario['nombre2'] ?? '') . " " . htmlspecialchars($usuario['apellidos2'] ?? '') . "</p>";
+echo "<h3>Tutor 1</h3>";
+echo "<p><strong>Nombre:</strong> " . htmlspecialchars(trim(($usuario['nombre'] ?? '') . ' ' . ($usuario['apellidos'] ?? ''))) . "</p>";
 echo "<p><strong>Email:</strong> " . htmlspecialchars($usuario['email'] ?? '') . "</p>";
 echo "<p><strong>Teléfono:</strong> " . htmlspecialchars($usuario['telefono'] ?? '') . "</p>";
-echo "<p><strong>Direccion:</strong> " . htmlspecialchars($usuario['direccion'] ?? '') . "</p>";
+echo "<p><strong>Dirección:</strong> " . htmlspecialchars($usuario['direccion'] ?? '') . "</p>";
+
+$nombre2    = trim($usuario['nombre2'] ?? '');
+$apellidos2 = trim($usuario['apellidos2'] ?? '');
+$email2     = trim($usuario['email2'] ?? '');
+$telefono2  = trim($usuario['telefono2'] ?? '');
+if ($nombre2 !== '' || $apellidos2 !== '') {
+    echo "<h3>Tutor 2</h3>";
+    echo "<p><strong>Nombre:</strong> " . htmlspecialchars(trim($nombre2 . ' ' . $apellidos2)) . "</p>";
+    if ($email2 !== '') {
+        echo "<p><strong>Email:</strong> " . htmlspecialchars($email2) . "</p>";
+    }
+    if ($telefono2 !== '') {
+        echo "<p><strong>Teléfono:</strong> " . htmlspecialchars($telefono2) . "</p>";
+    }
+}
 echo "</section>";
 
 // Bloque derecho: listado de archivos del educando con miniatura y enlace de apertura.

@@ -24,6 +24,10 @@ if (!isset($_GET['id_aviso'])) {
 
 $id_aviso = (int)$_GET['id_aviso'];
 
+$normalizarSeccion = static function ($valor): string {
+    return strtolower(trim((string)$valor));
+};
+
 // Obtener aviso (añadimos circular)
 $stmt = $conexion->prepare("SELECT titulo, secciones, circular FROM avisos WHERE id = ?");
 $stmt->bind_param("i", $id_aviso);
@@ -32,7 +36,7 @@ $resAviso = $stmt->get_result();
 $aviso = $resAviso->fetch_assoc();
 $stmt->close();
 
-$secciones = array_filter(array_map('trim', explode(',', $aviso['secciones'])));
+$secciones = array_values(array_unique(array_filter(array_map($normalizarSeccion, explode(',', (string)$aviso['secciones'])))));
 $tituloAviso = $aviso['titulo'];
 $tieneCircular = ($aviso['circular'] === 'si');
 
@@ -42,9 +46,9 @@ if (!empty($secciones)) {
     $placeholders = implode(',', array_fill(0, count($secciones), '?'));
     $tipos = str_repeat('s', count($secciones));
     $stmtEdu = $conexion->prepare("
-        SELECT id, nombre, apellidos, seccion 
+        SELECT id, nombre, apellidos, LOWER(TRIM(seccion)) AS seccion 
         FROM educandos 
-        WHERE seccion IN ($placeholders) 
+        WHERE LOWER(TRIM(seccion)) IN ($placeholders) 
         ORDER BY FIELD(seccion,'colonia','manada','tropa','posta','rutas')
     ");
     $stmtEdu->bind_param($tipos, ...$secciones);
@@ -86,14 +90,18 @@ $seccionesResumen = !empty($secciones)
 // Normalizamos el título para construir el prefijo del archivo de circular.
 // Se reutiliza tanto en la tabla como en los donuts, evitando duplicar lógica.
 $tituloLimpioAviso = limpiarTexto($tituloAviso);
+$cursoScout = function_exists('obtenerCursoScoutActual')
+    ? (int)obtenerCursoScoutActual()
+    : (int)date('Y');
+$rondaCarpeta = ($cursoScout - 1) . '-' . $cursoScout;
 
 // Caché en memoria por petición: id_educando => true/false (entregó circular).
 // Así no repetimos escaneos de carpeta para el mismo educando.
 $cacheEntregasCircular = [];
 
 // Función auxiliar para comprobar si un educando entregó circular de ESTE aviso.
-// Criterio: existe un archivo en su carpeta con prefijo "<tituloAviso>_<nombreEdu>."
-$educandoHaEntregadoCircular = static function (array $edu) use (&$cacheEntregasCircular, $tituloLimpioAviso): bool {
+// Criterio: existe un archivo con prefijo "<tituloAviso>_<nombreEdu>.".
+$educandoHaEntregadoCircular = static function (array $edu) use (&$cacheEntregasCircular, $tituloLimpioAviso, $rondaCarpeta): bool {
     $idEdu = (int)($edu['id'] ?? 0);
     if ($idEdu > 0 && array_key_exists($idEdu, $cacheEntregasCircular)) {
         return $cacheEntregasCircular[$idEdu];
@@ -101,16 +109,34 @@ $educandoHaEntregadoCircular = static function (array $edu) use (&$cacheEntregas
 
     $nombreCompleto = ($edu['nombre'] ?? '') . ' ' . ($edu['apellidos'] ?? '');
     $nombreCarpeta = limpiarTexto($nombreCompleto);
-    $ruta = BASE_PATH . '/circulares/educandos/' . $nombreCarpeta;
+    $seccionCarpeta = preg_replace('/[^a-z0-9_\-]/', '', strtolower(trim((string)($edu['seccion'] ?? ''))));
+    if ($seccionCarpeta === '') {
+        $seccionCarpeta = 'sin_seccion';
+    }
+
     $prefijo = $tituloLimpioAviso . '_' . $nombreCarpeta . '.';
+    $rutasCandidatas = [
+        BASE_PATH . '/circulares/educandos/' . $rondaCarpeta . '/' . $seccionCarpeta . '/' . $nombreCarpeta,
+        BASE_PATH . '/circulares/educandos/' . $nombreCarpeta,
+    ];
+
+    // Compatibilidad: buscar también en otras rondas si el aviso es anterior.
+    $rutasHistoricas = glob(BASE_PATH . '/circulares/educandos/*/' . $seccionCarpeta . '/' . $nombreCarpeta, GLOB_ONLYDIR);
+    if (is_array($rutasHistoricas) && !empty($rutasHistoricas)) {
+        $rutasCandidatas = array_merge($rutasCandidatas, $rutasHistoricas);
+    }
 
     $entregado = false;
-    if (is_dir($ruta)) {
+    foreach (array_values(array_unique($rutasCandidatas)) as $ruta) {
+        if (!is_dir($ruta)) {
+            continue;
+        }
+
         $archivos = array_diff(scandir($ruta), ['.', '..']);
         foreach ($archivos as $archivo) {
             if (strpos($archivo, $prefijo) === 0) {
                 $entregado = true;
-                break;
+                break 2;
             }
         }
     }

@@ -39,12 +39,12 @@ $normalizarEtiqueta = static function (string $texto): string {
 
 $columnasOcultasOrden = [
     'email2', 'telefono2', 'nombre2', 'apellidos2',
-    'apellidos', 'id_usuario', 'permisos', 'cambio_contraseña', 'id'
+    'apellidos', 'id_usuario', 'permisos', 'cambio_contraseña', 'id', 'contraseña'
 ];
 
 $columnasOcultasTabla = [
     'email2', 'telefono2', 'nombre2', 'apellidos2',
-    'apellidos', 'id_usuario', 'permisos', 'cambio_contraseña', 'id'
+    'apellidos', 'id_usuario', 'permisos', 'cambio_contraseña', 'id', 'contraseña'
 ];
 
 if ($tabla === 'lista_espera') {
@@ -354,11 +354,13 @@ if ($resultadoListado) {
         }
 
           echo '<td><a href="?operacion=actualizar&amp;tabla=' . urlencode($tabla) . '&amp;id=' . (int)$fila['id']
+              . '&amp;seccion=' . urlencode((string)($seccionFiltro ?? ''))
               . '&amp;ordenar_por=' . urlencode($ordenarPor) . '&amp;direccion=' . urlencode($direccion) . '"></a></td>';
 
         // Enlace de eliminar con CSRF token y confirmación JS
         $urlEliminar = 'controladores/procesaeliminar.php?tabla=' . urlencode($tabla)
                      . '&id=' . (int)$fila['id']
+                     . '&seccion=' . urlencode((string)($seccionFiltro ?? ''))
                      . '&ordenar_por=' . urlencode($ordenarPor)
                      . '&direccion=' . urlencode($direccion)
                      . '&csrf_token=' . urlencode($csrfToken);
@@ -435,4 +437,24 @@ document.querySelectorAll('.btn-detalle-lista').forEach(function(boton) {
         this.textContent = visible ? '⏬' : '⏫';
     });
 });
+</script>
+
+<script>
+// Guardar posición de scroll antes de entrar a un formulario de insertar/editar.
+document.addEventListener('click', function (e) {
+    var link = e.target.closest('a[href]');
+    if (!link) return;
+    var href = link.getAttribute('href') || '';
+    if (href.indexOf('operacion=insertar') !== -1 || href.indexOf('operacion=actualizar') !== -1) {
+        sessionStorage.setItem('adminScrollRestore', Math.round(window.scrollY));
+    }
+});
+// Restaurar scroll al volver desde un formulario (post redirect).
+(function () {
+    var y = sessionStorage.getItem('adminScrollRestore');
+    if (y !== null) {
+        sessionStorage.removeItem('adminScrollRestore');
+        window.scrollTo(0, parseInt(y, 10));
+    }
+})();
 </script>
