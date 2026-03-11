@@ -4,11 +4,11 @@
 - Cambio de idioma
 - Modo oscuro
 - Modo mobil
+- Hacer un log
 
 
 # SECUNDARIO
 - Tabla sanitaria
-- Historial de archivos para los padres
 - Que los padres puedan modificar su perfil
 - Panel de estadisticas
 - Poder escoger fotos que salen en el carrusel

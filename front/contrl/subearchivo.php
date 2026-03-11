@@ -84,6 +84,17 @@ function buscarIdEducando(mysqli $conexion, $nombreCompletoOriginal, $nombreEduc
     return null;
 }
 
+// Devuelve el nombre de carpeta de ronda en formato "YYYY-YYYY".
+// Usa la lógica scout actual (curso), con fallback al año natural.
+function obtenerCarpetaRondaActual() {
+    $curso = function_exists('obtenerCursoScoutActual')
+        ? (int)obtenerCursoScoutActual()
+        : (int)date('Y');
+
+    $inicio = $curso - 1;
+    return $inicio . '-' . $curso;
+}
+
 // Comprueba si existe una columna concreta en una tabla.
 // Se usa para no romper si la migración de 'permisos' no está aplicada.
 function existeColumna(mysqli $conexion, $tabla, $columna) {
@@ -586,8 +597,29 @@ $tituloAvisoOriginal = $_POST['tituloAviso'] ?? 'sin_aviso';
 $nombreEducando = limpiarTexto($nombreEducandoOriginal);
 $tituloAviso = limpiarTexto($tituloAvisoOriginal);
 
-// Carpeta destino del archivo
-$baseDir = BASE_PATH . '/circulares/educandos/' . $nombreEducando;
+// Carpeta destino del archivo (ronda/seccion/educando)
+$rondaCarpeta = obtenerCarpetaRondaActual();
+$idEducandoRuta = buscarIdEducando($conexion, $nombreEducandoOriginal, $nombreEducando);
+$seccionEducandoRuta = 'sin_seccion';
+
+if ($idEducandoRuta !== null) {
+    $stmtSec = $conexion->prepare("SELECT seccion FROM educandos WHERE id = ? LIMIT 1");
+    if ($stmtSec) {
+        $stmtSec->bind_param('i', $idEducandoRuta);
+        $stmtSec->execute();
+        $resSec = $stmtSec->get_result();
+        if ($filaSec = $resSec->fetch_assoc()) {
+            $sec = strtolower(trim((string)($filaSec['seccion'] ?? '')));
+            $sec = preg_replace('/[^a-z0-9_\-]/', '', $sec);
+            if ($sec !== '') {
+                $seccionEducandoRuta = $sec;
+            }
+        }
+        $stmtSec->close();
+    }
+}
+
+$baseDir = BASE_PATH . '/circulares/educandos/' . $rondaCarpeta . '/' . $seccionEducandoRuta . '/' . $nombreEducando;
 $tmpDirPreferido = BASE_PATH . '/circulares/tmp';
 $tmpDirAlternativo = rtrim(sys_get_temp_dir(), DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . 'webscout_uploads';
 $tmpDir = '';
@@ -671,7 +703,7 @@ if ($extension === 'pdf' && $esFichaInscripcion) {
 if ($esFichaInscripcion && $permisosCalculados !== null) {
     // Persistencia de permisos en la BD.
     // Si algo falla, no se rompe la subida: se registra aviso + log.
-    $idEducando = buscarIdEducando($conexion, $nombreEducandoOriginal, $nombreEducando);
+    $idEducando = $idEducandoRuta ?? buscarIdEducando($conexion, $nombreEducandoOriginal, $nombreEducando);
     if ($idEducando === null) {
         $avisoSubida = $avisoSubida ?: 'ocr_sin_educando';
         error_log('No se encontró educando para actualizar permisos: ' . $nombreEducandoOriginal);

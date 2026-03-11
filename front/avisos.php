@@ -216,18 +216,49 @@ while ($aviso = $resultado->fetch_assoc()) {
                     // Comprobar si entregó archivo
                     $nombreCarpeta = limpiarTexto($nombreCompleto);
                     $tituloLimpio  = limpiarTexto($aviso['titulo']);
-                    $ruta = BASE_PATH . '/circulares/educandos/' . $nombreCarpeta;
+                    $seccionCarpeta = preg_replace('/[^a-z0-9_\-]/', '', strtolower(trim((string)($edu['seccion'] ?? ''))));
+                    if ($seccionCarpeta === '') {
+                        $seccionCarpeta = 'sin_seccion';
+                    }
+
+                    $cursoScout = function_exists('obtenerCursoScoutActual')
+                        ? (int)obtenerCursoScoutActual()
+                        : (int)date('Y');
+                    $rondaCarpeta = ($cursoScout - 1) . '-' . $cursoScout;
+
+                    $rutasCandidatas = [
+                        BASE_PATH . '/circulares/educandos/' . $rondaCarpeta . '/' . $seccionCarpeta . '/' . $nombreCarpeta,
+                        BASE_PATH . '/circulares/educandos/' . $rondaCarpeta . '/sin_seccion/' . $nombreCarpeta,
+                        BASE_PATH . '/circulares/educandos/' . $nombreCarpeta,
+                    ];
+
+                    // Si la seccion no coincide (cambio reciente o dato desfasado),
+                    // buscar tambien en cualquier seccion de la ronda actual.
+                    $globRonda = BASE_PATH . '/circulares/educandos/' . $rondaCarpeta . '/*/' . $nombreCarpeta;
+                    $rutasRonda = glob($globRonda, GLOB_ONLYDIR);
+                    if (is_array($rutasRonda) && !empty($rutasRonda)) {
+                        $rutasCandidatas = array_merge($rutasCandidatas, $rutasRonda);
+                    }
+
+                    $rutasCandidatas = array_values(array_unique($rutasCandidatas));
+
                     $entregado = false;
-                    if (is_dir($ruta)) {
+                    $prefijo = $tituloLimpio . '_' . $nombreCarpeta . '.';
+
+                    foreach ($rutasCandidatas as $ruta) {
+                        if (!is_dir($ruta)) {
+                            continue;
+                        }
+
                         $archivos = array_diff(scandir($ruta), ['.', '..']);
-                        $prefijo = $tituloLimpio . '_' . $nombreCarpeta . '.';
                         foreach ($archivos as $f) {
                             if (strpos($f, $prefijo) === 0) {
                                 $entregado = true;
-                                break;
+                                break 2;
                             }
                         }
                     }
+
                     $filaClase = $entregado ? "tr-entregado" : "tr-pendiente"; // verde o rojo
                     $puedeSubir = true;
                     $checkedSi = "checked";

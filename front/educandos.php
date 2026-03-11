@@ -3,6 +3,8 @@
 include("../inc/header.php");
 include("../inc/conexion_bd.php");
 
+requerirSesion();
+
 // limpiarTexto() ya definida en utils.php (cargado por conexion_bd)
 
 $subidaAviso = $_GET['subida_aviso'] ?? '';
@@ -16,14 +18,19 @@ if(!isset($_GET['id'])) {
 
 // COnvertimos el id a entero por seguridad
 $id_educando = intval($_GET['id']);
+$idUsuarioSesion = (int)($_SESSION['id_usuario'] ?? 0);
 
 // Consultamos la información del educando
-$sql = "SELECT * FROM educandos WHERE id = ?";
+$sql = "SELECT * FROM educandos WHERE id = ? AND id_usuario = ?";
 $stmt = $conexion->prepare($sql);
-$stmt->bind_param("i", $id_educando);
+$stmt->bind_param("ii", $id_educando, $idUsuarioSesion);
 $stmt->execute();
 $resultado = $stmt->get_result();
 $educando = $resultado->fetch_assoc();
+
+if (!$educando) {
+    die("No tienes permisos para ver este educando o no existe.");
+}
 
 // Determinar clase de color según sección
 switch(strtolower($educando['seccion'])) {
@@ -49,24 +56,54 @@ switch(strtolower($educando['seccion'])) {
 // Nombre compelto del educando
 $nombreCompleto = $educando['nombre'] . " " . $educando['apellidos'];
 
+// Nombres de los archivos principales
+$titulos = [
+    1 => "1-Ficha de inscripción",
+    2 => "2-Ficha sanitaria",
+    3 => "3-Exclusión de responsabilidad",
+    4 => "4-Autorización ausentarse de actividades"
+];
+
+// Datos de ruta para documentos del educando (estructura nueva + fallback antigua)
+$nombreCarpeta = limpiarTexto($nombreCompleto);
+$cursoScout = function_exists('obtenerCursoScoutActual')
+    ? (int)obtenerCursoScoutActual()
+    : (int)date('Y');
+$rondaCarpeta = ($cursoScout - 1) . '-' . $cursoScout;
+$seccionCarpeta = preg_replace('/[^a-z0-9_\-]/', '', strtolower(trim((string)($educando['seccion'] ?? ''))));
+if ($seccionCarpeta === '') {
+    $seccionCarpeta = 'sin_seccion';
+}
+
+$rutasPosibles = [
+    [
+        'abs' => BASE_PATH . '/circulares/educandos/' . $rondaCarpeta . '/' . $seccionCarpeta . '/' . $nombreCarpeta,
+        'web' => '../circulares/educandos/' . rawurlencode($rondaCarpeta) . '/' . rawurlencode($seccionCarpeta) . '/' . rawurlencode($nombreCarpeta),
+    ],
+    [
+        'abs' => BASE_PATH . '/circulares/educandos/' . $nombreCarpeta,
+        'web' => '../circulares/educandos/' . rawurlencode($nombreCarpeta),
+    ],
+];
+
 ?>
 
-<main>
-    <!-- Pintamos la informacion del educando -->
-    <section class="izquierda <?=$clase_color?>">
-        <h1><?=$educando['nombre']?> <?=$educando['apellidos']?></h1>
-        <p>Sección: <?=$educando['seccion']?></p>
-        <p>Año: <?=$educando['anio']?></p>
-        <p>DNI: <?=$educando['dni']?></p>
-        <!-- Boton para volver al perfil de los padres -->
-        <button class="sin-icono-auto" type="button" onclick="window.location.href='perfil.php'">&larr; Atrás</button>
-    </section>
+<main class="educandos-unificado">
+    <div class="educandos-superior">
+        <!-- Pintamos la informacion del educando -->
+        <section class="izquierda <?=$clase_color?>">
+            <h1><?=$educando['nombre']?> <?=$educando['apellidos']?></h1>
+            <p>Sección: <?=$educando['seccion']?></p>
+            <p>Año: <?=$educando['anio']?></p>
+            <p>DNI: <?=$educando['dni']?></p>
+            <button class="sin-icono-auto" type="button" onclick="window.location.href='perfil.php'">&larr; Atrás</button>
+        </section>
 
-    <!-- Apartado de documentación -->
-    <section class="derecha">
-        <h1>Documentación</h1>
+        <!-- Apartado de documentación principal -->
+        <section class="derecha">
+            <h1>Documentación</h1>
 
-        <article>
+            <article>
         <!-- Cada documento tiene un formulario para subir el archivo -->
         <div class="documentacion" id="doc1">
             <p>1-Ficha de inscripción</p>
@@ -119,8 +156,96 @@ $nombreCompleto = $educando['nombre'] . " " . $educando['apellidos'];
                 <input class="btn-archivo btn-subir" type='submit' value='⬆️ Subir'>
             </form>
         </div>
-        </article>
+            </article>
+        </section>
+    </div>
 
+    <section class="documentos-subidos-panel">
+        <h2>Archivos subidos</h2>
+        <?php
+        $rutaDocumentosAbs = '';
+        $rutaDocumentosWeb = '';
+
+        foreach ($rutasPosibles as $rutaCandidata) {
+            if (is_dir($rutaCandidata['abs'])) {
+                $rutaDocumentosAbs = $rutaCandidata['abs'];
+                $rutaDocumentosWeb = $rutaCandidata['web'];
+                break;
+            }
+        }
+
+        if ($rutaDocumentosAbs === '') {
+            echo "<p>Este educando aún no tiene archivos subidos.</p>";
+        } else {
+            $archivosListado = array_values(array_filter(scandir($rutaDocumentosAbs), function ($archivo) use ($rutaDocumentosAbs) {
+                return $archivo !== '.' && $archivo !== '..' && is_file($rutaDocumentosAbs . '/' . $archivo);
+            }));
+
+            natcasesort($archivosListado);
+
+            if (empty($archivosListado)) {
+                echo "<p>No hay archivos en la carpeta del educando.</p>";
+            } else {
+                echo "<div class='documentos-grid'>";
+
+                foreach ($archivosListado as $archivo) {
+                    $rutaAbs = $rutaDocumentosAbs . '/' . $archivo;
+                    $urlArchivo = $rutaDocumentosWeb . '/' . rawurlencode($archivo);
+                    $extension = strtolower(pathinfo($archivo, PATHINFO_EXTENSION));
+
+                    echo "<article class='doc-card'>";
+
+                    $previewMostrada = false;
+
+                    if (class_exists('Imagick')) {
+                        try {
+                            $imagick = new Imagick();
+
+                            if ($extension === 'pdf') {
+                                $imagick->setResolution(200, 200);
+                                $imagick->readImage($rutaAbs . '[0]');
+                            } elseif (in_array($extension, ['png', 'jpg', 'jpeg', 'webp'], true)) {
+                                $imagick->readImage($rutaAbs);
+                            }
+
+                            if ($imagick->getNumberImages() > 0) {
+                                $imagick->setIteratorIndex(0);
+                                $imagick->transformImageColorspace(Imagick::COLORSPACE_SRGB);
+                                $imagick->setImageBackgroundColor('white');
+
+                                if ($imagick->getImageAlphaChannel()) {
+                                    $imagick->setImageAlphaChannel(Imagick::ALPHACHANNEL_REMOVE);
+                                }
+
+                                $imagick = $imagick->mergeImageLayers(Imagick::LAYERMETHOD_FLATTEN);
+                                $imagick->thumbnailImage(260, 0);
+                                $imagick->setImageFormat('jpeg');
+
+                                $base64 = base64_encode($imagick->getImageBlob());
+                                echo "<img class='doc-preview' src='data:image/jpeg;base64,{$base64}' alt='Preview de " . htmlspecialchars($archivo) . "'>";
+                                $previewMostrada = true;
+                            }
+
+                            $imagick->clear();
+                            $imagick->destroy();
+                        } catch (Exception $e) {
+                            $previewMostrada = false;
+                        }
+                    }
+
+                    if (!$previewMostrada) {
+                        echo "<p class='doc-sin-preview'>Sin preview disponible.</p>";
+                    }
+
+                    echo "<p class='doc-nombre' title='" . htmlspecialchars($archivo) . "'><strong>" . htmlspecialchars($archivo) . "</strong></p>";
+                    echo "<a class='doc-link' href='" . htmlspecialchars($urlArchivo) . "' target='_blank'>Abrir archivo</a>";
+                    echo "</article>";
+                }
+
+                echo "</div>";
+            }
+        }
+        ?>
     </section>
 </main>
 
@@ -163,25 +288,12 @@ document.querySelectorAll('.input-archivo-oculto').forEach(function(input) {
 
 <?php
 
-// Nombres de los archivos
-$titulos = [
-    1 => "1-Ficha de inscripción",
-    2 => "2-Ficha sanitaria",
-    3 => "3-Exclusión de responsabilidad",
-    4 => "4-Autorización ausentarse de actividades"
-];
-
-// Limpiamos el nombre completo para usarlo como parte del nombre de los archivos
-$nombreCarpeta = limpiarTexto($nombreCompleto);
-
-// Ruta de la carpeta del educando en el servidor
-$ruta = BASE_PATH . '/circulares/educandos/' . $nombreCarpeta;
-
 // Comprobamos si la carpeta existe y listamos los archivos para marcar los documentos entregados
-if (is_dir($ruta)) {
+foreach ($rutasPosibles as $ruta) {
+if (is_dir($ruta['abs'])) {
 
     // Recopilamos los archivos subidos a la ruta
-    $archivos = array_diff(scandir($ruta), ['.', '..']);
+    $archivos = array_diff(scandir($ruta['abs']), ['.', '..']);
 
     // Por cada titulo/archivo
     foreach ($titulos as $num => $titulo) {
@@ -200,6 +312,7 @@ if (is_dir($ruta)) {
             }
         }
     }
+}
 }
 
 include("../inc/footer.html");

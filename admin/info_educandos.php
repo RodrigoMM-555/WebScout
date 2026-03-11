@@ -74,9 +74,38 @@ echo "<h2>Documentación del educando</h2>";
 // Se construye el nombre de carpeta del niño con el mismo formato usado al subir archivos.
 $nombreCarpetaEducando = limpiarTexto(trim(($educando['nombre'] ?? '') . ' ' . ($apellidoEducando ?? '')));
 
+// Nueva estructura: ronda/seccion/educando.
+// Se mantiene compatibilidad con la ruta antigua.
+$cursoScout = function_exists('obtenerCursoScoutActual')
+    ? (int)obtenerCursoScoutActual()
+    : (int)date('Y');
+$rondaCarpeta = ($cursoScout - 1) . '-' . $cursoScout;
+$seccionCarpeta = preg_replace('/[^a-z0-9_\-]/', '', strtolower(trim((string)($educando['seccion'] ?? ''))));
+if ($seccionCarpeta === '') {
+    $seccionCarpeta = 'sin_seccion';
+}
+
 // Ruta absoluta para leer archivos del educando desde servidor, y ruta web para abrirlos.
-$rutaDocumentosAbs = BASE_PATH . '/circulares/educandos/' . $nombreCarpetaEducando;
-$rutaDocumentosWeb = '../circulares/educandos/' . rawurlencode($nombreCarpetaEducando);
+$rutasPosibles = [
+    [
+        'abs' => BASE_PATH . '/circulares/educandos/' . $rondaCarpeta . '/' . $seccionCarpeta . '/' . $nombreCarpetaEducando,
+        'web' => '../circulares/educandos/' . rawurlencode($rondaCarpeta) . '/' . rawurlencode($seccionCarpeta) . '/' . rawurlencode($nombreCarpetaEducando),
+    ],
+    [
+        'abs' => BASE_PATH . '/circulares/educandos/' . $nombreCarpetaEducando,
+        'web' => '../circulares/educandos/' . rawurlencode($nombreCarpetaEducando),
+    ],
+];
+
+$rutaDocumentosAbs = '';
+$rutaDocumentosWeb = '';
+foreach ($rutasPosibles as $rutaCandidata) {
+    if (is_dir($rutaCandidata['abs'])) {
+        $rutaDocumentosAbs = $rutaCandidata['abs'];
+        $rutaDocumentosWeb = $rutaCandidata['web'];
+        break;
+    }
+}
 
 if (!is_dir($rutaDocumentosAbs)) {
     echo "<p>El educando aún no tiene carpeta de documentación.</p>";
