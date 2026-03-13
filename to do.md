@@ -36,10 +36,6 @@ Hay que hacer que automaticamente se cree una neuva cada año
 Hacerlo multigrupo
 
 
-# Pruebas
-- Poner en marcha el servidor para comprobar rutas
-
-
 # SEGURIDAD
 DOCUMENTO
 - Quién es el responsable del tratamiento (nombre de la asociación)

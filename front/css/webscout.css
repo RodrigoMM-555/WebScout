@@ -266,6 +266,8 @@ header {
     width: 100%;
     padding: 10px;
     box-shadow: var(--sombra);
+    z-index: 1000;
+    position: relative;
 }
 
 header > div {
@@ -389,7 +391,7 @@ ul.paño::after {
     color: var(--morado-oscuro);
     box-shadow: 0 6px 16px rgba(0,0,0,0.18);
     cursor: pointer;
-    z-index: 1000;
+    z-index: 100;
     transition: background 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
 }
 
