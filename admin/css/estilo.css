@@ -110,6 +110,18 @@ button[type="submit"]:not(:has(img, svg, i, [class*="icon"])):not(.sin-icono-aut
     content: "✅ ";
 }
 
+a[href="index.php?tabla=avisos"]:not(:has(img, svg, i, [class*="icon"]))::before {
+    content: "📣 ";
+}
+
+a[class="donut-link"]:not(:has(img, svg, i, [class*="icon"]))::before {
+    content: "📄";
+}
+
+button[class="descarga-todo-btn"]:not(:has(img, svg, i, [class*="icon"]))::before {
+    content: "📥 ";
+}
+
 /* ===================== 2) Layout ===================== */
 nav {
     background: var(--morado-principal);
@@ -502,6 +514,20 @@ form .control_formulario.booleano .check-item input[type="checkbox"] {
     accent-color: var(--morado-principal);
 }
 
+form .aviso-obligatorio {
+    display: block;
+    min-height: 18px;
+    margin-top: 2px;
+    color: #b42318;
+    font-size: 0.78rem;
+    font-weight: 600;
+    line-height: 1.2;
+}
+
+form .aviso-obligatorio.is-hidden {
+    visibility: hidden;
+}
+
 label {
     font-weight: 700;
     color: var(--admin-texto);
@@ -665,19 +691,6 @@ div.asi {
     box-shadow: var(--admin-sombra-suave);
 }
 
-div.asi a {
-    background: var(--morado-medio);
-    color: #fff;
-    padding: 8px 14px;
-    border-radius: 10px;
-    text-decoration: none;
-    font-weight: 600;
-    transition: .25s;
-    cursor: pointer;
-    touch-action: manipulation;
-    -webkit-tap-highlight-color: transparent;
-}
-
 .resumen-donuts {
     /* Rejilla responsive de tarjetas donut (3 o 4 según el aviso). */
     display: grid;
@@ -706,6 +719,22 @@ div.asi a {
     position: relative;
     width: 100%;
     height: 220px;
+}
+
+.donut-link {
+    /* Enlace debajo del donut para ver circulares (solo si tiene circulares). */
+    display: block;
+    margin-top: 8px;
+    text-align: center;
+    color: var(--morado-oscuro);
+    font-weight: 600;
+    text-decoration: none;
+    transition: .25s ease;
+}
+
+.donut-link:hover {
+    background: var(--morado-oscuro);
+    color: #fff;
 }
 
 .donut-total {
@@ -828,6 +857,41 @@ main.info-educandos-page {
 .doc-link:hover {
     background: #e5d4f8;
     text-decoration: none;
+}
+
+.asi a {
+    background: var(--morado-medio);
+    font-size: 1rem;
+    color: #fff;
+    padding: 8px 14px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 700;
+    transition: .25s;
+    cursor: pointer;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.asi a:hover {
+    background: var(--morado-oscuro);
+}
+
+.descarga-todo-btn {
+    font-size: 1rem;
+    padding: 8px 14px;
+    background: #2fa35a;
+    color: #fff;
+    font-weight: 600;
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    box-shadow: 0 8px 16px rgba(28, 94, 57, .26);
+    transition: .25s;
+}
+
+.descarga-todo-btn:hover {
+    background: #24864a;
 }
 
 /* ===================== 7) Mensajes flash y utilidades ===================== */

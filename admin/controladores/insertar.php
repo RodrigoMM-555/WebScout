@@ -25,12 +25,34 @@
     // Pedimos la estructura de la tabla
     $resultado = $conexion->query("DESCRIBE `$tabla`;");
 
-    // Recorremos las columnas
+    $columnas = [];
     while ($fila = $resultado->fetch_assoc()) {
+        $columnas[] = $fila;
+    }
+
+    // Campos obligatorios segun esquema (NOT NULL, excepto auto_increment).
+    $camposObligatorios = [];
+    foreach ($columnas as $columna) {
+        $esNotNull = (($columna['Null'] ?? 'YES') === 'NO');
+        $esAutoIncrement = (($columna['Extra'] ?? '') === 'auto_increment');
+        if ($esNotNull && !$esAutoIncrement) {
+            $camposObligatorios[] = (string)$columna['Field'];
+        }
+    }
+
+    $esCampoObligatorio = static function (string $campo) use ($camposObligatorios): bool {
+        return in_array($campo, $camposObligatorios, true);
+    };
+
+    // Recorremos las columnas
+    foreach ($columnas as $fila) {
         $clave = $fila['Field']; // nombre de la columna
         $tipoColumna = strtolower((string)$fila['Type']);
 
         $clave2 = ucfirst($normalizarTexto(str_replace('_', ' ', $clave)));
+        $avisoObligatorio = $esCampoObligatorio($clave)
+            ? "<small class='aviso-obligatorio'>*Obligatorio</small>"
+            : "<small class='aviso-obligatorio is-hidden' aria-hidden='true'>&nbsp;</small>";
 
 
         // Saltar columna auto_increment
@@ -51,6 +73,7 @@
                         <option value="posta">Posta</option>
                         <option value="rutas">Rutas</option>
                     </select>
+                    '.$avisoObligatorio.'
                 </div>
                 ';
                 continue;
@@ -66,6 +89,7 @@
                     <option value="posta" '.($seccion=="posta" ? "selected" : "").'>Posta</option>
                     <option value="rutas" '.($seccion=="rutas" ? "selected" : "").'>Rutas</option>
                 </select>
+                '.$avisoObligatorio.'
             </div>
             ';
         }
@@ -81,6 +105,7 @@
                     <label class='check-item seccion-posta'><input type='checkbox' name='secciones[]' value='posta'> <span>Posta</span></label>
                     <label class='check-item seccion-rutas'><input type='checkbox' name='secciones[]' value='rutas'> <span>Rutas</span></label>
                     <label class='check-item seccion-todas'><input type='checkbox' name='secciones[]' value='colonia,manada,tropa,posta,rutas'> <span>Todas</span></label>
+                    $avisoObligatorio
                 </div>
             ";
         }
@@ -103,6 +128,7 @@
             }
             echo "
                     </select>
+                    $avisoObligatorio
                 </div>
             ";
         }
@@ -115,8 +141,15 @@
                     <input type='datetime-local'
                            name='$clave'
                            step='60'>
+                    $avisoObligatorio
                 </div>
             ";
+        }
+
+        // LISTA ESPERA: ocultamos fecha_registro para que no sea editable.
+        elseif ($esListaEspera && $fila['Field'] === 'fecha_registro') {
+            echo "<input type='hidden' name='fecha_registro' value='" . date('Y-m-d') . "'>";
+            continue;
         }
 
         // FECHA DE REGISTRO (solo fecha)
@@ -125,6 +158,7 @@
                 <div class='control_formulario'>
                     <label>$clave2</label>
                     <input type='date' name='$clave' value='" . date('Y-m-d') . "'>
+                    $avisoObligatorio
                 </div>
             ";
         }
@@ -135,9 +169,10 @@
                 <div class='control_formulario'>
                     <label>$clave2</label>
                     <select name='circular'>
-                        <option value='si'>Si</option>
                         <option value='no'>No</option>
+                        <option value='si'>Si</option>
                     </select>
+                    $avisoObligatorio
                 </div>
             ";
         }
@@ -151,6 +186,7 @@
                         <option value='usuario'>Usuario</option>
                         <option value='admin'>Administrador</option>
                     </select>
+                    $avisoObligatorio
                 </div>
             ";
         }
@@ -167,6 +203,7 @@
                         <option value='excursion'>Excursion</option>
                         <option value='otro'>Otro</option>
                     </select>
+                    $avisoObligatorio
                 </div>
             ";
         }
@@ -179,6 +216,7 @@
                     <select name="anio" id="select-anio">
                         <option value="">—</option>
                     </select>
+                    '.$avisoObligatorio.'
                 </div>
             ';
         }
@@ -193,6 +231,7 @@
                     <label class='check-item'><input type='checkbox' name='permisos[]' value='2'> <span>WhatsApp</span></label>
                     <label class='check-item'><input type='checkbox' name='permisos[]' value='4'> <span>Solo</span></label>
                     <label class='check-item'><input type='checkbox' name='permisos[]' value='8'> <span>Fotos</span></label>
+                    $avisoObligatorio
                 </div>
             ";
         }
@@ -226,6 +265,7 @@
                         <input type='checkbox' name='estuvo_en_grupo' value='1'>
                         <span>Estuvo en el grupo antes</span>
                     </label>
+                    $avisoObligatorio
                 </div>
             ";
         }
@@ -239,6 +279,7 @@
                         <input type='checkbox' name='cambio_contraseña_visual' value='1' checked disabled>
                         <span>$clave2 (obligatorio al crear)</span>
                     </label>
+                    $avisoObligatorio
                 </div>
             ";
         }
@@ -252,6 +293,7 @@
                         <input type='checkbox' name='$clave' value='1'>
                         <span>$clave2</span>
                     </label>
+                    $avisoObligatorio
                 </div>
             ";
         }
@@ -262,6 +304,7 @@
                 <div class='control_formulario'>
                     <label>$clave2</label>
                     <input type='date' name='$clave'>
+                    $avisoObligatorio
                 </div>
             ";
         }
@@ -272,6 +315,7 @@
                 <div class='control_formulario'>
                     <label>$clave2</label>
                     <textarea name='$clave' placeholder='$clave2'></textarea>
+                    $avisoObligatorio
                 </div>
             ";
         }
@@ -282,6 +326,7 @@
                 <div class='control_formulario'>
                     <label>$clave2</label>
                     <input type='password' name='$clave' placeholder='$clave2'>
+                    $avisoObligatorio
                 </div>
             ";
         }
@@ -292,6 +337,7 @@
                 <div class='control_formulario'>
                     <label>$clave2</label>
                     <input type='email' name='$clave' placeholder='$clave2'>
+                    $avisoObligatorio
                 </div>
             ";
         }
@@ -302,6 +348,7 @@
                 <div class='control_formulario'>
                     <label>$clave2</label>
                     <input type='tel' name='$clave' placeholder='$clave2' maxlength='20' inputmode='tel'>
+                    $avisoObligatorio
                 </div>
             ";
         }
@@ -312,6 +359,7 @@
                 <div class='control_formulario'>
                     <label>$clave2</label>
                     <input type='text' name='$clave' placeholder='$clave2'>
+                    $avisoObligatorio
                 </div>
             ";
         }

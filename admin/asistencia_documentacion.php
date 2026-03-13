@@ -241,8 +241,11 @@ foreach ($donutPayload['charts'] as $chart) {
             <div class='donut-wrap'>
                 <canvas id='" . htmlspecialchars($chart['id']) . "'></canvas>
                 <div class='donut-total'>" . (int)$chart['total'] . "</div>
-            </div>
-          </article>";
+            </div>";
+            if (strpos($chart['titulo'], 'Con circular') == true) {
+                echo "<a href='verCirculares.php?id_aviso=" . $id_aviso . "' class='donut-link'>Ver circulares</a>";
+            }
+    echo "</article>";
 }
 echo "</section>";
 
@@ -271,16 +274,17 @@ foreach (['si','pendiente','no'] as $key) {
     foreach ($grupos[$key] as $edu) {
 
         $nombre = $edu['nombre'] . ' ' . $edu['apellidos'];
-        $seccion = htmlspecialchars($edu['seccion']);
+        $seccionClase = strtolower(trim((string)$edu['seccion']));
+        $seccionMostrada = htmlspecialchars(ucfirst($seccionClase));
 
         if ($key == 'si' || $key == 'pendiente') {
-            echo "<tr class='seccion-{$edu['seccion']}'>
+            echo "<tr class='seccion-{$seccionClase}'>
                     <td>" . htmlspecialchars($nombre) . "</td>
-                    <td>$seccion</td>";
+                    <td>" . $seccionMostrada . "</td>";
         } else {
             echo "<tr>
                     <td>" . htmlspecialchars($nombre) . "</td>
-                    <td>$seccion</td>";
+                    <td>" . $seccionMostrada . "</td>";
         }
 
         // Solo comprobamos archivos si hay circular
