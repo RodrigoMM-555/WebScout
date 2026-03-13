@@ -1,0 +1,76 @@
+<canvas></canvas>
+
+<script>
+    let lienzo = document.querySelector("canvas");
+    let contexto = lienzo.getContext("2d");
+
+    lienzo.width = window.innerWidth;
+    lienzo.height = window.innerHeight;
+
+    // Ajusta el tamaño del canvas al cambiar el tamaño de la ventana
+    window.addEventListener("resize", () => {
+        lienzo.width = window.innerWidth;
+        lienzo.height = window.innerHeight;
+    });
+
+    let circulos = [];
+
+    function crearCirculo() {
+
+        // Posicion y tamaño aleatorio
+        let radio = Math.random() * 50;
+        let x = -radio; // Empieza fuera del canvas (lado izquierdo)
+        let y = Math.random() * lienzo.height;
+
+        // Color aleatorio
+        // Colores más suaves (rango reducido)
+        let rojo = Math.round(Math.random() * 180 + 50); // 50-230
+        let verde = Math.round(Math.random() * 180 + 50);
+        let azul = Math.round(Math.random() * 180 + 50);
+        // Más transparencia (alpha bajo)
+        let alpha = (Math.random() * 0.25 + 0.10).toFixed(2); // 0.10-0.35
+        let color = "rgba(" + rojo + ", " + verde + "," + azul + "," + alpha + ")";
+
+        let velocidad = Math.random() * 2 + 1;
+
+        circulos.push({
+            x: x,
+            y: y,
+            radio: radio,
+            color: color,
+            velocidad: velocidad
+        });
+
+        
+    }
+
+    // Genera círculos constantemente
+    setInterval(crearCirculo, 50);
+
+    function animar() {
+
+        contexto.clearRect(0, 0, lienzo.width, lienzo.height);
+
+        for (let i = 0; i < circulos.length; i++) {
+
+            circulos[i].x += circulos[i].velocidad;
+
+            contexto.fillStyle = circulos[i].color;
+            contexto.beginPath();
+            contexto.arc(circulos[i].x, circulos[i].y, circulos[i].radio, 0, Math.PI * 2);
+            contexto.fill();
+        }
+
+        // Eliminar los que ya están fuera completamente
+        for (let i = 0; i < circulos.length; i++) {
+            if (circulos[i].x - circulos[i].radio > lienzo.width) {
+                circulos.splice(i, 1);
+                i--;
+            }
+        }
+
+        requestAnimationFrame(animar);
+    }
+
+    animar();
+</script>

@@ -99,6 +99,17 @@ button[onclick*="volver"]:not(:has(img, svg, i, [class*="icon"])):not(.sin-icono
    ========================== LOGIN =========================
    ========================================================= */
 
+.circulitos {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: 0;
+}
+
+
 body.login {
     background: linear-gradient(var(--morado-claro), var(--morado-medio));
     display: flex;
@@ -115,6 +126,8 @@ body.login {
     text-align: center;
     box-shadow: var(--sombra);
     flex: 0;
+    position: relative;
+    z-index: 10;
 }
 
 .login h2 {

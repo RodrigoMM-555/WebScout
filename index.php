@@ -19,6 +19,11 @@ require_once __DIR__ . '/tools/config.php';
     <link rel="stylesheet" href="<?= BASE_URL ?>/front/css/webscout.css">
 </head>
 <body class="login">
+    <div class="circulitos">
+    <?php
+        include 'inc/circulos.html';
+    ?>
+    </div>
     <main>
         <img src="<?= BASE_URL ?>/img/logo.png" alt="Logo WebScout">
         <h2>Iniciar sesión</h2>
