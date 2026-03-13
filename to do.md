@@ -3,7 +3,6 @@
 - Seguridad
 - Cambio de idioma
 - Modo mobil
-- Hacer un log
 
 
 # SECUNDARIO
