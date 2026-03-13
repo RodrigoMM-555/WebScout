@@ -16,6 +16,7 @@ if (session_status() === PHP_SESSION_NONE) {
 if (!defined('BASE_URL')) {
     require_once __DIR__ . '/../tools/config.php';
 }
+require_once __DIR__ . '/../tools/log.php';
 
 // Detectar la página actual para marcar la nav activa
 $paginaActual = basename($_SERVER['PHP_SELF']); // ej: "avisos.php"

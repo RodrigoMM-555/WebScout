@@ -2,7 +2,6 @@
 # PRIORITARIO
 - Seguridad
 - Cambio de idioma
-- Modo oscuro
 - Modo mobil
 - Hacer un log
 
@@ -12,6 +11,8 @@
 - Que los padres puedan modificar su perfil
 - Panel de estadisticas
 - Poder escoger fotos que salen en el carrusel
+- Modo oscuro
+
 
 
 # TERCIARIO
