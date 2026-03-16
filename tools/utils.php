@@ -162,7 +162,60 @@ function obtenerCursoScoutActual(?DateTimeInterface $fecha = null): int {
     $fechaBase = $fecha ?? new DateTimeImmutable('now');
     $anio = (int)$fechaBase->format('Y');
     $mes = (int)$fechaBase->format('n');
-    return ($mes >= 9) ? $anio + 1 : $anio;
+    $curso = ($mes >= 9) ? $anio + 1 : $anio;
+
+    // --- Lógica de copia de carpeta de ronda ---
+    $rutaBase = __DIR__ . '/../circulares/educandos/';
+    // Buscar la carpeta de año más reciente existente
+    $carpetas = glob($rutaBase . '*-*', GLOB_ONLYDIR);
+    $maxA = 0;
+    $maxB = 0;
+    $carpetaActual = '';
+    foreach ($carpetas as $carpeta) {
+        if (preg_match('#(\\d{4})-(\\d{4})$#', $carpeta, $m)) {
+            $a = (int)$m[1];
+            $b = (int)$m[2];
+            if ($b > $maxB || ($b == $maxB && $a > $maxA)) {
+                $maxA = $a;
+                $maxB = $b;
+                $carpetaActual = $carpeta;
+            }
+        }
+    }
+    // Si la carpeta actual termina en el año anterior al curso, y la nueva no existe, copiar
+    $nuevoNombre = ($curso - 1) . '-' . $curso;
+    $nuevaCarpeta = $rutaBase . $nuevoNombre;
+    if ($carpetaActual && !is_dir($nuevaCarpeta)) {
+        if (preg_match('#(\\d{4})-(\\d{4})$#', $carpetaActual, $m)) {
+            $b = (int)$m[2];
+            if ($b == $curso - 1) {
+                // Copiar recursivamente la carpeta
+                copiarDirectorio($carpetaActual, $nuevaCarpeta);
+            }
+        }
+    }
+    // --- Fin lógica de copia ---
+    return $curso;
+}
+
+/**
+ * Copia recursivamente un directorio origen a destino
+ */
+function copiarDirectorio($origen, $destino) {
+    if (!is_dir($origen)) return false;
+    if (!mkdir($destino, 0777, true) && !is_dir($destino)) return false;
+    $archivos = scandir($origen);
+    foreach ($archivos as $archivo) {
+        if ($archivo === '.' || $archivo === '..') continue;
+        $rutaOrigen = $origen . '/' . $archivo;
+        $rutaDestino = $destino . '/' . $archivo;
+        if (is_dir($rutaOrigen)) {
+            copiarDirectorio($rutaOrigen, $rutaDestino);
+        } else {
+            copy($rutaOrigen, $rutaDestino);
+        }
+    }
+    return true;
 }
 
 /**

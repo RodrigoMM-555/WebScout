@@ -94,6 +94,17 @@ CREATE TABLE lista_espera (
 );
 
 
+-- Tabla de circualres principales
+CREATE TABLE circulares_principales (
+    id_educando INT PRIMARY KEY,
+    ficha_inscripcion VARCHAR(255) DEFAULT NULL,
+    ficha_sanitaria VARCHAR(255) DEFAULT NULL,
+    exclusion_responsabilidad VARCHAR(255) DEFAULT NULL,
+    autorizacion_ausentarse VARCHAR(255) DEFAULT NULL,
+    FOREIGN KEY (id_educando) REFERENCES educandos(id) ON DELETE CASCADE
+);
+
+
 -- Crear el usuario y asignar permisos
 CREATE USER 
 'Uwebscout'@'localhost' 

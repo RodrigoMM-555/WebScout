@@ -8,6 +8,11 @@
  * Para "1-Ficha de inscripción" convierte PDF a PNG y calcula permisos de
  * forma automática mediante análisis por coordenadas y densidad de píxeles.
  */
+
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 session_start();
 include("../../inc/conexion_bd.php");
 
@@ -206,55 +211,6 @@ function convertirPdfAPng($rutaPdf, $rutaPng, &$error) {
     }
 }
 
-// OCR auxiliar (actualmente no es el método principal para permisos,
-// pero se deja para compatibilidad y futuras mejoras).
-function obtenerPalabrasTesseract($rutaPng) {
-    if (!function_exists('exec')) {
-        return [];
-    }
-
-    $bin = '';
-    exec('command -v tesseract', $salidaBin, $retBin);
-    if ($retBin !== 0 || empty($salidaBin[0])) {
-        return [];
-    }
-    $bin = trim($salidaBin[0]);
-
-    $cmd = escapeshellarg($bin) . ' ' . escapeshellarg($rutaPng) . ' stdout --dpi 300 -l spa+eng tsv 2>/dev/null';
-    exec($cmd, $lineas, $ret);
-    if ($ret !== 0 || empty($lineas)) {
-        return [];
-    }
-
-    $palabras = [];
-    foreach ($lineas as $idx => $linea) {
-        if ($idx === 0 || trim($linea) === '') {
-            continue;
-        }
-
-        $cols = explode("\t", $linea);
-        if (count($cols) < 12) {
-            continue;
-        }
-
-        $texto = trim($cols[11]);
-        $conf = (float)$cols[10];
-        if ($texto === '' || $conf < 20) {
-            continue;
-        }
-
-        $palabras[] = [
-            'texto' => $texto,
-            'texto_norm' => normalizarBusqueda($texto),
-            'left' => (int)$cols[6],
-            'top' => (int)$cols[7],
-            'width' => (int)$cols[8],
-            'height' => (int)$cols[9],
-        ];
-    }
-
-    return $palabras;
-}
 
 // Detecta si una región está marcada (escritura/tachado) analizando
 // densidad de píxeles oscuros en el interior del recuadro.
@@ -665,7 +621,6 @@ $esFichaInscripcion = (limpiarTexto($tituloAvisoOriginal) === limpiarTexto('1-Fi
 $rutaFinal = '';
 $permisosCalculados = null;
 $avisoSubida = '';
-
 if ($extension === 'pdf' && $esFichaInscripcion) {
     // Copia temporal PNG SOLO para leer casillas (no se entrega al usuario).
     $rutaPngTemporal = $tmpDir . '/' . uniqid('ocr_', true) . '.png';
