@@ -54,14 +54,15 @@ echo "<div class='info-educandos-layout'>";
 echo "<section class='info-izquierda'>";
 echo "<h2>Información del Educando</h2>";
 echo "<p><strong>Nombre:</strong> " . htmlspecialchars($educando['nombre']) . "</p>";
-echo "<p><strong>Apellido:</strong> " . htmlspecialchars($apellidoEducando) . "</p>";
+echo "<p><strong>Apellidos:</strong> " . htmlspecialchars($apellidoEducando) . "</p>";
 echo "<p><strong>Año:</strong> " . htmlspecialchars($educando['anio']) . "</p>";
 echo "<p><strong>Sección:</strong> " . htmlspecialchars($educando['seccion']) . "</p>";
 echo "<p><strong>DNI:</strong> " . htmlspecialchars($educando['dni']) . "</p>";
 
 echo "<h2>Información de tutores</h2>";
 echo "<h3>Tutor 1</h3>";
-echo "<p><strong>Nombre:</strong> " . htmlspecialchars(trim(($usuario['nombre'] ?? '') . ' ' . ($usuario['apellidos'] ?? ''))) . "</p>";
+echo "<p><strong>Nombre:</strong> " . htmlspecialchars($usuario['nombre']) . "</p>";
+echo "<p><strong>Apellidos</strong> " . htmlspecialchars($usuario['apellidos'] ?? '') . "</p>";
 echo "<p><strong>Email:</strong> " . htmlspecialchars($usuario['email'] ?? '') . "</p>";
 echo "<p><strong>Teléfono:</strong> " . htmlspecialchars($usuario['telefono'] ?? '') . "</p>";
 echo "<p><strong>Dirección:</strong> " . htmlspecialchars($usuario['direccion'] ?? '') . "</p>";
@@ -72,7 +73,10 @@ $email2     = trim($usuario['email2'] ?? '');
 $telefono2  = trim($usuario['telefono2'] ?? '');
 if ($nombre2 !== '' || $apellidos2 !== '') {
     echo "<h3>Tutor 2</h3>";
-    echo "<p><strong>Nombre:</strong> " . htmlspecialchars(trim($nombre2 . ' ' . $apellidos2)) . "</p>";
+    echo "<p><strong>Nombre:</strong> " . htmlspecialchars($nombre2) . "</p>";
+    if ($apellidos2 !== '') {
+        echo "<p><strong>Apellidos:</strong> " . htmlspecialchars($apellidos2) . "</p>";
+    }
     if ($email2 !== '') {
         echo "<p><strong>Email:</strong> " . htmlspecialchars($email2) . "</p>";
     }

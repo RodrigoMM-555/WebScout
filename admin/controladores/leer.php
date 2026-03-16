@@ -389,7 +389,7 @@ if ($resultadoListado) {
         }
 
         if ($tabla === "avisos") {
-            echo "<tr><td colspan='100%'><a href='asistencia_documentacion.php?id_aviso=" . (int)$fila['id'] . "'>Ver asistencia y documentación</a></td></tr>";
+            echo "<tr><td colspan='100%'><a href='asistencia_documentacion.php?id_aviso=" . (int)$fila['id'] . "&ordenar_por=" . htmlspecialchars($_GET['ordenar_por'] ?? 'id') . "&direccion=" . htmlspecialchars($_GET['direccion'] ?? 'ASC') . "'>Ver asistencia y documentación</a></td></tr>";
         }
     }
 }

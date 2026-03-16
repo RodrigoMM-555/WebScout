@@ -36,7 +36,7 @@
         } else {
             echo "<button class='descarga-btn' onclick='descargarTodo()'>Descargar todo</button>";
         }
-        echo "<a href='asistencia_documentacion.php?id_aviso=" . $id_aviso . "'>Volver</a>
+        echo "<a class='volver-asistencia' href='#' onclick='history.back(); return false;'>Volver</a>
                 </ul>
             </div>
             <section class='documentos-subidos-panel'>";

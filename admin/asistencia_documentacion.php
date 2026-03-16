@@ -79,7 +79,7 @@ foreach ($educandos as $edu) {
 // Pintar tabla
 echo "<div class='asi'>
         <h1>Asistencia y documentación: " . htmlspecialchars($tituloAviso) . "</h1>
-        <a href='index.php?tabla=avisos'>Volver a avisos</a>
+        <a class='volver-avisos' href='index.php?tabla=avisos&ordenar_por=" . htmlspecialchars($_GET['ordenar_por'] ?? 'id') . "&direccion=" . htmlspecialchars($_GET['direccion'] ?? 'ASC') . "' >Volver a avisos</a>
       </div>";
 
 $ordenSecciones = ['colonia', 'manada', 'tropa', 'posta', 'rutas'];

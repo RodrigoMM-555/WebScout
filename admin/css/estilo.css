@@ -98,7 +98,8 @@ a[href*="operacion=ia_admin"]:not(:has(img, svg, i, [class*="icon"]))::before {
     content: "🤖 ";
 }
 
-a[href*="asistencia_documentacion.php"]:not(:has(img, svg, i, [class*="icon"]))::before {
+a[href*="asistencia_documentacion.php"]:not(:has(img, svg, i, [class*="icon"]))::before,
+a.volver-asistencia:not(:has(img, svg, i, [class*="icon"]))::before {
     content: "📋 ";
 }
 
@@ -110,7 +111,7 @@ button[type="submit"]:not(:has(img, svg, i, [class*="icon"])):not(.sin-icono-aut
     content: "✅ ";
 }
 
-a[href="index.php?tabla=avisos"]:not(:has(img, svg, i, [class*="icon"]))::before {
+a.volver-avisos:not(:has(img, svg, i, [class*="icon"]))::before {
     content: "📣 ";
 }
 
@@ -216,6 +217,7 @@ tr:hover {
 
 tr a {
     text-decoration: none;
+    color: #1976d2;
 }
 
 tr.seccion-colonia td { background-color: #ffe5b4 !important; }
