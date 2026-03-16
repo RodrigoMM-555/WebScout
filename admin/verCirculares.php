@@ -21,11 +21,22 @@
         $tituloAviso = $aviso['titulo'] ?? '';
         $secciones = array_values(array_unique(array_filter(array_map(function($v){return strtolower(trim($v));}, explode(',', (string)$aviso['secciones'])))));
 
+        // Mostrar mensaje flash si existe
+        if (function_exists('mostrarFlash')) mostrarFlash();
+
         echo "<div class='asi'>
-                <h1>Archivos subidos de " . htmlspecialchars($tituloAviso) . "</h1>
-                <ul>
-                    <button class='descarga-todo-btn' onclick='descargarTodo()'>Descargar todo</button>
-                    <a href='asistencia_documentacion.php?id_aviso=" . $id_aviso . "'>Volver</a>
+        <h1>Archivos subidos de " . htmlspecialchars($tituloAviso) . "</h1>
+                <ul class='descarga-lista'>";
+        if (count($secciones) > 1) {
+            foreach ($secciones as $sec) {
+                $secLabel = ucfirst($sec);
+                echo "<button class='descarga-btn " . htmlspecialchars($sec) . "' onclick='descargarSeccion(\"" . htmlspecialchars($sec) . "\")'>Descargar " . $secLabel . "</button>";
+            }
+            echo "<button class='descarga-btn' onclick='descargarTodo()'>Descargar todo</button>";
+        } else {
+            echo "<button class='descarga-btn' onclick='descargarTodo()'>Descargar todo</button>";
+        }
+        echo "<a href='asistencia_documentacion.php?id_aviso=" . $id_aviso . "'>Volver</a>
                 </ul>
             </div>
             <section class='documentos-subidos-panel'>";
@@ -73,7 +84,7 @@
                 if ($seccionCarpeta === '') {
                     $seccionCarpeta = 'sin_seccion';
                 }
-                $prefijo = $tituloLimpioAviso . '_' . $nombreCarpeta . '.';
+                $prefijo = $tituloLimpioAviso . '_' . $nombreCarpeta . '_' . $rondaCarpeta .'.';
                 $rutaDocumentosAbs = BASE_PATH . '/circulares/educandos/' . $rondaCarpeta . '/' . $seccionCarpeta . '/' . $nombreCarpeta;
                 $rutaDocumentosWeb = '../circulares/educandos/' . $rondaCarpeta . '/' . $seccionCarpeta . '/' . $nombreCarpeta;
 
@@ -146,6 +157,14 @@
             if (!confirm('¿Descargar todos los archivos de "' + titulo + '"?')) return;
 
             window.location.href = 'controladores/descargar_todo.php?id_aviso=' + idAviso;
+        }
+       function descargarSeccion(seccion) {
+            const titulo = <?php echo json_encode($tituloAviso); ?>;
+            const idAviso = <?php echo (int)$id_aviso; ?>;
+
+            if (!confirm('¿Descargar los archivos de la sección "' + seccion + '" de "' + titulo + '"?')) return;
+
+            window.location.href = 'controladores/descargar_todo.php?id_aviso=' + idAviso + '&seccion=' + encodeURIComponent(seccion);
         }
     </script>
 </main>

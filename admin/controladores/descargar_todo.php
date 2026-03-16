@@ -34,6 +34,19 @@ if (empty($secciones)) {
     exit;
 }
 
+$seccionFiltro = isset($_GET['seccion']) ? strtolower(trim($_GET['seccion'])) : null;
+if ($seccionFiltro) {
+    if (!in_array($seccionFiltro, $secciones, true)) {
+        if (session_status() === PHP_SESSION_NONE) session_start();
+        require_once '../../tools/utils.php';
+        setFlash('error', 'Sección no válida.');
+        $redir = '../verCirculares.php?id_aviso=' . $id_aviso;
+        header('Location: ' . $redir);
+        exit;
+    }
+    $secciones = [$seccionFiltro];
+}
+
 // Obtener educandos
 $placeholders = implode(',', array_fill(0, count($secciones), '?'));
 $tipos = str_repeat('s', count($secciones));
@@ -64,12 +77,6 @@ foreach ($educandos as $edu) {
 }
 $stmt->close();
 
-if (empty($asistentes)) {
-    http_response_code(404);
-    echo "No hay asistentes.";
-    exit;
-}
-
 $tituloLimpio = limpiarTexto($tituloAviso);
 $curso = function_exists('obtenerCursoScoutActual') ? obtenerCursoScoutActual() : date('Y');
 $rondaCarpeta = ($curso - 1) . '-' . $curso;
@@ -94,7 +101,7 @@ foreach ($asistentes as $edu) {
     $nombreCarpeta = limpiarTexto($nombre);
     $seccionCarpeta = preg_replace('/[^a-z0-9_\-]/', '', strtolower($edu["seccion"]));
 
-    $prefijo = $tituloLimpio . "_" . $nombreCarpeta . ".";
+    $prefijo = $tituloLimpio . "_" . $nombreCarpeta . "_" . $rondaCarpeta . ".";
 
     $ruta = BASE_PATH . "/circulares/educandos/$rondaCarpeta/$seccionCarpeta/$nombreCarpeta/";
     if (!is_dir($ruta)) continue;
@@ -113,12 +120,20 @@ foreach ($asistentes as $edu) {
 $zip->close();
 
 if ($total === 0) {
+    if (session_status() === PHP_SESSION_NONE) session_start();
+    require_once '../../tools/utils.php';
+    setFlash('error', $seccionFiltro ? 'No hay archivos para descargar en la sección seleccionada.' : 'No hay archivos para descargar.');
+    $redir = '../verCirculares.php?id_aviso=' . $id_aviso;
+    header('Location: ' . $redir);
     unlink($tmp);
-    echo "No hay archivos para descargar.";
     exit;
 }
 
-$nombreZip = "archivos_" . $tituloLimpio . "_" . $rondaCarpeta . ".zip";
+if (isset($_GET['seccion']) && count($secciones) === 1) {
+    $nombreZip = "archivos_" . $tituloLimpio . "_" . $secciones[0] . "_" . $rondaCarpeta . ".zip";
+} else {
+    $nombreZip = "archivos_" . $tituloLimpio . "_" . $rondaCarpeta . ".zip";
+}
 
 header("Content-Type: application/zip");
 header("Content-Disposition: attachment; filename=\"$nombreZip\"");

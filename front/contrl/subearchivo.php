@@ -640,14 +640,15 @@ if ($extension === 'pdf' && $esFichaInscripcion) {
 
     // Persistencia final: se guarda SIEMPRE el PDF original firmado/subido.
     // El PNG se usa únicamente como insumo técnico de análisis automático.
-    $nuevoNombre = $tituloAviso . "_" . $nombreEducando . ".pdf";
+    $nuevoNombre = $tituloAviso . "_" . $nombreEducando . "_" . $rondaCarpeta . ".pdf";
     $rutaFinal = $baseDir . '/' . $nuevoNombre;
     if (!moverArchivoSeguro($rutaTemporal, $rutaFinal)) {
         @unlink($rutaTemporal);
         die("Error al mover el PDF temporal a la carpeta final.");
     }
 } else {
-    $nuevoNombre = $tituloAviso . "_" . $nombreEducando . "." . $extension;
+    // Añadir la ronda al nombre del archivo (excepto ficha de inscripción)
+    $nuevoNombre = $tituloAviso . "_" . $nombreEducando . "_" . $rondaCarpeta . "." . $extension;
     $rutaFinal = $baseDir . '/' . $nuevoNombre;
     if (!moverArchivoSeguro($rutaTemporal, $rutaFinal)) {
         @unlink($rutaTemporal);

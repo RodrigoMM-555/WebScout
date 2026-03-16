@@ -114,7 +114,7 @@ $educandoHaEntregadoCircular = static function (array $edu) use (&$cacheEntregas
         $seccionCarpeta = 'sin_seccion';
     }
 
-    $prefijo = $tituloLimpioAviso . '_' . $nombreCarpeta . '.';
+    $prefijo = $tituloLimpioAviso . '_' . $nombreCarpeta . '_' . $rondaCarpeta . '.';
     $rutasCandidatas = [
         BASE_PATH . '/circulares/educandos/' . $rondaCarpeta . '/' . $seccionCarpeta . '/' . $nombreCarpeta,
         BASE_PATH . '/circulares/educandos/' . $nombreCarpeta,
@@ -252,10 +252,56 @@ echo "</section>";
 foreach (['si','pendiente','no'] as $key) {
 
     $label = $key==='si' ? 'Asisten' : ($key==='no' ? 'No asisten' : 'Pendientes');
-    echo "<h2>$label</h2>";
+    echo "<h2 style='margin-bottom: 0px;'>$label</h2>";
 
     if (empty($grupos[$key])) {
         echo "<p>No hay registros</p>";
+        continue;
+    }
+
+    if ($key==='si' && $tieneCircular) {
+        $entregaron = [];
+        $noEntregaron = [];
+        foreach ($grupos['si'] as $edu) {
+            if ($educandoHaEntregadoCircular($edu)) {
+                $entregaron[] = $edu;
+            } else {
+                $noEntregaron[] = $edu;
+            }
+        }
+        echo "<div style='display:flex; gap:32px; justify-content:center;'>";
+        // Tabla de los que sí entregaron
+        echo "<div style='flex:1;'>";
+        echo "<h2 style='color:green;'>Circular entregada</h2>";
+        if (empty($entregaron)) {
+            echo "<p>No hay registros</p>";
+        } else {
+            echo "<table class='asistencia'><tr><th>Niñ@</th><th>Sección</th></tr>";
+            foreach ($entregaron as $edu) {
+                $nombre = $edu['nombre'] . ' ' . $edu['apellidos'];
+                $seccionClase = strtolower(trim((string)$edu['seccion']));
+                $seccionMostrada = htmlspecialchars(ucfirst($seccionClase));
+                echo "<tr class='seccion-{$seccionClase}'><td>" . htmlspecialchars($nombre) . "</td><td>" . $seccionMostrada . "</td></tr>";
+            }
+            echo "</table>";
+        }
+        echo "</div>";
+        // Tabla de los que no entregaron
+        echo "<div style='flex:1;'>";
+        echo "<h2 style='color:red;'>Circular NO entregada</h2>";
+        if (empty($noEntregaron)) {
+            echo "<p>No hay registros</p>";
+        } else {
+            echo "<table class='asistencia'><tr><th>Niñ@</th><th>Sección</th></tr>";
+            foreach ($noEntregaron as $edu) {
+                $nombre = $edu['nombre'] . ' ' . $edu['apellidos'];
+                $seccionClase = strtolower(trim((string)$edu['seccion']));
+                $seccionMostrada = htmlspecialchars(ucfirst($seccionClase));
+                echo "<tr class='seccion-{$seccionClase}'><td>" . htmlspecialchars($nombre) . "</td><td>" . $seccionMostrada . "</td></tr>";
+            }
+            echo "</table>";
+        }
+        echo "</div></div>";
         continue;
     }
 

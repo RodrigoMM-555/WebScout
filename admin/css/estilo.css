@@ -118,7 +118,7 @@ a[class="donut-link"]:not(:has(img, svg, i, [class*="icon"]))::before {
     content: "📄";
 }
 
-button[class="descarga-todo-btn"]:not(:has(img, svg, i, [class*="icon"]))::before {
+button[class^="descarga-"]:not(:has(img, svg, i, [class*="icon"]))::before {
     content: "📥 ";
 }
 
@@ -877,7 +877,17 @@ main.info-educandos-page {
     background: var(--morado-oscuro);
 }
 
-.descarga-todo-btn {
+
+.descarga-lista{
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 14px;
+    font-weight: 600;
+    border: none;
+}
+
+.descarga-btn {
     font-size: 1rem;
     padding: 8px 14px;
     background: #2fa35a;
@@ -890,9 +900,18 @@ main.info-educandos-page {
     transition: .25s;
 }
 
-.descarga-todo-btn:hover {
-    background: #24864a;
-}
+.descarga-btn.colonia {background: #f2c278;}
+.descarga-btn.manada {background: #e9dd7f;}
+.descarga-btn.tropa {background: #8bc1f5;}
+.descarga-btn.posta {background: #f09ca6;}
+.descarga-btn.rutas {background: #9fcea1;}
+
+.descarga-btn:hover {background: #24864a;}
+.descarga-btn.colonia:hover {background: #d4920a;}
+.descarga-btn.manada:hover {background: #bfae00;}
+.descarga-btn.tropa:hover {background: #1976d2;}
+.descarga-btn.posta:hover {background: #c62828;}
+.descarga-btn.rutas:hover {background: #2e7d32;}
 
 /* ===================== 7) Mensajes flash y utilidades ===================== */
 
