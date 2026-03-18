@@ -85,6 +85,39 @@ $etiquetasListaEspera = [
     'estuvo_en_grupo' => 'Estuvo antes'
 ];
 
+if ($tabla === "avisos") {
+    echo '<div class="avisos-botones-wrap" style="margin-bottom:18px;display:flex;gap:12px;justify-content:center;">';
+    echo '<button type="button" class="btn-avisos-calendario">Ver calendario</button>';
+    echo '<button type="button" class="btn-avisos-tabla activo">Ver tabla</button>';
+    echo '</div>';
+    echo '<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const btnCalendario = document.querySelector(".btn-avisos-calendario");
+        const btnTabla = document.querySelector(".btn-avisos-tabla");
+        const calendario = document.querySelector(".admin-calendario, .calendario-trimestre");
+        const tabla = document.querySelector("table");
+        const filtros = document.querySelector(".tabla-controles");
+        if (calendario) calendario.style.display = "none";
+        if (tabla) tabla.style.display = "";
+        if (filtros) filtros.style.display = "";
+        btnCalendario.addEventListener("click", function() {
+            btnCalendario.classList.add("activo");
+            btnTabla.classList.remove("activo");
+            if (calendario) calendario.style.display = "";
+            if (tabla) tabla.style.display = "none";
+            if (filtros) filtros.style.display = "none";
+        });
+        btnTabla.addEventListener("click", function() {
+            btnTabla.classList.add("activo");
+            btnCalendario.classList.remove("activo");
+            if (calendario) calendario.style.display = "none";
+            if (tabla) tabla.style.display = "";
+            if (filtros) filtros.style.display = "";
+        });
+    });
+    </script>';
+}
+
 $opcionesOrden = [];
 $columnas_result = $conexion->query("SHOW COLUMNS FROM `{$tabla}`");
 
@@ -396,7 +429,19 @@ if ($resultadoListado) {
 ?>
 </table>
 
+<?php
+if ($tabla === "avisos") {
+    echo "<div class='admin-calendario' style='display: none;'>";
+    global $conexion;
+    include_once __DIR__ . "/../../inc/calendario.php";
+    echo "</div>";
+}
+?>
+
+
+
 <!--
+-
     JavaScript de tabla admin
     =========================
     - Toggle de permisos por fetch (actualización instantánea).

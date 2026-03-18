@@ -243,7 +243,8 @@ while ($aviso = $resultado->fetch_assoc()) {
                     $rutasCandidatas = array_values(array_unique($rutasCandidatas));
 
                     $entregado = false;
-                    $prefijo = $tituloLimpio . '_' . $nombreCarpeta . '.';
+                    // El archivo subido tiene el nombre: $tituloAviso . "_" . $nombreEducando . "_" . $rondaCarpeta . "." . $extension;
+                    $prefijo = $tituloLimpio . '_' . $nombreCarpeta . '_' . $rondaCarpeta . '.';
 
                     foreach ($rutasCandidatas as $ruta) {
                         if (!is_dir($ruta)) {

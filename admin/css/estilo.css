@@ -74,11 +74,6 @@ p {
     text-align: left;
 }
 
-/* Iconos automáticos para enlaces y botones sin icono/imagen */
-button:not(:has(img, svg, i, [class*="icon"])):not(.sin-icono-auto)::before {
-    content: "🔹 ";
-}
-
 /* Admin: iconos contextuales */
 a.logout-admin:not(:has(img, svg, i, [class*="icon"]))::before,
 a[href*="logout.php"]:not(:has(img, svg, i, [class*="icon"]))::before {
@@ -121,6 +116,16 @@ a[class="donut-link"]:not(:has(img, svg, i, [class*="icon"]))::before {
 
 button[class^="descarga-"]:not(:has(img, svg, i, [class*="icon"]))::before {
     content: "📥 ";
+}
+
+button[class="btn-avisos-calendario"]:not(:has(img, svg, i, [class*="icon"]))::before,
+button[class="btn-avisos-calendario activo"]:not(:has(img, svg, i, [class*="icon"]))::before {
+    content: "📆 ";
+}
+
+button[class="btn-avisos-tabla"]:not(:has(img, svg, i, [class*="icon"]))::before,
+button[class="btn-avisos-tabla activo"]:not(:has(img, svg, i, [class*="icon"]))::before {
+    content: "📄";
 }
 
 /* ===================== 2) Layout ===================== */
@@ -1039,5 +1044,257 @@ a, button, input[type="submit"], .orden-link, .chip-seccion, .boton_insertar {
     .documentos-derecha {
         max-height: none;
         overflow: visible;
+    }
+}
+
+/* ===================== 9) Calendario visual de avisos ===================== */
+.calendario-trimestre {
+    background: #fff;
+    border: 1px solid #e5d7f3;
+    border-radius: 18px;
+    padding: 20px;
+    width: 100%;
+    margin: 20px 20px 0 0;
+
+}
+
+.calendario-trimestre h2 {
+    color: var(--morado-oscuro);
+}
+
+.calendario-trimestre .evento {
+    border-radius: 12px;
+    border-left-width: 5px;
+    box-shadow: 0 6px 14px rgba(83, 48, 114, 0.12);
+}
+
+.calendario-trimestre .calendario-meses-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto;
+    gap: 0px 24px;
+    max-width: 1900px;
+    margin: 0 auto;
+    margin-top: 0;
+}
+.calendario-trimestre .calendario-mes {
+    margin: 0px;
+    background: #f8f6fb;
+    border-radius: var(--radius);
+    box-shadow: 0 4px 16px rgba(123,31,162,0.08);
+    width: 100%;
+    max-width: 900px;
+    min-width: 320px;
+    margin-left: auto;
+    margin-right: auto;
+}
+.calendario-trimestre .calendario-mes:nth-child(1) {
+    grid-column: 1;
+    grid-row: 1;
+}
+.calendario-trimestre .calendario-mes:nth-child(2) {
+    grid-column: 2;
+    grid-row: 1;
+}
+.calendario-trimestre .calendario-mes:nth-child(3) {
+    grid-column: 1 / span 2;
+    grid-row: 2;
+    margin-left: auto;
+    margin-right: auto;
+}
+.calendario-trimestre .calendario-mes h2 {
+    text-align: left;
+    color: #333;
+    margin-bottom: 18px;
+    margin-top: 0px;
+    font-size: 2rem;
+    letter-spacing: 1px;
+}
+.calendario-trimestre .calendario-mes:nth-child(2) h2 {
+    text-align: center;
+}
+.calendario-trimestre .calendario-mes:nth-child(3) h2 {
+    text-align: center;
+}
+.calendario-trimestre .ronda {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin: 32px;
+    gap: 24px;
+}
+.calendario-trimestre .ronda h2 {
+    flex: 1;
+    text-align: left;
+    margin: 0;
+    color: var(--morado-principal);
+    font-size: 1.5rem;
+}
+.calendario-trimestre .ronda h1 {
+    flex: 1;
+    text-align: center;
+    margin: 0;
+    color: darkorange;
+    font-size: 3rem;
+}
+.calendario-trimestre .ronda ul {
+    flex: 1;
+    text-align: right;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+.calendario-trimestre .ronda ul h3 {
+    margin: 0;
+    color: var(--morado-oscuro);
+    font-size: 1.1rem;
+}
+.calendario-trimestre .ronda ul p {
+    margin: 0;
+    color: var(--morado-oscuro);
+    font-size: 1rem;
+}
+@media (max-width: 1100px) {
+    .calendario-trimestre .calendario-meses-grid {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto auto;
+    }
+    .calendario-trimestre .calendario-mes:nth-child(1),
+    .calendario-trimestre .calendario-mes:nth-child(2),
+    .calendario-trimestre .calendario-mes:nth-child(3) {
+        grid-column: 1;
+        margin-left: auto;
+        margin-right: auto;
+    }
+    .calendario-trimestre .calendario-mes h2 {
+        text-align: center;
+    }
+}
+.calendario-trimestre .calendario-mes {
+    margin: 12px 0;
+    background: #f8f6fb;
+    border-radius: var(--radius);
+    box-shadow: 0 4px 16px rgba(123,31,162,0.08);
+    padding: 24px 18px;
+    width: 100%;
+    max-width: 900px;
+    margin-left: auto;
+    margin-right: auto;
+}
+.calendario-trimestre .calendario-mes h2 {
+    text-align: center;
+    color: var(--morado-principal);
+    margin-bottom: 18px;
+    font-size: 2rem;
+    letter-spacing: 1px;
+}
+.calendario-trimestre .calendario-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 8px;
+    background: #fff;
+    border-radius: var(--radius-sm);
+    padding: 18px 8px 8px 8px;
+    box-shadow: 0 2px 8px rgba(123,31,162,0.06);
+}
+.calendario-trimestre .calendario-dia-header {
+    font-weight: bold;
+    color: var(--morado-oscuro);
+    text-align: center;
+    font-size: 1.1rem;
+    padding: 4px 0;
+    background: #f3e9ff;
+    border-radius: 8px;
+}
+.calendario-trimestre .calendario-dia-vacio {
+    background: transparent;
+    min-height: 32px;
+}
+.calendario-trimestre .calendario-dia {
+    background: #faf7ff;
+    border-radius: 8px;
+    min-height: 70px;
+    padding: 6px 4px 4px 4px;
+    box-shadow: 0 1px 4px rgba(123,31,162,0.04);
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    transition: box-shadow 0.2s;
+    position: relative;
+}
+.calendario-trimestre .calendario-dia:hover {
+    box-shadow: 0 4px 12px rgba(123,31,162,0.12);
+    z-index: 2;
+}
+.calendario-trimestre .calendario-dia-num {
+    font-weight: bold;
+    color: var(--morado-oscuro);
+    font-size: 1.2rem;
+    margin-bottom: 4px;
+    background: #ede4f9;
+    border-radius: 6px;
+    padding: 2px 8px;
+    text-align: center;
+}
+.calendario-trimestre .titulo-evento {
+    font-size: 1rem;
+    margin: 2px 0 0 0;
+    padding: 2px 6px;
+    border-radius: 6px;
+    background: #fff;
+    color: #333;
+    box-shadow: 0 1px 3px rgba(123,31,162,0.07);
+    word-break: break-word;
+}
+/* Botones de alternancia avisos */
+.avisos-botones-wrap button {
+    padding: 12px 32px;
+    border-radius: 12px;
+    border: 1px solid var(--morado-principal);
+    background: #ede4f9;
+    color: var(--morado-principal);
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(123,31,162,0.08);
+    transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+}
+.avisos-botones-wrap button.activo {
+    background: var(--morado-principal);
+    color: #fff;
+    box-shadow: 0 4px 16px rgba(123,31,162,0.18);
+    border-color: var(--morado-principal);
+}
+.avisos-botones-wrap button:hover:not(.activo) {
+    background: #d1b8f3;
+    color: var(--morado-oscuro);
+}
+
+.calendario-trimestre .titulo-evento.tipo-sabado { color: #7b1fa2; background: #e1bee7; }
+.calendario-trimestre .titulo-evento.tipo-excursion { color: #388e3c; background: #c8e6c9; }
+.calendario-trimestre .titulo-evento.tipo-campamento { color: #ff8f00; background: #ffe082; }
+.calendario-trimestre .titulo-evento.tipo-reunion { color: #1976d2; background: #bbdefb; }
+.calendario-trimestre .titulo-evento.tipo-otro { color: #616161; background: #eeeeee; }
+@media (max-width: 700px) {
+    .calendario-trimestre .calendario-mes {
+        padding: 12px 2px;
+        max-width: 100%;
+    }
+    .calendario-trimestre .calendario-grid {
+        padding: 8px 2px;
+        gap: 4px;
+    }
+    .calendario-trimestre .calendario-dia {
+        min-height: 48px;
+        padding: 2px 2px 2px 2px;
+    }
+    .calendario-trimestre .calendario-dia-num {
+        font-size: 1rem;
+        padding: 2px 4px;
+    }
+    .calendario-trimestre .titulo-evento {
+        font-size: 0.9rem;
+        padding: 2px 4px;
     }
 }

@@ -17,4 +17,5 @@ if ($conexion->connect_error) {
 
 // Forzar charset UTF-8
 $conexion->set_charset('utf8mb4');
+global $conexion
 ?>

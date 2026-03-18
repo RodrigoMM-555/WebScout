@@ -1,7 +1,7 @@
 <main>
         <link rel="stylesheet" href="css/estilo.css">
         <?php
-        include "../inc/conexion_bd.php";
+        include_once __DIR__ . "/../inc/conexion_bd.php";
         require_once "../tools/utils.php";
 
         $id_aviso = isset($_GET['id_aviso']) ? (int)$_GET['id_aviso'] : 0;

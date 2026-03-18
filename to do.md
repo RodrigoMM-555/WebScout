@@ -1,17 +1,20 @@
 
 # PRIORITARIO
-- Seguridad
 - Cambio de idioma
-- Modo mobil
 
 
 # SECUNDARIO
+- Calendario de avisos
 - Tabla sanitaria
 - Que los padres puedan modificar su perfil
-- Panel de estadisticas
 - Poder escoger fotos que salen en el carrusel
 - Modo oscuro
+- Modo mobil
+- Seguridad
 
+
+- Arreglar contraseña
+- Arreglar archivos entregados en avisos
 
 
 # TERCIARIO
@@ -22,12 +25,10 @@
 # CONSULTAS AL GRUPO
 - Año de subida de la ficha -> consultar si se tieen que reentregar cada año
 No se tiene que reentregar cada año, se teiene que guardar los ultimos 5 años
-- Tema contraseñas -> como queremos gestionarlas, podemos verlas, solo cambiarlas?
-?
 - Tema proteccion de datos -> como va que puedo mostrar que no hay alguna medida sobre alamcenamiento de datos?
 Apartado de seguridad
-- Estructura de carpetas docuemntacion -> Año - seccion - niño
-Hay que hacer que automaticamente se cree una neuva cada año
+- Estructura de carpetas documentacion -> Año - seccion - niño
+Hay que hacer que automaticamente se cree una nueva cada año
 - Puntuacion lista de espera
 ?
 
