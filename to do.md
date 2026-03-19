@@ -4,7 +4,6 @@
 
 
 # SECUNDARIO
-- Calendario de avisos
 - Tabla sanitaria
 - Que los padres puedan modificar su perfil
 - Poder escoger fotos que salen en el carrusel
