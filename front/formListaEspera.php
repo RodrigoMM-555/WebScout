@@ -20,21 +20,21 @@ include '../inc/conexion_bd.php';
 <main class="lista-espera-wrap">
 
 <?php if (isset($_GET['estado']) && $_GET['estado'] === 'ok'): ?>
-    <p class="flash flash-exito">La solicitud ha sido procesada correctamente.</p>
+    <p class="flash flash-exito" data-i18n="solicitud_ok">La solicitud ha sido procesada correctamente.</p>
 <?php endif; ?>
 
 <!-- Formulario principal de solicitud -->
 <form class="lista-espera-form" action="contrl/procesaListaEspera.php" method="POST">
-    <h1>Formulario de lista de espera</h1>
+    <h1 data-i18n="form_lista_espera">Formulario de lista de espera</h1>
 
     <div class="lista-espera-grid">
         <div>
-            <label for="nombre_nino">Nombre del niño:</label>
+            <label for="nombre_nino" data-i18n="nombre_nino_label">Nombre del niño:</label>
             <input type="text" id="nombre_nino" name="nombre_nino" required>
         </div>
 
         <div>
-            <label for="apellido_ninio">Apellidos del niño:</label>
+            <label for="apellido_ninio" data-i18n="apellidos_nino_label">Apellidos del niño:</label>
             <input type="text" id="apellido_ninio" name="apellido_ninio" required>
         </div>
 

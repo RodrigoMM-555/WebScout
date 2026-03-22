@@ -10,7 +10,7 @@ include("../inc/conexion_bd.php");
 <main class="avisos">
 
 <!-- Seccion de avisos -->
-<h1>Avisos</h1>
+<h1 data-i18n="avisos">Avisos</h1>
 
 <?php
 // Por si se entra sin sesion
@@ -88,29 +88,29 @@ while ($aviso = $resultado->fetch_assoc()) {
 
         // Fechas en bloque propio
         echo "<div class='aviso-fechas'>";
-        echo "<span class='aviso-fecha-item'><strong>📅 Inicio</strong>$fecha_inicio_formateada</span>";
+        echo "<span class='aviso-fecha-item'><strong data-i18n='inicio_fecha'>📅 Inicio</strong>$fecha_inicio_formateada</span>";
         if (!empty($fecha_fin_formateada)) {
             $fecha_fin_limpia = ltrim($fecha_fin_formateada, '- ');
-            echo "<span class='aviso-fecha-item'><strong>🏁 Fin</strong>$fecha_fin_limpia</span>";
+            echo "<span class='aviso-fecha-item'><strong data-i18n='fin_fecha'>🏁 Fin</strong>$fecha_fin_limpia</span>";
         }
         echo "</div>";
 
         // Detalles del aviso en tarjeta con iconos
         $detalles = [];
         if (!empty($aviso["lugar"]))
-            $detalles[] = "<span class='aviso-detalle'><strong>📍 Lugar</strong>" . htmlspecialchars($aviso["lugar"]) . "</span>";
+            $detalles[] = "<span class='aviso-detalle'><strong data-i18n='lugar'>📍 Lugar</strong>" . htmlspecialchars($aviso["lugar"]) . "</span>";
         if (!empty($aviso["municipio"]))
-            $detalles[] = "<span class='aviso-detalle'><strong>🏘️ Municipio</strong>" . htmlspecialchars($aviso["municipio"]) . "</span>";
+            $detalles[] = "<span class='aviso-detalle'><strong data-i18n='municipio'>🏘️ Municipio</strong>" . htmlspecialchars($aviso["municipio"]) . "</span>";
         if (!empty($aviso["provincia"]))
-            $detalles[] = "<span class='aviso-detalle'><strong>🗺️ Provincia</strong>" . htmlspecialchars($aviso["provincia"]) . "</span>";
+            $detalles[] = "<span class='aviso-detalle'><strong data-i18n='provincia'>🗺️ Provincia</strong>" . htmlspecialchars($aviso["provincia"]) . "</span>";
         if (!empty($aviso["responsable"]))
-            $detalles[] = "<span class='aviso-detalle'><strong>👤 Responsable</strong>" . htmlspecialchars($aviso["responsable"]) . "</span>";
+            $detalles[] = "<span class='aviso-detalle'><strong data-i18n='responsable'>👤 Responsable</strong>" . htmlspecialchars($aviso["responsable"]) . "</span>";
 
         echo "<div class='aviso-detalles" . (empty($detalles) ? " solo-secciones" : "") . "'>";
         echo implode('', $detalles);
         // Secciones dentro de la misma tarjeta, en fila completa
         echo "<div class='aviso-secciones" . (empty($detalles) ? " sin-borde" : "") . "'>";
-        echo "<strong>📋 Secciones</strong> ";
+        echo "<strong data-i18n='secciones'>📋 Secciones</strong> ";
         foreach ($seccionesAviso as $sec) {
             echo "<span class='aviso-seccion-chip seccion-$sec'>" . ucfirst($sec) . "</span>";
         }

@@ -22,7 +22,7 @@ include("../inc/header.php")
         <?php endforeach; ?>
         <!-- Difuminado y texto -->
         <div class="overlay"></div>
-        <div class="texto-carrusel">Grupo Scout Seeonee</div>
+        <div class="texto-carrusel">Grupo Scout Seeonee</div> <!-- No traducible, nombre propio -->
     </article>
 
      <article class="info">
@@ -31,9 +31,9 @@ include("../inc/header.php")
 
         <!-- Info varia -->
         <div>
-            <p>Correo</p>
-            <p>Telefono</p>
-            <p>Direccion</p>
+            <p data-i18n="correo">Correo</p>
+            <p data-i18n="telefono">Telefono</p>
+            <p data-i18n="direccion">Direccion</p>
         </div>
     </article>
 </main>

@@ -29,6 +29,7 @@ $paginaActual = basename($_SERVER['PHP_SELF']); // ej: "avisos.php"
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WebScout</title>
     <link rel="stylesheet" href="css/webscout.css">
+    <script src="js/lang.js"></script>
 </head>
 <body>
     <header>
@@ -39,6 +40,8 @@ $paginaActual = basename($_SERVER['PHP_SELF']); // ej: "avisos.php"
                 <a href="inicio.php" class="sin-icono-auto <?= $paginaActual === 'inicio.php' ? 'nav-activa' : '' ?>"><h2>Inicio</h2></a>
             </article>
             <article>
+                <!-- Botón de cambiar idioma SIEMPRE visible a la derecha -->
+                <button id="lang-switch-btn" onclick="toggleLang()" style="padding: 6px 18px; font-weight: 600; border-radius: 20px; border: 1.5px solid #0074d9; background: #fff; color: #0074d9; cursor: pointer; margin-left: 24px; box-shadow: 0 1px 4px #0001; transition: background 0.2s, color 0.2s;">Idioma</button>
                 <a href="avisos.php" class="<?= $paginaActual === 'avisos.php' ? 'nav-activa' : '' ?>">
                     <img src="<?= BASE_URL ?>/img/exclama.png" alt="Avisos">
                 </a>

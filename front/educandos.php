@@ -93,28 +93,28 @@ $rutasPosibles = [
         <!-- Pintamos la informacion del educando -->
         <section class="izquierda <?=$clase_color?>">
             <h1><?=$educando['nombre']?> <?=$educando['apellidos']?></h1>
-            <p>Sección: <?=$educando['seccion']?></p>
-            <p>Año: <?=$educando['anio']?></p>
-            <p>DNI: <?=$educando['dni']?></p>
-            <button class="sin-icono-auto" type="button" onclick="window.location.href='perfil.php'">&larr; Atrás</button>
+            <p><span data-i18n="seccion">Sección</span>: <?=$educando['seccion']?></p>
+            <p><span data-i18n="anio">Año</span>: <?=$educando['anio']?></p>
+            <p><span data-i18n="dni">DNI</span>: <?=$educando['dni']?></p>
+            <button class="sin-icono-auto" type="button" onclick="window.location.href='perfil.php'">&larr; <span data-i18n="atras">Atrás</span></button>
         </section>
 
         <!-- Apartado de documentación principal -->
         <section class="derecha">
-            <h1>Documentación</h1>
+            <h1 data-i18n="documentacion">Documentación</h1>
 
             <article>
         <!-- Cada documento tiene un formulario para subir el archivo -->
         <div class="documentacion" id="doc1">
-            <p>1-Ficha de inscripción</p>
-            <a class="btn-archivo btn-descargar" href="../circulares/plantillas/1-Ficha de inscripción.pdf" target="_blank">Descargar</a>
+            <p data-i18n="ficha_inscripcion">1-Ficha de inscripción</p>
+            <a class="btn-archivo btn-descargar" href="../circulares/plantillas/1-Ficha de inscripción.pdf" target="_blank" data-i18n="descargar">Descargar</a>
             <form class="form-archivo" action='contrl/subearchivo.php?ori=educandos' method='post' enctype='multipart/form-data'>
-                <label class="btn-archivo btn-archivo-select-emoji" for="archivo_doc1" title="Seleccionar archivo">📎 Elegir</label>
+                <label class="btn-archivo btn-archivo-select-emoji" for="archivo_doc1" title="Seleccionar archivo" data-i18n="elegir">📎 Elegir</label>
                 <input class="input-archivo input-archivo-oculto" id="archivo_doc1" type='file' name='archivo' required>
-                <span class="archivo-nombre">Sin archivo</span>
+                <span class="archivo-nombre" data-i18n="sin_archivo">Sin archivo</span>
                 <input type='hidden' name='nombreCompleto' value="<?=htmlspecialchars($nombreCompleto)?>">
                 <input type='hidden' name='tituloAviso' value='1-Ficha de inscripción'>
-                <input class="btn-archivo btn-subir" type='submit' value='⬆️ Subir'>
+                <input class="btn-archivo btn-subir" type='submit' value='⬆️ Subir' data-i18n="subir">
             </form>
         </div>
 
