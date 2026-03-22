@@ -12,10 +12,6 @@
 - Seguridad
 
 
-- Arreglar contraseña
-- Arreglar archivos entregados en avisos
-
-
 # TERCIARIO
 - Añadir comprobaciones para evitar errores fatales o warnings
 - Formulario para restablecer contraseña y contraseña necesaria para modificar el perfil

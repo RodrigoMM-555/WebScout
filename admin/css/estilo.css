@@ -310,7 +310,9 @@ tr.seccion-rutas:hover td {
 /* ===================== 4) Controles ===================== */
 .tabla-controles {
     display: flex;
+    flex-direction: row;
     align-items: center;
+    justify-content: space-between;
     gap: 10px;
     flex-wrap: wrap;
     margin-bottom: 14px;
@@ -322,6 +324,7 @@ tr.seccion-rutas:hover td {
 }
 
 .orden-botones {
+    order: 1;
     display: flex;
     gap: 8px;
     flex-wrap: wrap;
@@ -348,8 +351,8 @@ tr.seccion-rutas:hover td {
 }
 
 .boton_insertar {
-    position: static;
     width: auto;
+    order: 2;
     min-width: 44px;
     height: 44px;
     line-height: 44px;

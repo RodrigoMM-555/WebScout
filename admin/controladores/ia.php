@@ -194,7 +194,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && $peticion !== '') {
       . "2) No uses markdown, explicación ni bloques de código.\n"
       . "3) No incluyas comentarios SQL ni palabras clave de escritura/DDL.\n"
       . "4) No generes consultas que modifiquen datos (INSERT, UPDATE, DELETE).\n"
-      . "5) Niños o niñas es lo mismo que educandos.\n";
+      . "5) Niños o niñas es lo mismo que educandos.\n"
+      . "6) No muetsres las columnas de permisos, constraseña o id'.\n";
       
 
     // Payload JSON para la API de Ollama.
