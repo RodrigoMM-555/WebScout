@@ -23,6 +23,7 @@ if (!isset($_SESSION['rol']) || $_SESSION['rol'] !== 'admin') {
         <link rel="stylesheet" href="css/estilo.css">
     </head>
     <body>
+        <?php require_once __DIR__ . '/../tools/log.php'; ?>
         <?php include_once __DIR__ . "/../inc/conexion_bd.php"; ?>
         <nav>
             <img src="../img/logo.png" alt="Logo WebScout" class="logo">
