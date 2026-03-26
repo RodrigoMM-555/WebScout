@@ -38,7 +38,7 @@ if (!$fila) {
 <main>
     <!-- Datos del usuario -->
     <section class="izquierda">
-        <h1>Perfil</h1>
+        <h1 data-i18n="perfil">Perfil</h1>
         <div>
             <p>
                 <?= htmlspecialchars($fila["nombre"]) ?> <?= htmlspecialchars($fila["apellidos"]) ?>
@@ -72,12 +72,12 @@ if (!$fila) {
         <div>
             <p><?= htmlspecialchars($fila["direccion"]) ?></p>
         </div>
-        <button class="sin-icono-auto" type="button" onclick="window.location.href='inicio.php'">&larr; Atrás</button>
+        <button class="sin-icono-auto" type="button" onclick="window.location.href='inicio.php'">&larr; <span data-i18n="inicio">Atrás</span></button>
     </section>
 
     <!-- Tarjetas de los hijos -->
     <section class="derecha">
-        <h1>Hijos</h1>
+        <h1 data-i18n="hijos">Hijos</h1>
 <?php
 // Preparar y ejecutar la consulta para educandos
 $sql = "SELECT * FROM educandos WHERE id_usuario = ? ORDER BY FIELD(seccion, 'colonia', 'manada', 'tropa', 'posta', 'rutas')";

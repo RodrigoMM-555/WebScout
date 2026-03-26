@@ -26,7 +26,7 @@ if (!isset($_SESSION['rol']) || $_SESSION['rol'] !== 'admin') {
         <?php include_once __DIR__ . "/../inc/conexion_bd.php"; ?>
         <nav>
             <img src="../img/logo.png" alt="Logo WebScout" class="logo">
-            <?php include "controladores/poblar_menu.php" ?>
+            <?php include "contrl/poblar_menu.php" ?>
             <!-- Botón de cerrar sesión -->
             <a href="../front/contrl/logout.php" class="logout-admin">Cerrar sesión</a>
         </nav>
@@ -39,25 +39,25 @@ if (!isset($_SESSION['rol']) || $_SESSION['rol'] !== 'admin') {
                 $operacion = $_GET['operacion'] ?? null;
 
                 if (!$operacion) {
-                    include "controladores/leer.php";
+                    include "contrl/leer.php";
                 }
                 elseif ($operacion === "insertar") {
-                    include "controladores/insertar.php";
+                    include "contrl/insertar.php";
                 }
                 elseif ($operacion === "procesainsertar") {
-                    include "controladores/procesainsertar.php";
+                    include "contrl/procesainsertar.php";
                 }
                 elseif ($operacion === "actualizar") {
-                    include "controladores/actualizar.php";
+                    include "contrl/actualizar.php";
                 }
                 elseif ($operacion === "procesaactualizar") {
-                    include "controladores/procesaactualizar.php";
+                    include "contrl/procesaactualizar.php";
                 }
                 elseif ($operacion === "ia_admin") {
-                    include "controladores/ia.php";
+                    include "contrl/ia.php";
                 }
                 elseif ($operacion === "sincronizar_secciones") {
-                    include "controladores/sincronizar_secciones.php";
+                    include "contrl/sincronizar_secciones.php";
                 }
                 else {
                     echo "<p>Operación no reconocida.</p>";

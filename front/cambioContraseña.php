@@ -80,12 +80,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cambiar contraseña</title>
+    <title data-i18n="cambiar_contraseña">Cambiar contraseña</title>
     <link rel="stylesheet" href="css/webscout.css">
 </head>
 <body class="login cambio-password-page">
     <main class="cambio-password-card">
-        <h2>Cambiar contraseña</h2>
+        <h2 data-i18n="cambiar_contraseña">Cambiar contraseña</h2>
 
         <?php if ($mensaje !== ''): ?>
             <p class="cambio-password-msg <?= $tipoMensaje === 'exito' ? 'is-success' : 'is-error' ?>">
@@ -97,12 +97,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             <?= campoCSRF() ?>
 
             <div class="campo-pass">
-                <label for="contraseña_actual">Contraseña actual</label>
+                <label for="contraseña_actual" data-i18n="contraseña_actual">Contraseña actual</label>
                 <input type="password" id="contraseña_actual" name="contraseña_actual" required>
             </div>
 
             <div class="campo-pass">
-                <label for="contraseña_nueva">Nueva contraseña</label>
+                <label for="contraseña_nueva" data-i18n="nueva_contraseña">Nueva contraseña</label>
                 <input
                     type="password"
                     id="contraseña_nueva"
@@ -114,7 +114,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             </div>
 
             <div class="campo-pass">
-                <label for="confirmar_contraseña">Confirmar nueva contraseña</label>
+                <label for="confirmar_contraseña" data-i18n="confirmar_contraseña">Confirmar nueva contraseña</label>
                 <input type="password" id="confirmar_contraseña" name="confirmar_contraseña" required autocomplete="new-password">
             </div>
 
