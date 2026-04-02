@@ -19,9 +19,18 @@ include '../inc/conexion_bd.php';
 <body class="lista-espera-page">
 <main class="lista-espera-wrap">
 
-<?php if (isset($_GET['estado']) && $_GET['estado'] === 'ok'): ?>
-    <p class="flash flash-exito" data-i18n="solicitud_ok">La solicitud ha sido procesada correctamente.</p>
-<?php endif; ?>
+<?php 
+if (isset($_GET['estado']) && $_GET['estado'] === 'ok'):
+    echo '<p class="flash flash-exito" data-i18n="solicitud_ok">La solicitud ha sido procesada correctamente.</p>';
+elseif (isset($_GET['estado']) && $_GET['estado'] === 'error_preparacion'):
+    echo '<p class="flash flash-error" data-i18n="solicitud_error">Hubo un error al preparar la solicitud. Por favor, inténtalo de nuevo.</p>';
+elseif (isset($_GET['estado']) && $_GET['estado'] === 'error_insercion'):
+    echo '<p class="flash flash-error" data-i18n="solicitud_error">Hubo un error al insertar la solicitud. Por favor, inténtalo de nuevo.</p>';
+elseif (isset($_GET['estado']) && $_GET['estado'] === 'error_campos'):
+    echo '<p class="flash flash-error" data-i18n="solicitud_error_campos">Por favor, completa todos los campos obligatorios.</p>';
+endif;
+?>
+
 
 <!-- Formulario principal de solicitud -->
 <form class="lista-espera-form" action="contrl/procesaListaEspera.php" method="POST">
@@ -31,52 +40,64 @@ include '../inc/conexion_bd.php';
         <div>
             <label for="nombre_nino" data-i18n="nombre_nino_label">Nombre del niño:</label>
             <input type="text" id="nombre_nino" name="nombre_nino" required>
+            <small class='aviso-obligatorio'>*Obligatorio</small>
         </div>
 
         <div>
             <label for="apellido_ninio" data-i18n="apellidos_nino_label">Apellidos del niño:</label>
             <input type="text" id="apellido_ninio" name="apellido_ninio" required>
+            <small class='aviso-obligatorio'>*Obligatorio</small>
         </div>
 
         <div class="campo-completo">
             <label for="fecha_nacimiento">Fecha de nacimiento:</label>
             <input type="date" id="fecha_nacimiento" name="fecha_nacimiento" required>
+            <small class='aviso-obligatorio'>*Obligatorio</small>
         </div>
 
         <div>
             <label for="nombre_contacto">Nombre del contacto:</label>
             <input type="text" id="nombre_contacto" name="nombre_contacto" required>
+            <small class='aviso-obligatorio'>*Obligatorio</small>
         </div>
 
         <div>
             <label for="telefono_contacto">Teléfono del contacto:</label>
             <input type="text" id="telefono_contacto" name="telefono_contacto" required>
+            <small class='aviso-obligatorio'>*Obligatorio</small>
         </div>
 
         <div class="campo-completo">
             <label for="correo_contacto">Correo del contacto:</label>
             <input type="email" id="correo_contacto" name="correo_contacto" required>
+            <small class='aviso-obligatorio'>*Obligatorio</small>
+        </div>
+
+        <div class="campo-completo">
+            <label for="direccion_contacto">Dirección del contacto:</label>
+            <input type="text" id="direccion_contacto" name="direccion_contacto" required>
+            <small class='aviso-obligatorio'>*Obligatorio</small>
         </div>
 
         <div class="checks-wrap">
             <div class="check-item">
                 <input type="checkbox" id="hermano_en_grupo" name="hermano_en_grupo">
-                <label for="hermano_en_grupo">¿Tiene hermano en el grupo?</label>
+                <label for="hermano_en_grupo">¿Es hermano o hermana de algun miembro del grupo, scouter o educando?</label>
             </div>
 
             <div class="check-item">
                 <input type="checkbox" id="relacion_con_miembro" name="relacion_con_miembro">
-                <label for="relacion_con_miembro">¿Tiene relación con algún miembro del grupo?</label>
+                <label for="relacion_con_miembro">¿Tiene otro tipo de relacion familiar con algun miembro del grupo?</label>
             </div>
 
             <div class="check-item">
                 <input type="checkbox" id="familia_antiguo_scouter" name="familia_antiguo_scouter">
-                <label for="familia_antiguo_scouter">¿Es parte de la familia de un antiguo scouter?</label>
+                <label for="familia_antiguo_scouter">¿Es familiar de un antiguo scouter?</label>
             </div>
 
             <div class="check-item">
                 <input type="checkbox" id="estuvo_en_grupo" name="estuvo_en_grupo">
-                <label for="estuvo_en_grupo">¿Ha estado en el grupo antes?</label>
+                <label for="estuvo_en_grupo">¿Ha estado apuntado en el grupo antes?</label>
             </div>
         </div>
 

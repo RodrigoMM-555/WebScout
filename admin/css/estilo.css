@@ -273,6 +273,113 @@ tr.seccion-rutas:hover td {
     cursor: default;
 }
 
+/* ===================== Lista de espera - Detalle PRO (SCROLL OK) ===================== */
+
+.detalle-lista-fila td {
+    background: #f9f4ff !important;
+    padding: 16px;
+}
+
+/* Contenedor general (SIN overflow) */
+.detalle-lista-contenido {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+    gap: 18px;
+    align-items: stretch;
+}
+
+/* Tarjetas internas: AQUÍ va el límite y el scroll */
+.detalle-izquierda,
+.detalle-derecha {
+    background: #ffffff;
+    border: 1px solid #e4d5f4;
+    border-radius: 14px;
+    padding: 14px 16px;
+
+    max-height: 360px;     /* ✅ límite real */
+    overflow-y: auto;      /* ✅ scroll funcional */
+
+    box-shadow: 0 6px 14px rgba(123, 31, 162, 0.08);
+}
+
+/* Scroll elegante */
+.detalle-izquierda::-webkit-scrollbar,
+.detalle-derecha::-webkit-scrollbar {
+    width: 6px;
+}
+.detalle-izquierda::-webkit-scrollbar-thumb,
+.detalle-derecha::-webkit-scrollbar-thumb {
+    background: #c6a8e7;
+    border-radius: 6px;
+}
+
+/* Texto informativo izquierda */
+.detalle-izquierda p {
+    margin: 0 0 12px;
+    line-height: 1.45;
+    color: var(--admin-texto);
+    word-break: break-word;
+}
+
+.detalle-izquierda strong {
+    color: var(--morado-oscuro);
+}
+
+/* ----------------- Puntuación ----------------- */
+
+.detalle-derecha > p strong {
+    font-size: 1rem;
+    display: block;
+    margin-bottom: 8px;
+}
+
+/* Lista tipo timeline */
+.desglose-puntuacion {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.desglose-puntuacion li {
+    position: relative;
+    padding: 6px 10px 6px 26px;
+    margin-bottom: 6px;
+    background: #f6effd;
+    border-radius: 10px;
+    font-size: .9rem;
+    color: var(--admin-texto);
+    font-variant-numeric: tabular-nums;
+}
+
+/* Puntito tipo timeline */
+.desglose-puntuacion li::before {
+    content: "•";
+    position: absolute;
+    left: 10px;
+    top: 6px;
+    color: var(--morado-principal);
+    font-size: 1.4rem;
+    line-height: 1;
+}
+
+/* Hover suave */
+.desglose-puntuacion li:hover {
+    background: #eadcf8;
+}
+
+/* ----------------- Responsive ----------------- */
+
+@media (max-width: 900px) {
+    .detalle-lista-contenido {
+        grid-template-columns: 1fr;
+    }
+
+    .detalle-izquierda,
+    .detalle-derecha {
+        max-height: 300px;
+    }
+}
+
 .btn-detalle-lista {
     border: 1px solid #d9c2ee;
     background: #f6effd;
@@ -293,19 +400,6 @@ tr.seccion-rutas:hover td {
     text-align: left;
 }
 
-.detalle-lista-contenido {
-    border: 1px solid #e5d7f3;
-    background: #fff;
-    border-radius: 10px;
-    padding: 10px 12px;
-    display: grid;
-    gap: 8px;
-}
-
-.detalle-lista-contenido p {
-    margin: 0;
-    color: var(--admin-texto);
-}
 
 /* ===================== 4) Controles ===================== */
 .tabla-controles {

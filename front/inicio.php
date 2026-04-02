@@ -31,9 +31,6 @@ include("../inc/header.php")
 
         <!-- Info varia -->
         <div>
-            <p data-i18n="correo">Correo</p>
-            <p data-i18n="telefono">Telefono</p>
-            <p data-i18n="direccion">Direccion</p>
         </div>
     </article>
 </main>

@@ -48,16 +48,12 @@ body {
 
 main {
     width: 100%;
-    flex: 1; /* 🔹 AÑADIDO */
+    flex: 1;
 }
 
 /* Iconos automáticos para enlaces y botones sin icono/imagen */
 a:not(:has(img, svg, i, [class*="icon"])):not(.sin-icono-auto)::before {
     content: "🔗 ";
-}
-
-button:not(:has(img, svg, i, [class*="icon"])):not(.sin-icono-auto)::before {
-    content: "🔹 ";
 }
 
 /* Front: iconos contextuales */
@@ -451,6 +447,16 @@ body.lista-espera-page {
 
 .campo-completo {
     grid-column: 1 / -1;
+}
+
+.aviso-obligatorio {
+    display: block;
+    min-height: 18px;
+    margin-top: 2px;
+    color: #b42318;
+    font-size: 0.78rem;
+    font-weight: 600;
+    line-height: 1.2;
 }
 
 .lista-espera-form label {
@@ -2197,4 +2203,44 @@ main.educandos-unificado {
     display: flex !important;
     flex-direction: column !important;
     align-items: stretch;
+}
+
+/* Banderas cambio de idioma */
+
+.bandera-valencia {
+    width: 1.5em;
+    height: 1em;
+    display: inline-block;
+    position: relative;
+    vertical-align: middle;
+
+    background: repeating-linear-gradient(
+        to bottom,
+        red 0px,
+        red 2px,
+        yellow 2px,
+        yellow 4px
+    );
+}
+
+.bandera-espana {
+    width: 1.5em;
+    height: 1em;
+    display: inline-block;
+    vertical-align: middle;
+
+    background: linear-gradient(
+        to bottom,
+        red 0%,
+        red 25%,
+        yellow 25%,
+        yellow 75%,
+        red 75%,
+        red 100%
+    );
+}
+
+.btn-idioma:hover{
+    padding: 8px 14px;
+    margin: 2px 2px;
 }

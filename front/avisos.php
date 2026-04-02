@@ -122,9 +122,9 @@ while ($aviso = $resultado->fetch_assoc()) {
 
             echo "<table class='tabla-archivos tabla-sin-circular'>
                 <tr>
-                    <th>Niñ@</th>
-                    <th>No hay circular adjunta</th> 
-                    <th>Asistencia</th>
+                    <th data-i18n='nino'>Niñ@</th>
+                    <th data-i18n='no_circular'>No hay circular adjunta</th> 
+                    <th data-i18n='asistencia'>Asistencia</th>
                 </tr>";
 
             foreach ($lista_nombres as $edu) {
@@ -159,11 +159,11 @@ while ($aviso = $resultado->fetch_assoc()) {
                     <td>$nombreCompleto</td>
                     <td>";
                     if ($asis && $asis["asistencia"] === "no") {
-                        echo "<span>No asiste</span>";
+                        echo "<span data-i18n='no_asiste'>No asiste</span>";
                     } elseif ($asis && $asis["asistencia"] === "si") {
-                        echo "<span>Sí asiste</span>";
+                        echo "<span data-i18n='si_asiste'>Sí asiste</span>";
                     } else {
-                        echo "<span style='color: blue; font-weight:bold;'>RESPONDER</span>";
+                        echo "<span style='color: blue; font-weight:bold;' data-i18n='responder'>RESPONDER</span>";
                     }
                 echo "</td>
                     <td>
@@ -187,11 +187,11 @@ while ($aviso = $resultado->fetch_assoc()) {
         if ($aviso["circular"] == "si") {
             echo "<table class='tabla-archivos tabla-con-circular'>
                 <tr>
-                    <th>Niñ@</th>
-                    <th>Descargar archivo</th>
-                    <th>Subir archivo</th>
-                    <th>Entregado</th>
-                    <th>Asistencia</th>
+                    <th data-i18n='nino'>Niñ@</th>
+                    <th data-i18n='nino'>Descargar archivo</th>
+                    <th data-i18n='nino'>Subir archivo</th>
+                    <th data-i18n='nino'>Entregado</th>
+                    <th data-i18n='nino'>Asistencia</th>
                 </tr>";
 
             foreach ($lista_nombres as $edu) {

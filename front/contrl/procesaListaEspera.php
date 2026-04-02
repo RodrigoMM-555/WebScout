@@ -1,4 +1,9 @@
 <?php
+
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 /**
  * procesaListaEspera.php — Persistencia de solicitudes de lista de espera
  * =======================================================================
@@ -24,6 +29,7 @@ $familia_antiguo_scouter = isset($_POST['familia_antiguo_scouter']) ? 1 : 0;
 $estuvo_en_grupo = isset($_POST['estuvo_en_grupo']) ? 1 : 0;
 $explicacion_relacion = trim($_POST['explicacion_relacion'] ?? '');
 $comentarios = trim($_POST['comentarios'] ?? '');
+$direccion_contacto = trim($_POST['direccion_contacto'] ?? '');
 
 
 // Validación de campos obligatorios.
@@ -33,10 +39,12 @@ if (
 	$fecha_nacimiento === '' ||
 	$nombre_contacto === '' ||
 	$telefono_contacto === '' ||
-	$correo_contacto === ''
+	$correo_contacto === '' ||
+	$direccion_contacto === ''
 ) {
-	http_response_code(400);
-	exit('Faltan campos obligatorios.');
+
+	header('Location: ../formListaEspera.php?estado=error_campos');
+	exit;
 }
 
 // Validación estricta de formato de fecha.
@@ -68,18 +76,34 @@ $telefono_contacto = $cortarTexto($telefono_contacto, 20);
 $correo_contacto = $cortarTexto($correo_contacto, 150);
 $explicacion_relacion = $cortarTexto($explicacion_relacion, 65535);
 $comentarios = $cortarTexto($comentarios, 65535);
+$direccion_contacto = $cortarTexto($direccion_contacto, 255);
+
+$puntuacion = 0;
+if ($hermano_en_grupo) {
+	$puntuacion += 5;
+}
+if ($relacion_con_miembro) {
+	$puntuacion += 4;
+}
+if ($familia_antiguo_scouter) {
+	$puntuacion += 3;
+}
+if ($estuvo_en_grupo) {
+	$puntuacion += 1;
+}
+
 
 // Inserción con prepared statement para evitar SQL injection.
-$sql = 'INSERT INTO lista_espera (nombre_nino, apellidos_nino, fecha_nacimiento, nombre_contacto, telefono_contacto, correo_contacto, hermano_en_grupo, relacion_con_miembro, familia_antiguo_scouter, estuvo_en_grupo, explicacion_relacion, comentarios) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
+$sql = 'INSERT INTO lista_espera (nombre_nino, apellidos_nino, fecha_nacimiento, nombre_contacto, telefono_contacto, correo_contacto, hermano_en_grupo, relacion_con_miembro, familia_antiguo_scouter, estuvo_en_grupo, explicacion_relacion, comentarios, puntuacion, direccion_contacto) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)';
 $stmt = $conexion->prepare($sql);
 
 if (!$stmt) {
-	http_response_code(500);
-	exit('No se pudo preparar la solicitud.');
+	header('Location: ../formListaEspera.php?estado=error_preparacion');
+	exit;
 }
 
 $stmt->bind_param(
-	'ssssssiiiiss',
+	'ssssssiiiissi',
 	$nombre_nino,
 	$apellido_ninio,
 	$fecha_nacimiento,
@@ -91,12 +115,14 @@ $stmt->bind_param(
 	$familia_antiguo_scouter,
 	$estuvo_en_grupo,
 	$explicacion_relacion,
-	$comentarios
+	$comentarios,
+	$puntuacion,
+	$direccion_contacto
 );
 
 if (!$stmt->execute()) {
-	http_response_code(500);
-	exit('No se pudo guardar la solicitud: ' . $stmt->error);
+	header('Location: ../formListaEspera.php?estado=error_insercion');
+	exit;
 }
 
 // Cierre y redirección de confirmación.

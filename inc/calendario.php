@@ -88,6 +88,20 @@ date_default_timezone_set("Europe/Madrid");
         }
         setlocale(LC_TIME, 'es_ES.UTF-8', 'Spanish_Spain.1252');
         $nombreMes = ucfirst(strftime("%B", mktime(0,0,0,$mesActual,1,$anioActual)));
+        $mesesI18n = [
+            1 => '<span data-i18n="enero">Enero</span>',
+            2 => '<span data-i18n="febrero">Febrero</span>',
+            3 => '<span data-i18n="marzo">Marzo</span>',
+            4 => '<span data-i18n="abril">Abril</span>',
+            5 => '<span data-i18n="mayo">Mayo</span>',
+            6 => '<span data-i18n="junio">Junio</span>',
+            7 => '<span data-i18n="julio">Julio</span>',
+            8 => '<span data-i18n="agosto">Agosto</span>',
+            9 => '<span data-i18n="septiembre">Septiembre</span>',
+            10 => '<span data-i18n="octubre">Octubre</span>',
+            11 => '<span data-i18n="noviembre">Noviembre</span>',
+            12 => '<span data-i18n="diciembre">Diciembre</span>'
+        ];
         $primerDiaMes = new DateTime("$anioActual-$mesActual-01");
         $ultimoDiaMes = clone $primerDiaMes;
         $ultimoDiaMes->modify("last day of this month");
@@ -95,12 +109,21 @@ date_default_timezone_set("Europe/Madrid");
         $diaSemanaInicio = (int)$primerDiaMes->format("N"); // 1=Lunes
 
         echo "<section class='calendario-mes'>";
-        echo "<h2>$nombreMes $anioActual</h2>";
+        echo "<h2>" . $mesesI18n[$mesActual] . " $anioActual</h2>";
         echo "<div class='calendario-grid'>";
         // Cabecera días
         $diasSemana = ['L', 'M', 'X', 'J', 'V', 'S', 'D'];
+        $diasSemanaI18n = [
+            'L' => '<span data-i18n="lunes_corto">L</span>',
+            'M' => '<span data-i18n="martes_corto">M</span>',
+            'X' => '<span data-i18n="miercoles_corto">X</span>',
+            'J' => '<span data-i18n="jueves_corto">J</span>',
+            'V' => '<span data-i18n="viernes_corto">V</span>',
+            'S' => '<span data-i18n="sabado_corto">S</span>',
+            'D' => '<span data-i18n="domingo_corto">D</span>'
+        ];
         foreach ($diasSemana as $d) {
-            echo "<div class='calendario-dia-header'>$d</div>";
+            echo "<div class='calendario-dia-header'>" . $diasSemanaI18n[$d] . "</div>";
         }
         // Espacios vacíos antes del primer día
         for ($i = 1; $i < $diaSemanaInicio; $i++) {

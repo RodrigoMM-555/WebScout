@@ -89,6 +89,35 @@ $rutasPosibles = [
 ?>
 
 <main class="educandos-unificado">
+    <script src="js/lang.js"></script>
+    <script>
+    // Cambia los value de los input hidden de las fichas al cambiar idioma
+    function updateFichaHiddenValues() {
+        const lang = localStorage.getItem('webscout_lang') || 'es';
+        const map = {
+            es: [
+                '1-Ficha de inscripción',
+                '2-Ficha sanitaria',
+                '3-Exclusión de responsabilidad',
+                '4-Autorización ausentarse de actividades'
+            ],
+            va: [
+                "1-Fitxa d'inscripció",
+                "2-Fitxa sanitària",
+                "3-Exclusió de responsabilitat",
+                "4-Autorització absentar-se d'activitats"
+            ]
+        };
+        for (let i = 1; i <= 4; i++) {
+            const input = document.getElementById('tituloAviso' + i);
+            if (input) input.value = map[lang][i-1];
+        }
+    }
+    document.addEventListener('DOMContentLoaded', updateFichaHiddenValues);
+    window.addEventListener('storage', function(e) {
+        if (e.key === 'webscout_lang') updateFichaHiddenValues();
+    });
+    </script>
     <div class="educandos-superior">
         <!-- Pintamos la informacion del educando -->
         <section class="izquierda <?=$clase_color?>">
@@ -113,47 +142,47 @@ $rutasPosibles = [
                 <input class="input-archivo input-archivo-oculto" id="archivo_doc1" type='file' name='archivo' required>
                 <span class="archivo-nombre" data-i18n="sin_archivo">Sin archivo</span>
                 <input type='hidden' name='nombreCompleto' value="<?=htmlspecialchars($nombreCompleto)?>">
-                <input type='hidden' name='tituloAviso' value='1-Ficha de inscripción'>
+                <input type='hidden' name='tituloAviso' id='tituloAviso1' value='1-Ficha de inscripción'>
                 <input class="btn-archivo btn-subir" type='submit' value='⬆️ Subir' data-i18n="subir">
             </form>
         </div>
 
         <div class="documentacion" id="doc2">
-            <p>2-Ficha sanitaria</p>
-            <a class="btn-archivo btn-descargar" href="../circulares/plantillas/2-Ficha sanitaria menor edad.pdf" target="_blank">Descargar</a>
+            <p data-i18n="ficha_sanitaria">2-Ficha sanitaria</p>
+            <a class="btn-archivo btn-descargar" href="../circulares/plantillas/2-Ficha sanitaria menor edad.pdf" target="_blank" data-i18n="descargar">Descargar</a>
             <form class="form-archivo" action='contrl/subearchivo.php?ori=educandos' method='post' enctype='multipart/form-data'>
-                <label class="btn-archivo btn-archivo-select-emoji" for="archivo_doc2" title="Seleccionar archivo">📎 Elegir</label>
+                <label class="btn-archivo btn-archivo-select-emoji" for="archivo_doc2" title="Seleccionar archivo" data-i18n="elegir">📎 Elegir</label>
                 <input class="input-archivo input-archivo-oculto" id="archivo_doc2" type='file' name='archivo' required>
-                <span class="archivo-nombre">Sin archivo</span>
+                <span class="archivo-nombre" data-i18n="sin_archivo">Sin archivo</span>
                 <input type='hidden' name='nombreCompleto' value="<?=htmlspecialchars($nombreCompleto)?>">
-                <input type='hidden' name='tituloAviso' value='2-Ficha sanitaria'>
-                <input class="btn-archivo btn-subir" type='submit' value='⬆️ Subir'>
+                <input type='hidden' name='tituloAviso' id='tituloAviso2' value='2-Ficha sanitaria'>
+                <input class="btn-archivo btn-subir" type='submit' value='⬆️ Subir' data-i18n="subir">
             </form>
         </div>
 
         <div class="documentacion" id="doc3">
-            <p>3-Exclusión de responsabilidad</p>
-            <a class="btn-archivo btn-descargar" href="../circulares/plantillas/4-Exclusión de responsabilidad.pdf" target="_blank">Descargar</a>
+            <p data-i18n="ficha_exclusion">3-Exclusión de responsabilidad</p>
+            <a class="btn-archivo btn-descargar" href="../circulares/plantillas/4-Exclusión de responsabilidad.pdf" target="_blank" data-i18n="descargar">Descargar</a>
             <form class="form-archivo" action='contrl/subearchivo.php?ori=educandos' method='post' enctype='multipart/form-data'>
-                <label class="btn-archivo btn-archivo-select-emoji" for="archivo_doc3" title="Seleccionar archivo">📎 Elegir</label>
+                <label class="btn-archivo btn-archivo-select-emoji" for="archivo_doc3" title="Seleccionar archivo" data-i18n="elegir">📎 Elegir</label>
                 <input class="input-archivo input-archivo-oculto" id="archivo_doc3" type='file' name='archivo' required>
-                <span class="archivo-nombre">Sin archivo</span>
+                <span class="archivo-nombre" data-i18n="sin_archivo">Sin archivo</span>
                 <input type='hidden' name='nombreCompleto' value="<?=htmlspecialchars($nombreCompleto)?>">
-                <input type='hidden' name='tituloAviso' value='3-Exclusión de responsabilidad'>
-                <input class="btn-archivo btn-subir" type='submit' value='⬆️ Subir'>
+                <input type='hidden' name='tituloAviso' id='tituloAviso3' value='3-Exclusión de responsabilidad'>
+                <input class="btn-archivo btn-subir" type='submit' value='⬆️ Subir' data-i18n="subir">
             </form>
         </div>
 
         <div class="documentacion" id="doc4">
-            <p>4-Autorización ausentarse de actividades</p>
-            <a class="btn-archivo btn-descargar" href="../circulares/plantillas/5-Autorización ausentarse actividades.pdf" target="_blank">Descargar</a>
+            <p data-i18n="ficha_autorizacion">4-Autorización ausentarse de actividades</p>
+            <a class="btn-archivo btn-descargar" href="../circulares/plantillas/5-Autorización ausentarse actividades.pdf" target="_blank" data-i18n="descargar">Descargar</a>
             <form class="form-archivo" action='contrl/subearchivo.php?ori=educandos' method='post' enctype='multipart/form-data'>
-                <label class="btn-archivo btn-archivo-select-emoji" for="archivo_doc4" title="Seleccionar archivo">📎 Elegir</label>
+                <label class="btn-archivo btn-archivo-select-emoji" for="archivo_doc4" title="Seleccionar archivo" data-i18n="elegir">📎 Elegir</label>
                 <input class="input-archivo input-archivo-oculto" id="archivo_doc4" type='file' name='archivo' required>
-                <span class="archivo-nombre">Sin archivo</span>
+                <span class="archivo-nombre" data-i18n="sin_archivo">Sin archivo</span>
                 <input type='hidden' name='nombreCompleto' value="<?=htmlspecialchars($nombreCompleto)?>">
-                <input type='hidden' name='tituloAviso' value='4-Autorización ausentarse de actividades'>
-                <input class="btn-archivo btn-subir" type='submit' value='⬆️ Subir'>
+                <input type='hidden' name='tituloAviso' id='tituloAviso4' value='4-Autorización ausentarse de actividades'>
+                <input class="btn-archivo btn-subir" type='submit' value='⬆️ Subir' data-i18n="subir">
             </form>
         </div>
             </article>
@@ -161,7 +190,7 @@ $rutasPosibles = [
     </div>
 
     <section class="documentos-subidos-panel">
-        <h2>Archivos subidos</h2>
+        <h2 data-i18n="archivos_subidos">Archivos subidos</h2>
         <?php
         $rutaDocumentosAbs = '';
         $rutaDocumentosWeb = '';
@@ -175,7 +204,7 @@ $rutasPosibles = [
         }
 
         if ($rutaDocumentosAbs === '') {
-            echo "<p>Este educando aún no tiene archivos subidos.</p>";
+            echo "<p data-i18n='sin_archivos_subidos'>Este educando aún no tiene archivos subidos.</p>";
         } else {
             $archivosListado = array_values(array_filter(scandir($rutaDocumentosAbs), function ($archivo) use ($rutaDocumentosAbs) {
                 return $archivo !== '.' && $archivo !== '..' && is_file($rutaDocumentosAbs . '/' . $archivo);

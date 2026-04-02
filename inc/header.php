@@ -41,7 +41,7 @@ $paginaActual = basename($_SERVER['PHP_SELF']); // ej: "avisos.php"
             </article>
             <article>
                 <!-- Botón de cambiar idioma SIEMPRE visible a la derecha -->
-                <button id="lang-switch-btn" onclick="toggleLang()" style="padding: 6px 18px; font-weight: 600; border-radius: 20px; border: 1.5px solid #0074d9; background: #fff; color: #0074d9; cursor: pointer; margin-left: 24px; box-shadow: 0 1px 4px #0001; transition: background 0.2s, color 0.2s;">Idioma</button>
+                <button class="btn-idioma" id="lang-switch-btn" onclick="toggleLang()"></button>
                 <a href="avisos.php" class="<?= $paginaActual === 'avisos.php' ? 'nav-activa' : '' ?>">
                     <img src="<?= BASE_URL ?>/img/exclama.png" alt="Avisos">
                 </a>

@@ -55,7 +55,7 @@ if ($tabla === 'lista_espera') {
     $columnasOcultasOrden[] = 'relacion_con_miembro';
     $columnasOcultasOrden[] = 'familia_antiguo_scouter';
     $columnasOcultasOrden[] = 'estuvo_en_grupo';
-
+    $columnasOcultasTabla[] = 'hermano_en_grupo';
     $columnasOcultasTabla[] = 'apellidos_nino';
     $columnasOcultasTabla[] = 'comentarios';
     $columnasOcultasTabla[] = 'explicacion_relacion';
@@ -64,6 +64,7 @@ if ($tabla === 'lista_espera') {
 $ordenColumnasListaEspera = [
     'nombre_nino',
     'fecha_nacimiento',
+    'fecha_registro',
     'nombre_contacto',
     'telefono_contacto',
     'correo_contacto',
@@ -79,10 +80,11 @@ $etiquetasListaEspera = [
     'nombre_contacto' => 'Contacto',
     'telefono_contacto' => 'Teléfono',
     'correo_contacto' => 'Correo',
-    'hermano_en_grupo' => 'Hermano',
-    'relacion_con_miembro' => 'Relación',
-    'familia_antiguo_scouter' => 'Familia scout',
-    'estuvo_en_grupo' => 'Estuvo antes'
+    'hermano_en_grupo' => 'Hermano en grupo',
+    'relacion_con_miembro' => 'Relación con miembro',
+    'familia_antiguo_scouter' => 'Familia antiguo scouter',
+    'estuvo_en_grupo' => 'Estuvo antes',
+    'fecha_registro' => 'Fecha de registro'
 ];
 
 if ($tabla === "avisos") {
@@ -255,7 +257,8 @@ if ($resultado && $resultado->num_rows > 0) {
     }
 
     if ($tabla === 'lista_espera') {
-        echo "<th>Detalle</th>";
+        echo "<th>Puntuación</th>";
+        echo "<th>Detalles</th>";
         $totalColumnasCabecera++;
     }
 
@@ -292,6 +295,7 @@ $coloresSeccion = [
 if ($resultadoListado) {
     while ($fila = $resultadoListado->fetch_assoc()) {
 
+        $puntuacion = 0;
         $claseFila = "";
         if (isset($fila['seccion'])) {
             $seccionValor = strtolower((string)$fila['seccion']);
@@ -305,6 +309,7 @@ if ($resultadoListado) {
         if ($tabla === 'lista_espera') {
             $comentariosDetalle = trim((string)($fila['comentarios'] ?? ''));
             $explicacionDetalle = trim((string)($fila['explicacion_relacion'] ?? ''));
+            $direccionDetalle = trim((string)($fila['direccion_contacto'] ?? ''));
             $tieneDetalle = ($comentariosDetalle !== '' || $explicacionDetalle !== '');
 
             foreach ($ordenColumnasListaEspera as $clave) {
@@ -327,9 +332,40 @@ if ($resultadoListado) {
                     }
                 }
 
+                if ($clave === 'fecha_registro' && !empty($valor)) {
+                    $timestampRegistro = strtotime((string)$valor);
+                    if ($timestampRegistro !== false) {
+                        $valor = date('d/m/Y H:i', $timestampRegistro);
+                        // Guardar para el calculo de rondas
+                        $fechaRegistroObj = DateTime::createFromFormat('U', $timestampRegistro);
+                    }
+                }
+
                 if (in_array($clave, ['hermano_en_grupo', 'relacion_con_miembro', 'familia_antiguo_scouter', 'estuvo_en_grupo'], true)) {
                     $checked = ((int)$valor === 1) ? 'checked' : '';
                     echo "<td><input type='checkbox' class='estado-check' $checked disabled></td>";
+                        if ($clave === 'hermano_en_grupo' && $valor == 1) {
+                            $puntuacion += 5;
+                        }
+                        elseif ($clave === 'relacion_con_miembro' && $valor == 1) {
+                            $puntuacion += 4;
+                        }
+                        elseif ($clave === 'familia_antiguo_scouter' && $valor == 1) {
+                            $puntuacion += 3;
+                        }
+                        elseif ($clave === 'estuvo_en_grupo' && $valor == 1) {
+                            $puntuacion += 1;
+                        }
+                    if ($clave === 'estuvo_en_grupo'){
+                        if (isset($fechaRegistroObj) && $fechaRegistroObj instanceof DateTime) {
+                            require_once __DIR__ . '/../../tools/utils.php';
+                            $cursoActual = obtenerCursoScoutActual();
+                            $cursoRegistro = obtenerCursoScoutActual($fechaRegistroObj);
+                            $rondasEspera = $cursoActual - $cursoRegistro;
+                            $puntuacionTotal = $puntuacion + $rondasEspera;
+                            echo '<td> ' . $puntuacionTotal . ' </td>';   
+                        }
+                    }
                     continue;
                 }
 
@@ -341,11 +377,9 @@ if ($resultadoListado) {
                 echo "<td>" . $valorCelda . "</td>";
             }
 
-            if ($tieneDetalle) {
-                echo "<td><button type='button' class='btn-detalle-lista sin-icono-auto' data-detalle-id='" . (int)$fila['id'] . "' aria-expanded='false' title='Ver detalle'>⏬</button></td>";
-            } else {
-                echo "<td></td>";
-            }
+
+            echo "<td><button type='button' class='btn-detalle-lista sin-icono-auto' data-detalle-id='" . (int)$fila['id'] . "' aria-expanded='false' title='Ver detalle'>⏬</button></td>";
+
         } else {
             foreach ($fila as $clave => $valor) {
 
@@ -391,7 +425,7 @@ if ($resultadoListado) {
               . '&amp;ordenar_por=' . urlencode($ordenarPor) . '&amp;direccion=' . urlencode($direccion) . '"></a></td>';
 
         // Enlace de eliminar con CSRF token y confirmación JS
-        $urlEliminar = 'controladores/procesaeliminar.php?tabla=' . urlencode($tabla)
+        $urlEliminar = 'contrl/procesaeliminar.php?tabla=' . urlencode($tabla)
                      . '&id=' . (int)$fila['id']
                      . '&seccion=' . urlencode((string)($seccionFiltro ?? ''))
                      . '&ordenar_por=' . urlencode($ordenarPor)
@@ -403,10 +437,14 @@ if ($resultadoListado) {
 
         echo "</tr>";
 
-        if ($tabla === 'lista_espera' && $tieneDetalle) {
+
+        if ($tabla === 'lista_espera') {
             echo "<tr id='detalle-fila-" . (int)$fila['id'] . "' class='detalle-lista-fila' style='display:none;'>";
-            echo "<td colspan='" . (int)$totalColumnasCabecera . "'>";
+            echo "<td colspan='" . (int)$totalColumnasCabecera + 1 . "'>";
+
             echo "<div class='detalle-lista-contenido'>";
+
+            echo "<section class='detalle-izquierda'>";
 
             if ($explicacionDetalle !== '') {
                 echo "<p><strong>Explicación de la relación:</strong> " . nl2br(htmlspecialchars($explicacionDetalle)) . "</p>";
@@ -416,6 +454,54 @@ if ($resultadoListado) {
                 echo "<p><strong>Comentarios:</strong> " . nl2br(htmlspecialchars($comentariosDetalle)) . "</p>";
             }
 
+            if ($direccionDetalle !== '') {
+                echo "<p><strong>Dirección:</strong> " . nl2br(htmlspecialchars($direccionDetalle)) . "</p>";
+            }
+
+            echo "</section>";
+
+            // Sección izquierda: desglose de puntuación
+            echo "<section class='detalle-derecha'>";
+            echo "<p><strong>Desglose puntuacion:</strong></p>";
+            $desglose = [];
+            $puntuacionBase = 0;
+            if ((int)($fila['hermano_en_grupo'] ?? 0) === 1) {
+                $desglose[] = 'Hermano en el grupo: +5';
+                $puntuacionBase += 5;
+            }
+            if ((int)($fila['relacion_con_miembro'] ?? 0) === 1) {
+                $desglose[] = 'Relación con miembro: +4';
+                $puntuacionBase += 4;
+            }
+            if ((int)($fila['familia_antiguo_scouter'] ?? 0) === 1) {
+                $desglose[] = 'Familia antiguo scouter: +3';
+                $puntuacionBase += 3;
+            }
+            if ((int)($fila['estuvo_en_grupo'] ?? 0) === 1) {
+                $desglose[] = 'Estuvo en el grupo: +1';
+                $puntuacionBase += 1;
+            }
+
+            // Desglose de rondas
+            require_once __DIR__ . '/../../tools/utils.php';
+            $fechaRegistro = isset($fila['fecha_registro']) ? $fila['fecha_registro'] : null;
+            $fechaRegistroObj = $fechaRegistro ? DateTime::createFromFormat('Y-m-d H:i:s', $fechaRegistro) : null;
+            $cursoActual = obtenerCursoScoutActual();
+            $cursoRegistro = $fechaRegistroObj ? obtenerCursoScoutActual($fechaRegistroObj) : $cursoActual;
+            $rondas = $cursoActual - $cursoRegistro;
+            for ($i = 1; $i <= $rondas; $i++) {
+                $rondaYearStart = ($cursoRegistro + $i - 1);
+                $rondaYearEnd = $rondaYearStart + 1;
+                $desglose[] = "Ronda {$rondaYearStart}-{$rondaYearEnd}: +{$i}";
+            }
+
+            echo '<ul class="desglose-puntuacion">';
+            foreach ($desglose as $item) {
+                echo '<li>' . htmlspecialchars($item) . '</li>';
+            }
+            echo '</ul>';
+
+            echo "</section>";
             echo "</div>";
             echo "</td>";
             echo "</tr>";
@@ -457,7 +543,7 @@ document.querySelectorAll(".permiso-check").forEach(function(checkbox){
         const id = this.dataset.id;
         const permiso = this.dataset.permiso;
 
-        fetch("controladores/actualizar_permiso.php", {
+        fetch("contrl/actualizar_permiso.php", {
             method: "POST",
             headers: {
                 "Content-Type": "application/x-www-form-urlencoded"
