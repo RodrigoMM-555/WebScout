@@ -1,6 +1,6 @@
 
 # PRIORITARIO
-- Cambio de idioma
+- Que se pueda ver de quien es padre el usuario
 
 
 # SECUNDARIO
@@ -29,7 +29,8 @@ Hay que hacer que automaticamente se cree una nueva cada año
 
 
 # MEJORAS
-Hacerlo multigrupo
+- Hacerlo multigrupo
+- Seccion de familias -> Pequeñas secciones donde aparezcan los padres y los hijos
 
 
 # SEGURIDAD

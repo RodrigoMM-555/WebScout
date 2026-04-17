@@ -89,8 +89,8 @@ $etiquetasListaEspera = [
 
 if ($tabla === "avisos") {
     echo '<div class="avisos-botones-wrap" style="margin-bottom:18px;display:flex;gap:12px;justify-content:center;">';
-    echo '<button type="button" class="btn-avisos-calendario">Ver calendario</button>';
-    echo '<button type="button" class="btn-avisos-tabla activo">Ver tabla</button>';
+    echo '<button type="button" class="btn-avisos-calendario">Calendario</button>';
+    echo '<button type="button" class="btn-avisos-tabla activo"> Tabla</button>';
     echo '</div>';
     echo '<script>
     document.addEventListener("DOMContentLoaded", function() {
@@ -113,6 +113,39 @@ if ($tabla === "avisos") {
             btnTabla.classList.add("activo");
             btnCalendario.classList.remove("activo");
             if (calendario) calendario.style.display = "none";
+            if (tabla) tabla.style.display = "";
+            if (filtros) filtros.style.display = "";
+        });
+    });
+    </script>';
+}
+
+if ($tabla === "usuarios") {
+    echo '<div class="avisos-botones-wrap" style="margin-bottom:18px;display:flex;gap:12px;justify-content:center;">';
+    echo '<button type="button" class="btn-usuarios-familias"> Familias</button>';
+    echo '<button type="button" class="btn-usuarios-tabla activo"> Tabla</button>';
+    echo '</div>';
+    echo '<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        const btnFamilias = document.querySelector(".btn-usuarios-familias");
+        const btnTabla = document.querySelector(".btn-usuarios-tabla");
+        const familias = document.querySelector(".admin-familias, .familias-trimestre");
+        const tabla = document.querySelector("table");
+        const filtros = document.querySelector(".tabla-controles");
+        if (familias) familias.style.display = "none";
+        if (tabla) tabla.style.display = "";
+        if (filtros) filtros.style.display = "";
+        btnFamilias.addEventListener("click", function() {
+            btnFamilias.classList.add("activo");
+            btnTabla.classList.remove("activo");
+            if (familias) familias.style.display = "";
+            if (tabla) tabla.style.display = "none";
+            if (filtros) filtros.style.display = "none";
+        });
+        btnTabla.addEventListener("click", function() {
+            btnTabla.classList.add("activo");
+            btnFamilias.classList.remove("activo");
+            if (familias) familias.style.display = "none";
             if (tabla) tabla.style.display = "";
             if (filtros) filtros.style.display = "";
         });
@@ -262,6 +295,11 @@ if ($resultado && $resultado->num_rows > 0) {
         $totalColumnasCabecera++;
     }
 
+    if ($tabla === "usuarios") {
+        echo "<th>Hij@s</th>";
+        $totalColumnasCabecera++;
+    }
+
     echo "<th>Editar</th><th>Eliminar</th>";
     $totalColumnasCabecera += 2;
     echo "</tr>";
@@ -404,6 +442,10 @@ if ($resultadoListado) {
             }
         }
 
+        if ($tabla === 'usuarios') {
+            echo "<td><button type='button' class='btn-detalle-lista sin-icono-auto' data-detalle-id='" . (int)$fila['id'] . "' aria-expanded='false' title='Ver detalle'>⏬</button></td>";
+        }
+
         if ($tabla === "educandos") {
 
             $permisos = (int)$fila['permisos'];
@@ -436,6 +478,33 @@ if ($resultadoListado) {
               . '></a></td>';
 
         echo "</tr>";
+
+        if ($tabla === 'usuarios') {
+            echo "<tr id='detalle-fila-" . (int)$fila['id'] . "' class='detalle-lista-fila' style='display:none;'>";
+            echo "<td colspan='" . (int)$totalColumnasCabecera + 1 . "'>";
+            echo "<section class='usuarios-hijos'>";
+
+            $sqlEducandos = "SELECT nombre, apellidos, seccion FROM educandos WHERE id_usuario = " . (int)$fila['id'] . " ORDER BY nombre ASC;";
+            $resultadoEducandos = $conexion->query($sqlEducandos);
+
+            if ($resultadoEducandos && $resultadoEducandos->num_rows > 0) {
+                echo "<p><strong>Hij@s:</strong></p>";
+
+                while ($educando = $resultadoEducandos->fetch_assoc()) {
+                    $nombreCompleto = htmlspecialchars($educando['nombre'] . ' ' . $educando['apellidos']);
+                    $seccion = htmlspecialchars($educando['seccion']);
+                    echo "<p class='usuarios-hijos-{$seccion}'>$nombreCompleto</p>";
+                }
+
+            } else {
+                echo "<p><strong>Hij@s:</strong> -</p>";
+            }
+
+            echo "</section>";
+            echo "</td>";
+            echo "</tr>";
+        }
+
 
 
         if ($tabla === 'lista_espera') {
@@ -522,6 +591,13 @@ if ($tabla === "avisos") {
     include_once __DIR__ . "/../../inc/calendario.php";
     echo "</div>";
 }
+
+if ($tabla === "usuarios") {
+    echo "<div class='admin-familias' style='display: none;'>";
+    global $conexion;
+    include_once __DIR__ . "/../../inc/familias.php";
+    echo "</div>";
+}
 ?>
 
 
@@ -568,6 +644,7 @@ document.querySelectorAll('.btn-detalle-lista').forEach(function(boton) {
         this.textContent = visible ? '⏬' : '⏫';
     });
 });
+
 </script>
 
 <script>

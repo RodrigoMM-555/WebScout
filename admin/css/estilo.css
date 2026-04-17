@@ -110,10 +110,6 @@ a.volver-avisos:not(:has(img, svg, i, [class*="icon"]))::before {
     content: "📣 ";
 }
 
-a[class="donut-link"]:not(:has(img, svg, i, [class*="icon"]))::before {
-    content: "📄";
-}
-
 button[class^="descarga-"]:not(:has(img, svg, i, [class*="icon"]))::before {
     content: "📥 ";
 }
@@ -123,8 +119,16 @@ button[class="btn-avisos-calendario activo"]:not(:has(img, svg, i, [class*="icon
     content: "📆 ";
 }
 
+button[class="btn-usuarios-familias"]:not(:has(img, svg, i, [class*="icon"]))::before,
+button[class="btn-usuarios-familias activo"]:not(:has(img, svg, i, [class*="icon"]))::before{
+    content: "👪";
+}
+
 button[class="btn-avisos-tabla"]:not(:has(img, svg, i, [class*="icon"]))::before,
-button[class="btn-avisos-tabla activo"]:not(:has(img, svg, i, [class*="icon"]))::before {
+button[class="btn-avisos-tabla activo"]:not(:has(img, svg, i, [class*="icon"]))::before,
+button[class="btn-usuarios-tabla"]:not(:has(img, svg, i, [class*="icon"]))::before,
+button[class="btn-usuarios-tabla activo"]:not(:has(img, svg, i, [class*="icon"]))::before,
+a[class="donut-link"]:not(:has(img, svg, i, [class*="icon"]))::before {
     content: "📄";
 }
 
@@ -167,6 +171,10 @@ nav a {
 nav a:hover {
     background: rgba(255, 255, 255, .25);
     transform: translateX(4px);
+}
+
+nav a.logout-admin:hover, nav a[href*="logout.php"]:hover {
+    transform: scale(1.02);
 }
 
 nav a.activo {
@@ -323,6 +331,26 @@ tr.seccion-rutas:hover td {
 
 .detalle-izquierda strong {
     color: var(--morado-oscuro);
+}
+
+p.usuarios-hijos-colonia { color: #d4920a; }
+p.usuarios-hijos-manada { color: #fbc02d; }
+p.usuarios-hijos-tropa { color: #1976d2; }
+p.usuarios-hijos-posta { color: #f44336; }
+p.usuarios-hijos-rutas { color: #2e7d32; }
+
+.usuarios-hijos{
+    background: #ffffff;
+    border: 1px solid #e4d5f4;
+    border-radius: 14px;
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: row;
+    gap: 12px;
+    max-height: 360px;     
+    overflow-y: auto;
+
+    box-shadow: 0 6px 14px rgba(123, 31, 162, 0.08);
 }
 
 /* ----------------- Puntuación ----------------- */
@@ -1069,6 +1097,7 @@ main.info-educandos-page {
     background: rgba(255, 70, 70, .85);
     border-color: rgba(255, 100, 100, .5);
     color: #fff !important;
+    scale: 1.05;
 }
 
 /* Transiciones suaves en botones e interacciones */
@@ -1395,3 +1424,77 @@ a, button, input[type="submit"], .orden-link, .chip-seccion, .boton_insertar {
         padding: 2px 4px;
     }
 }
+
+/* ===================== 9) Familias (grid y tarjetas) ===================== */
+.familias-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+    gap: 28px;
+    padding: 32px 24px 48px 24px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+.familia-card {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 6px 18px rgba(123,31,162,0.10);
+    border: 1.5px solid #e4d5f4;
+    padding: 22px 20px 18px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+    min-height: 180px;
+}
+.familia-padres {
+    display: flex;
+    justify-content: space-between;
+    gap: 18px;
+    align-items: center;
+    font-size: 1.13rem;
+    font-weight: 600;
+    color: var(--morado-oscuro);
+}
+.familia-padres .padre-sep {
+    margin: 0 10px;
+    color: #b39ddb;
+    font-size: 1.2em;
+    margin: 0 7px;
+    font-weight: 400;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    user-select: none;
+}
+.familia-hijos {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+}
+.hijo-caja {
+    border-radius: 12px;
+    padding: 10px 16px 8px 16px;
+    font-size: 1rem;
+    font-weight: 500;
+    min-width: 120px;
+    box-shadow: 0 2px 8px rgba(123,31,162,0.07);
+    border: 1.5px solid #e4d5f4;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+}
+.hijo-caja span {
+    font-size: .93em;
+    font-weight: 400;
+    color: #555;
+}
+.familia-card .sin-hijos {
+    color: #bdbdbd;
+    font-size: 1em;
+    font-style: italic;
+}
+/* Colores de sección */
+.hijo-caja.seccion-colonia { background: #ffe5b4; color: #7a4a0c; }
+.hijo-caja.seccion-manada { background: #fff9c4; color: #736701; }
+.hijo-caja.seccion-tropa { background: #bbdefb; color: #1d5f96; }
+.hijo-caja.seccion-posta { background: #ffcdd2; color: #943744; }
+.hijo-caja.seccion-rutas { background: #c8e6c9; color: #2f6b33; }

@@ -17,6 +17,7 @@ require_once __DIR__ . '/tools/config.php';
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>WebScout — Iniciar sesión</title>
     <link rel="stylesheet" href="<?= BASE_URL ?>/front/css/webscout.css">
+    <link rel="icon" href="<?= BASE_URL ?>/img/logo.png" type="image/png">
 </head>
 <body class="login">
     <div class="circulitos">

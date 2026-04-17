@@ -30,6 +30,7 @@ $paginaActual = basename($_SERVER['PHP_SELF']); // ej: "avisos.php"
     <title>WebScout</title>
     <link rel="stylesheet" href="css/webscout.css">
     <script src="js/lang.js"></script>
+    <link rel="icon" href="<?= BASE_URL ?>/img/logo.png" type="image/png">
 </head>
 <body>
     <header>
