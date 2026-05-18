@@ -1,64 +1,81 @@
-<!-- ============================================================
-     insertar.php — Formulario dinámico para insertar registros
-     ============================================================
-     Genera campos según la estructura de la tabla (DESCRIBE).
-     Incluye lógica especial para secciones, fechas, año, rol, etc.
+<!--
+    ============================================================
+    insertar.php — Formulario dinámico para insertar registros
+    ============================================================
+    Este archivo genera un formulario HTML para insertar un nuevo registro en la tabla seleccionada.
+    - Obtiene la estructura de la tabla con DESCRIBE y genera los campos automáticamente.
+    - Aplica lógica especial para campos como secciones, fechas, año, rol, permisos, etc.
+    - Marca los campos obligatorios y oculta los auto_increment.
+    - Incluye validaciones y normalizaciones para nombres, emails, teléfonos, etc.
+    - El formulario está protegido con token CSRF.
+    - Incluye JavaScript para autocompletar la sección scout según el año.
+    - El diseño y los controles se adaptan a cada tipo de tabla (educandos, usuarios, lista_espera, etc).
+    - Al final, incluye botones para insertar y cancelar.
 -->
 <?php
-    // Sacamos el nombre de la tabla (validado)
-    $tabla = $_GET['tabla'];
-    $seccion = $_GET['seccion'] ?? "colonia";
-    $esListaEspera = ($tabla === 'lista_espera');
-    $camposCheckboxListaEspera = ['hermano_en_grupo', 'relacion_con_miembro', 'familia_antiguo_scouter', 'estuvo_en_grupo'];
+// ===============================
+// Formulario de inserción genérico
+// ===============================
 
-    $normalizarTexto = static function (string $texto): string {
-        return str_ireplace(['ninio', 'nino'], 'niño', $texto);
-    };
+// 1. Obtener nombre de tabla y parámetros principales
+$tabla = $_GET['tabla']; // Nombre de la tabla a insertar (ya validado en el flujo principal)
+$seccion = $_GET['seccion'] ?? "colonia"; // Sección scout por defecto
+$esListaEspera = ($tabla === 'lista_espera'); // ¿Es la tabla lista_espera?
+$camposCheckboxListaEspera = ['hermano_en_grupo', 'relacion_con_miembro', 'familia_antiguo_scouter', 'estuvo_en_grupo']; // Campos especiales de lista_espera
 
-    $nombreTablaBonito = ucfirst($normalizarTexto(str_replace('_', ' ', $tabla)));
-    echo "<h1 class='titulo-form-admin'>Insertar en " . htmlspecialchars($nombreTablaBonito) . "</h1>";
-    echo "<form action=?operacion=procesainsertar&tabla=" . htmlspecialchars($_GET['tabla']) . "&seccion=" . htmlspecialchars($_GET['seccion'] ?? '') . "&ordenar_por=" . htmlspecialchars($_GET['ordenar_por'] ?? 'id') . "&direccion=" . htmlspecialchars($_GET['direccion'] ?? 'ASC') . "\" method=\"POST\">";
-    // Token CSRF para proteger el formulario
-    echo campoCSRF();
+// Función para normalizar nombres de campos (convierte "ninio"/"nino" en "niño")
+$normalizarTexto = static function (string $texto): string {
+    return str_ireplace(['ninio', 'nino'], 'niño', $texto);
+};
 
+// 2. Título del formulario
+$nombreTablaBonito = ucfirst($normalizarTexto(str_replace('_', ' ', $tabla)));
+echo "<h1 class='titulo-form-admin'>Insertar en " . htmlspecialchars($nombreTablaBonito) . "</h1>";
 
-    // Pedimos la estructura de la tabla
-    $resultado = $conexion->query("DESCRIBE `$tabla`;");
+// 3. Formulario principal: action con todos los parámetros de contexto
+echo "<form action=?operacion=procesainsertar&tabla=" . htmlspecialchars($_GET['tabla']) . "&seccion=" . htmlspecialchars($_GET['seccion'] ?? '') . "&ordenar_por=" . htmlspecialchars($_GET['ordenar_por'] ?? 'id') . "&direccion=" . htmlspecialchars($_GET['direccion'] ?? 'ASC') . "\" method=\"POST\">";
 
-    $columnas = [];
-    while ($fila = $resultado->fetch_assoc()) {
-        $columnas[] = $fila;
+// 4. Token CSRF para proteger el formulario contra ataques cross-site
+echo campoCSRF();
+
+// 5. Obtener estructura de la tabla (DESCRIBE)
+$resultado = $conexion->query("DESCRIBE `$tabla`;");
+$columnas = [];
+while ($fila = $resultado->fetch_assoc()) {
+    $columnas[] = $fila;
+}
+
+// 6. Determinar campos obligatorios (NOT NULL, excepto auto_increment)
+$camposObligatorios = [];
+foreach ($columnas as $columna) {
+    $esNotNull = (($columna['Null'] ?? 'YES') === 'NO');
+    $esAutoIncrement = (($columna['Extra'] ?? '') === 'auto_increment');
+    if ($esNotNull && !$esAutoIncrement) {
+        $camposObligatorios[] = (string)$columna['Field'];
     }
+}
 
-    // Campos obligatorios segun esquema (NOT NULL, excepto auto_increment).
-    $camposObligatorios = [];
-    foreach ($columnas as $columna) {
-        $esNotNull = (($columna['Null'] ?? 'YES') === 'NO');
-        $esAutoIncrement = (($columna['Extra'] ?? '') === 'auto_increment');
-        if ($esNotNull && !$esAutoIncrement) {
-            $camposObligatorios[] = (string)$columna['Field'];
-        }
+// Función para saber si un campo es obligatorio
+$esCampoObligatorio = static function (string $campo) use ($camposObligatorios): bool {
+    return in_array($campo, $camposObligatorios, true);
+};
+
+// 7. Recorrer columnas y generar campos del formulario
+foreach ($columnas as $fila) {
+    $clave = $fila['Field']; // Nombre de la columna
+    $tipoColumna = strtolower((string)$fila['Type']); // Tipo SQL
+
+    // Etiqueta bonita para el campo
+    $clave2 = ucfirst($normalizarTexto(str_replace('_', ' ', $clave)));
+    // Mensaje de obligatorio
+    $avisoObligatorio = $esCampoObligatorio($clave)
+        ? "<small class='aviso-obligatorio'>*Obligatorio</small>"
+        : "<small class='aviso-obligatorio is-hidden' aria-hidden='true'>&nbsp;</small>";
+
+    // --- Saltar columna auto_increment (no se edita ni muestra) ---
+    if ($fila['Extra'] === 'auto_increment') {
+        continue;
     }
-
-    $esCampoObligatorio = static function (string $campo) use ($camposObligatorios): bool {
-        return in_array($campo, $camposObligatorios, true);
-    };
-
-    // Recorremos las columnas
-    foreach ($columnas as $fila) {
-        $clave = $fila['Field']; // nombre de la columna
-        $tipoColumna = strtolower((string)$fila['Type']);
-
-        $clave2 = ucfirst($normalizarTexto(str_replace('_', ' ', $clave)));
-        $avisoObligatorio = $esCampoObligatorio($clave)
-            ? "<small class='aviso-obligatorio'>*Obligatorio</small>"
-            : "<small class='aviso-obligatorio is-hidden' aria-hidden='true'>&nbsp;</small>";
-
-
-        // Saltar columna auto_increment
-        if ($fila['Extra'] === 'auto_increment') {
-            continue;
-        }
 
         // SECCIÓN
         elseif ($fila['Field'] === 'seccion') {

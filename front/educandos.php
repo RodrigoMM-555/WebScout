@@ -1,5 +1,24 @@
-<!-- Perfil de los hijos -->
-<?php 
+<?php
+/**
+ * educandos.php — Vista de detalle de un educando para familias
+ * -------------------------------------------------------------
+ * Muestra la información de un educando concreto, sus documentos y permisos.
+ * Solo accesible para usuarios autenticados y propietarios del educando.
+ *
+ * Recibe: GET 'id' (id del educando)
+ * Devuelve: HTML con la ficha y documentos del educando
+ */
+// --- INICIO BLOQUE DE PROTECCIÓN Y VALIDACIÓN ---
+// Requiere sesión y validación de permisos sobre el educando
+// --- FIN BLOQUE DE PROTECCIÓN Y VALIDACIÓN ---
+// --- INICIO BLOQUE DE CONSULTA DE EDUCANDO ---
+// Consulta los datos del educando y determina color de sección
+// --- FIN BLOQUE DE CONSULTA DE EDUCANDO ---
+// --- INICIO BLOQUE DE RENDERIZADO DE DOCUMENTOS ---
+// Renderiza la ficha y los documentos principales del educando
+// --- FIN BLOQUE DE RENDERIZADO DE DOCUMENTOS ---
+
+
 include("../inc/header.php");
 include("../inc/conexion_bd.php");
 
@@ -10,15 +29,23 @@ requerirSesion();
 $subidaAviso = $_GET['subida_aviso'] ?? '';
 $permisosCalc = isset($_GET['permisos_calc']) ? (int)$_GET['permisos_calc'] : null;
 
+// Si existe el parámetro GET 'subida_aviso', se almacena en $subidaAviso, si no, queda vacío
+// Si existe el parámetro GET 'permisos_calc', se convierte a entero, si no, queda null
+
 
 // Comprobamos que nos pasan el id por GET
 if(!isset($_GET['id'])) {
     die("No se ha especificado un educando.");
 }
 
+// Si no se pasa el parámetro 'id' por GET, se detiene la ejecución mostrando un mensaje de error
+
 // COnvertimos el id a entero por seguridad
 $id_educando = intval($_GET['id']);
 $idUsuarioSesion = (int)($_SESSION['id_usuario'] ?? 0);
+
+// Convertimos el id recibido a entero para evitar inyecciones y errores
+// Obtenemos el id del usuario en sesión, o 0 si no existe
 
 // Consultamos la información del educando
 $sql = "SELECT * FROM educandos WHERE id = ? AND id_usuario = ?";
@@ -28,9 +55,13 @@ $stmt->execute();
 $resultado = $stmt->get_result();
 $educando = $resultado->fetch_assoc();
 
+// Consulta preparada para evitar SQLi. Solo devuelve el educando si pertenece al usuario en sesión
+
 if (!$educando) {
     die("No tienes permisos para ver este educando o no existe.");
 }
+
+// Si no se encuentra el educando, o no pertenece al usuario, se detiene la ejecución
 
 // Determinar clase de color según sección
 switch(strtolower($educando['seccion'])) {
@@ -53,8 +84,13 @@ switch(strtolower($educando['seccion'])) {
         $clase_color = 'otros';
 }
 
+// Asigna una clase de color CSS según la sección del educando
+// Si la sección no coincide con ninguna conocida, se asigna 'otros'
+
 // Nombre compelto del educando
 $nombreCompleto = $educando['nombre'] . " " . $educando['apellidos'];
+
+// Construye el nombre completo del educando para rutas y visualización
 
 // Nombres de los archivos principales
 $titulos = [
@@ -75,6 +111,9 @@ if ($seccionCarpeta === '') {
     $seccionCarpeta = 'sin_seccion';
 }
 
+// Determina la carpeta de documentos según el curso y sección
+// Si la sección está vacía, usa 'sin_seccion' como fallback
+
 $rutasPosibles = [
     [
         'abs' => BASE_PATH . '/circulares/educandos/' . $rondaCarpeta . '/' . $seccionCarpeta . '/' . $nombreCarpeta,
@@ -85,6 +124,8 @@ $rutasPosibles = [
         'web' => '../circulares/educandos/' . rawurlencode($nombreCarpeta),
     ],
 ];
+
+// Dos rutas posibles: estructura nueva (por curso y sección) y antigua (solo por nombre)
 
 ?>
 
@@ -203,6 +244,8 @@ $rutasPosibles = [
             }
         }
 
+        // Busca la primera ruta de documentos que exista físicamente en disco
+
         if ($rutaDocumentosAbs === '') {
             echo "<p data-i18n='sin_archivos_subidos'>Este educando aún no tiene archivos subidos.</p>";
         } else {
@@ -274,6 +317,11 @@ $rutasPosibles = [
                 echo "</div>";
             }
         }
+
+        // Si no hay ruta de documentos, muestra mensaje de que no hay archivos subidos
+        // Si hay ruta, lista los archivos y genera tarjetas con preview si es posible
+        // El bloque foreach recorre cada archivo y genera la vista, usando Imagick para previews
+        // Si Imagick no está disponible o falla, muestra mensaje alternativo
         ?>
     </section>
 </main>
@@ -344,11 +392,17 @@ if (is_dir($ruta['abs'])) {
 }
 }
 
+// Este bloque recorre todas las rutas posibles de documentos
+// Por cada archivo esperado (según $titulos), busca si existe en la carpeta
+// Si encuentra un archivo cuyo nombre empieza por el prefijo esperado, marca el bloque como entregado
+
 include("../inc/footer.html");
 
 if ($subidaAviso === 'ocr_conversion_fallida') {
     echo "<script>alert('El PDF se ha subido correctamente, pero no se pudo convertir temporalmente para leer las casillas. Revisa los permisos manualmente.');</script>";
 }
+
+// Muestra alertas específicas según el resultado de la subida OCR
 
 if ($subidaAviso === 'ocr_sin_educando') {
     echo "<script>alert('El PDF se ha subido, pero no se encontró el educando para actualizar permisos en la base de datos.');</script>";
@@ -365,4 +419,6 @@ if ($subidaAviso === 'ocr_update_preparacion_fallida' || $subidaAviso === 'ocr_u
 if ($permisosCalc !== null) {
     echo "<script>console.log('Permisos calculados automáticamente: ' + " . $permisosCalc . ");</script>";
 }
+
+// Si se calcularon permisos automáticamente, lo muestra en consola para depuración
 ?>

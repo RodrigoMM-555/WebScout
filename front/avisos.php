@@ -1,5 +1,23 @@
-<!-- Avisos -->
 <?php
+/**
+ * avisos.php — Listado de avisos y eventos para familias
+ * ------------------------------------------------------
+ * Muestra los avisos futuros y los educandos asociados a cada uno.
+ * Solo accesible para usuarios autenticados.
+ *
+ * Recibe: Sesión iniciada
+ * Devuelve: HTML con listado de avisos y educandos
+ */
+// --- INICIO BLOQUE DE PROTECCIÓN DE SESIÓN ---
+// Requiere sesión activa para mostrar avisos
+// --- FIN BLOQUE DE PROTECCIÓN DE SESIÓN ---
+// --- INICIO BLOQUE DE CONSULTA DE EDUCANDOS ---
+// Consulta los educandos asociados al usuario
+// --- FIN BLOQUE DE CONSULTA DE EDUCANDOS ---
+// --- INICIO BLOQUE DE CONSULTA Y RENDERIZADO DE AVISOS ---
+// Consulta y muestra los avisos futuros y los educandos relacionados
+// --- FIN BLOQUE DE CONSULTA Y RENDERIZADO DE AVISOS ---
+
 session_start();
 include("../inc/header.php");
 include("../inc/conexion_bd.php");

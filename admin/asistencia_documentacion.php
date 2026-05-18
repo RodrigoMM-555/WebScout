@@ -1,22 +1,29 @@
 <?php
 /**
  * asistencia_documentacion.php — Vista de asistencia y documentación por aviso
- * ===============================================================================
- * Muestra educandos agrupados por estado de asistencia (asisten/pendientes/no)
- * y comprueba si han entregado la circular asociada (cuando existe).
- * Contiene consultas de cruce entre avisos, asistencias y archivos subidos,
- * además del renderizado de tablas de seguimiento para administración.
+ * ---------------------------------------------------------------------------
+ * Muestra los educandos agrupados por estado de asistencia (asisten/pendientes/no)
+ * y verifica si han entregado la circular asociada (si existe).
+ * Realiza consultas cruzadas entre avisos, asistencias y archivos subidos,
+ * y renderiza tablas de seguimiento para la administración.
+ *
+ * Recibe: GET 'id_aviso' (ID del aviso a consultar)
+ * Devuelve: HTML con tablas de asistencia y documentación por educando.
  */
+
+// Inicia sesión y protege acceso solo para administradores
 session_start();
 ?>
 <main>
 <link rel="stylesheet" href="css/estilo.css">
 <?php
+// Conexión a la base de datos
 include_once __DIR__ . "/../inc/conexion_bd.php";
 
 // Solo admins pueden ver esta página
 requerirAdmin();
 
+// Validación de parámetro obligatorio
 if (!isset($_GET['id_aviso'])) {
     echo "Aviso no especificado";
     exit;
@@ -24,11 +31,12 @@ if (!isset($_GET['id_aviso'])) {
 
 $id_aviso = (int)$_GET['id_aviso'];
 
+// Función para normalizar nombres de sección
 $normalizarSeccion = static function ($valor): string {
     return strtolower(trim((string)$valor));
 };
 
-// Obtener aviso (añadimos circular)
+// Obtener datos del aviso (incluye si requiere circular)
 $stmt = $conexion->prepare("SELECT titulo, secciones, circular FROM avisos WHERE id = ?");
 $stmt->bind_param("i", $id_aviso);
 $stmt->execute();
@@ -36,21 +44,22 @@ $resAviso = $stmt->get_result();
 $aviso = $resAviso->fetch_assoc();
 $stmt->close();
 
+// Procesar secciones del aviso
 $secciones = array_values(array_unique(array_filter(array_map($normalizarSeccion, explode(',', (string)$aviso['secciones'])))));
 $tituloAviso = $aviso['titulo'];
 $tieneCircular = ($aviso['circular'] === 'si');
 
-// Obtener educandos
+// Obtener educandos de las secciones involucradas
 $educandos = [];
 if (!empty($secciones)) {
     $placeholders = implode(',', array_fill(0, count($secciones), '?'));
     $tipos = str_repeat('s', count($secciones));
-    $stmtEdu = $conexion->prepare("
-        SELECT id, nombre, apellidos, LOWER(TRIM(seccion)) AS seccion 
+    $stmtEdu = $conexion->prepare(
+        "SELECT id, nombre, apellidos, LOWER(TRIM(seccion)) AS seccion 
         FROM educandos 
         WHERE LOWER(TRIM(seccion)) IN ($placeholders) 
-        ORDER BY FIELD(seccion,'colonia','manada','tropa','posta','rutas')
-    ");
+        ORDER BY FIELD(seccion,'colonia','manada','tropa','posta','rutas')"
+    );
     $stmtEdu->bind_param($tipos, ...$secciones);
     $stmtEdu->execute();
     $resEdu = $stmtEdu->get_result();

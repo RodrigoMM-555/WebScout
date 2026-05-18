@@ -1,26 +1,46 @@
 <?php
 /**
  * cambioContraseña.php — Cambio de contraseña de usuario autenticado
- * ===================================================================
+ * ---------------------------------------------------------------
  * Muestra formulario y procesa el cambio de contraseña del usuario en sesión.
  * Aplica validaciones de seguridad (CSRF, verificación de contraseña actual
  * y reglas de complejidad de la nueva contraseña).
+ *
+ * Recibe: POST con contraseñas
+ * Devuelve: Mensaje de éxito o error
  */
+// --- INICIO BLOQUE DE PROTECCIÓN Y VALIDACIÓN DE SESIÓN ---
+// Requiere sesión activa para cambiar contraseña
+// --- FIN BLOQUE DE PROTECCIÓN Y VALIDACIÓN DE SESIÓN ---
+// --- INICIO BLOQUE DE PROCESAMIENTO DE FORMULARIO ---
+// Procesa el formulario de cambio de contraseña y valida reglas de seguridad
+// --- FIN BLOQUE DE PROCESAMIENTO DE FORMULARIO ---
 
 include("../inc/conexion_bd.php");
 
+// Incluimos la conexión a la base de datos
+
 requerirSesion();
+
+// Requiere que el usuario tenga sesión iniciada, si no, redirige o detiene
 
 $id_usuario = (int)($_SESSION["id_usuario"] ?? 0);
 $mensaje = '';
 $tipoMensaje = 'info';
 
+// Obtenemos el id del usuario autenticado de la sesión
+// Inicializamos variables para mensajes de feedback
+
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
     validarCSRF();
+
+    // Si el formulario se envía por POST, primero valida el token CSRF para evitar ataques de falsificación
 
     $contraseña_actual = (string)($_POST["contraseña_actual"] ?? '');
     $contraseña_nueva = (string)($_POST["contraseña_nueva"] ?? '');
     $confirmar = (string)($_POST["confirmar_contraseña"] ?? '');
+
+        // Recoge los valores del formulario: contraseña actual, nueva y confirmación
 
     $stmt = $conexion->prepare("SELECT contraseña FROM usuarios WHERE id = ? LIMIT 1");
     $stmt->bind_param("i", $id_usuario);
@@ -28,6 +48,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $resultado = $stmt->get_result();
     $usuario = $resultado->fetch_assoc();
     $stmt->close();
+
+        // Consulta segura: obtiene el hash de la contraseña actual del usuario
 
     if (!$usuario) {
         $mensaje = 'No se encontró el usuario en sesión.';
@@ -73,6 +95,17 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         }
     }
 }
+
+        // Validaciones del proceso:
+        // 1. Si no se encuentra el usuario, error.
+        // 2. Si la contraseña actual no coincide con el hash, error.
+        // 3. Si la nueva contraseña y la confirmación no coinciden, error.
+        // 4. Si pasa todo, se validan reglas de complejidad:
+        //    - Debe tener letra, mayúscula y número o carácter especial.
+        //    - Si no cumple, error.
+        //    - Si cumple, se hashea la nueva contraseña y se actualiza en la base de datos.
+        //    - Si la actualización es exitosa, se borra la sesión y cookies para forzar re-login.
+        //    - Si falla la actualización, muestra error.
 ?>
 
 <!DOCTYPE html>
@@ -93,13 +126,19 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             </p>
         <?php endif; ?>
 
+            <!-- Muestra mensaje de éxito o error según el resultado del proceso -->
+
         <form action="?" method="POST" id="form-cambio-pass" class="cambio-password-form">
             <?= campoCSRF() ?>
+
+                <!-- Campo oculto CSRF para proteger el formulario -->
 
             <div class="campo-pass">
                 <label for="contraseña_actual" data-i18n="contraseña_actual">Contraseña actual</label>
                 <input type="password" id="contraseña_actual" name="contraseña_actual" required>
             </div>
+
+                <!-- Campo para la contraseña actual, obligatorio -->
 
             <div class="campo-pass">
                 <label for="contraseña_nueva" data-i18n="nueva_contraseña">Nueva contraseña</label>
@@ -113,10 +152,14 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 >
             </div>
 
+                <!-- Campo para la nueva contraseña, obligatorio, mínimo 8 caracteres -->
+
             <div class="campo-pass">
                 <label for="confirmar_contraseña" data-i18n="confirmar_contraseña">Confirmar nueva contraseña</label>
                 <input type="password" id="confirmar_contraseña" name="confirmar_contraseña" required autocomplete="new-password">
             </div>
+
+                <!-- Campo para confirmar la nueva contraseña, obligatorio -->
 
             <div class="cambio-password-hint">
                 <p>Tu nueva contraseña debe cumplir:</p>
@@ -128,8 +171,12 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 </ul>
             </div>
 
+                <!-- Pistas visuales de los requisitos de la nueva contraseña -->
+
             <input type="submit" value="Cambiar contraseña">
         </form>
+
+            <!-- Botón para enviar el formulario de cambio de contraseña -->
     </main>
 
     <script>
@@ -154,6 +201,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             }
         });
     })();
+
+        // Script de validación en cliente:
+        // - Antes de enviar el formulario, comprueba que la nueva contraseña cumple los requisitos mínimos.
+        // - Si no cumple, muestra un alert y cancela el envío.
     </script>
 </body>
 </html>

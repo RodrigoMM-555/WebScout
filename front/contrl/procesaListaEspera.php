@@ -1,14 +1,31 @@
 <?php
 
+/**
+ * procesaListaEspera.php — Persistencia de solicitudes de lista de espera
+ * ------------------------------------------------------------------------
+ * Valida entrada del formulario público y guarda el registro en BD.
+ *
+ * Recibe: POST con datos del formulario de lista de espera
+ * Devuelve: Redirección o mensaje de error
+ */
+// --- INICIO BLOQUE DE VALIDACIÓN DE MÉTODO ---
+// Solo se acepta envío por POST para evitar inserciones vía URL.
+// --- FIN BLOQUE DE VALIDACIÓN DE MÉTODO ---
+// --- INICIO BLOQUE DE RECOGIDA Y NORMALIZACIÓN DE DATOS ---
+// Recoge y normaliza los datos enviados por el formulario
+// --- FIN BLOQUE DE RECOGIDA Y NORMALIZACIÓN DE DATOS ---
+// --- INICIO BLOQUE DE VALIDACIÓN DE CAMPOS ---
+// Valida que los campos obligatorios estén presentes y correctos
+// --- FIN BLOQUE DE VALIDACIÓN DE CAMPOS ---
+// --- INICIO BLOQUE DE VALIDACIÓN DE FORMATO DE FECHA Y EMAIL ---
+// Valida formato de fecha y correo electrónico
+// --- FIN BLOQUE DE VALIDACIÓN DE FORMATO DE FECHA Y EMAIL ---
+
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
 error_reporting(E_ALL);
 
-/**
- * procesaListaEspera.php — Persistencia de solicitudes de lista de espera
- * =======================================================================
- * Valida entrada del formulario público y guarda el registro en BD.
- */
+
 include '../../inc/conexion_bd.php';
 
 // Solo se acepta envío por POST para evitar inserciones vía URL.

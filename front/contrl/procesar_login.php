@@ -1,10 +1,24 @@
 <?php
+
 /**
  * procesar_login.php — Procesa el formulario de login
- * =====================================================
+ * ----------------------------------------------------
  * Verifica correo/contraseña contra la BD.
  * Crea sesión con id, nombre y rol; redirige según el tipo de usuario.
+ *
+ * Recibe: POST con email y password
+ * Devuelve: Redirección según rol o error
  */
+// --- INICIO BLOQUE DE RECOGIDA DE DATOS DEL FORMULARIO ---
+// Recoge email y contraseña del formulario de login
+// --- FIN BLOQUE DE RECOGIDA DE DATOS DEL FORMULARIO ---
+// --- INICIO BLOQUE DE CONSULTA Y VALIDACIÓN DE USUARIO ---
+// Consulta el usuario por email y valida la contraseña
+// --- FIN BLOQUE DE CONSULTA Y VALIDACIÓN DE USUARIO ---
+// --- INICIO BLOQUE DE INICIO DE SESIÓN Y REDIRECCIÓN ---
+// Si el login es correcto, inicia sesión y redirige según el rol
+// --- FIN BLOQUE DE INICIO DE SESIÓN Y REDIRECCIÓN ---
+
 include '../../inc/conexion_bd.php';
 
 // Recogemos la información de login

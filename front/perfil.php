@@ -1,12 +1,25 @@
 <?php
 /**
  * perfil.php — Perfil del padre/madre y listado de hijos
- * ========================================================
+ * ------------------------------------------------------
  * Vista privada para familias.
  * Muestra datos personales del usuario autenticado y las tarjetas de
  * sus educandos, incluyendo enlaces al detalle y color por sección.
  * Contiene consultas a usuarios/educandos y renderizado HTML de perfil.
+ *
+ * Recibe: Sesión iniciada
+ * Devuelve: HTML con datos del usuario y sus educandos
  */
+// --- INICIO BLOQUE DE PROTECCIÓN DE SESIÓN ---
+// Comprobar que hay sesión activa
+// --- FIN BLOQUE DE PROTECCIÓN DE SESIÓN ---
+// --- INICIO BLOQUE DE CONSULTA DE USUARIO ---
+// Consulta los datos del usuario autenticado
+// --- FIN BLOQUE DE CONSULTA DE USUARIO ---
+// --- INICIO BLOQUE DE RENDERIZADO DE PERFIL Y EDUCANDOS ---
+// Renderiza los datos del usuario y la lista de educandos asociados
+// --- FIN BLOQUE DE RENDERIZADO DE PERFIL Y EDUCANDOS ---
+
 session_start();
 
 // Comprobar que hay sesión activa

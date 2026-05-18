@@ -1,6 +1,31 @@
+
 <?php
-// Vista de detalle de un educando en admin.
-// Incluye datos del educando, datos del tutor y previsualización de plantillas.
+// -----------------------------------------------------------------------------
+// info_educandos.php — Vista de detalle de un educando (admin)
+// -----------------------------------------------------------------------------
+// Muestra información detallada de un educando, incluyendo datos personales,
+// datos del tutor y previsualización de plantillas asociadas.
+//
+// Recibe: GET 'id_educando' (ID del educando a consultar)
+// Devuelve: HTML con la ficha completa del educando y su usuario asociado.
+// -----------------------------------------------------------------------------
+// --- INICIO BLOQUE DE PROTECCIÓN Y VALIDACIÓN ---
+// Se valida que el usuario sea admin y que se haya pasado el parámetro id_educando
+// --- FIN BLOQUE DE PROTECCIÓN Y VALIDACIÓN ---
+// --- INICIO BLOQUE DE OBTENCIÓN DE DATOS DEL EDUCANDO ---
+// Se obtiene el registro del educando desde la base de datos
+// --- FIN BLOQUE DE OBTENCIÓN DE DATOS DEL EDUCANDO ---
+// --- INICIO BLOQUE DE OBTENCIÓN DE DATOS DEL USUARIO (TUTOR) ---
+// Se obtiene el usuario asociado al educando (tutor principal)
+// --- FIN BLOQUE DE OBTENCIÓN DE DATOS DEL USUARIO (TUTOR) ---
+// --- INICIO BLOQUE DE VISUALIZACIÓN DE INFORMACIÓN ---
+// Se muestra la cabecera de la vista con el nombre del educando y botón volver
+// Se muestra la información principal del educando (nombre, apellidos, año, sección, DNI)
+// Se muestra la información de los tutores asociados (tutor 1 y, si existe, tutor 2)
+// --- FIN BLOQUE DE VISUALIZACIÓN DE INFORMACIÓN ---
+// --- INICIO BLOQUE DE DOCUMENTACIÓN DEL EDUCANDO ---
+// Se construye el nombre de carpeta y rutas para mostrar los archivos/documentos del educando
+// --- FIN BLOQUE DE DOCUMENTACIÓN DEL EDUCANDO ---
 session_start();
 ?>
 <main class='info-educandos-page'>

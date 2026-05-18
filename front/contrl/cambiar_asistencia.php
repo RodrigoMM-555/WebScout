@@ -1,11 +1,27 @@
 <?php
 /**
  * cambiar_asistencia.php — Cambia la asistencia de un educando a un aviso
- * =========================================================================
+ * ------------------------------------------------------------------------
  * Endpoint de escritura para registrar asistencia desde la vista de avisos.
  * Inserta o actualiza (ON DUPLICATE KEY) el estado Sí/No de asistencia,
  * devuelve JSON en modo AJAX y redirige en modo formulario tradicional.
+ *
+ * Recibe: POST con id_aviso, id_educando, asiste, return_anchor, ajax
+ * Devuelve: JSON (si AJAX) o redirección a avisos.php
  */
+// --- INICIO BLOQUE DE PROTECCIÓN Y VALIDACIÓN ---
+// Requiere sesión de usuario (padres o admin)
+// --- FIN BLOQUE DE PROTECCIÓN Y VALIDACIÓN ---
+// --- INICIO BLOQUE DE RECOGIDA DE DATOS DEL FORMULARIO ---
+// Recoge los datos enviados por POST y los normaliza
+// --- FIN BLOQUE DE RECOGIDA DE DATOS DEL FORMULARIO ---
+// --- INICIO BLOQUE DE INSERCIÓN/ACTUALIZACIÓN EN BD ---
+// Inserta o actualiza la asistencia en la base de datos
+// --- FIN BLOQUE DE INSERCIÓN/ACTUALIZACIÓN EN BD ---
+// --- INICIO BLOQUE DE RESPUESTA SEGÚN MODO (AJAX O FORMULARIO) ---
+// Si es AJAX, responde con JSON; si no, redirige a la vista de avisos
+// --- FIN BLOQUE DE RESPUESTA SEGÚN MODO (AJAX O FORMULARIO) ---
+
 session_start();
 
 // Cargar config y utils

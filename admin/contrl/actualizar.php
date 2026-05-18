@@ -1,21 +1,32 @@
-<!-- ============================================================
-     actualizar.php — Formulario dinámico para editar registros
-     ============================================================
-     Similar a insertar.php pero pre-rellena los valores existentes.
+<!-- 
+ ============================================================
+ actualizar.php — Formulario dinámico para editar registros
+============================================================
+ * Este archivo genera un formulario para actualizar registros de cualquier tabla permitida.
+ * Recibe el nombre de la tabla y el id del registro a editar por GET.
+ * Si hay id, carga los valores actuales y los muestra en el formulario.
+ * Usa DESCRIBE para obtener la estructura de la tabla y renderizar los campos dinámicamente.
+ * Incluye lógica especial para campos de sección, checkboxes, fechas, permisos y normalización de nombres.
 -->
 <?php
-// Sacamos el nombre de la tabla (validado contra whitelist)
 $tabla = $_GET['tabla'];
 $id = $_GET['id'] ?? 0; // Obtenemos el ID del registro a actualizar (nuevo)
 $esListaEspera = ($tabla === 'lista_espera');
 $camposCheckboxListaEspera = ['hermano_en_grupo', 'relacion_con_miembro', 'familia_antiguo_scouter', 'estuvo_en_grupo'];
 
+// Recoge el nombre de la tabla y el id del registro a actualizar
+// Detecta si es la tabla especial 'lista_espera' para lógica de checkboxes
+
 $normalizarTexto = static function (string $texto): string {
     return str_ireplace(['ninio', 'nino'], 'niño', $texto);
 };
 
+// Función para normalizar nombres de campos y etiquetas (convierte 'nino' a 'niño')
+
 $nombreTablaBonito = ucfirst($normalizarTexto(str_replace('_', ' ', $tabla)));
 echo "<h1 class='titulo-form-admin'>" . ($id ? "Actualizar" : "Insertar") . " en " . htmlspecialchars($nombreTablaBonito) . "</h1>";
+
+// Renderiza el título del formulario según si es actualización o inserción
 
 // Si hay ID, cargamos los datos actuales
 $valores = [];
@@ -27,11 +38,15 @@ if ($id) {
     $resultado = $stmt->get_result();
     $valores = $resultado->fetch_assoc();
 }
+
+// Si se pasa un id, consulta los valores actuales del registro para pre-rellenar el formulario
 ?>
 <form action="?operacion=procesaactualizar&tabla=<?= htmlspecialchars($_GET['tabla']) ?>&seccion=<?= htmlspecialchars($_GET['seccion'] ?? '') ?>&ordenar_por=<?= htmlspecialchars($_GET['ordenar_por'] ?? 'id') ?>&direccion=<?= htmlspecialchars($_GET['direccion'] ?? 'ASC') ?>" method="POST">
 <?php
     // Token CSRF para proteger el formulario
     echo campoCSRF();
+
+    // Campo oculto CSRF para proteger contra ataques de falsificación
 
     // Pedimos estructura de la tabla
     $resultado = $conexion->query("DESCRIBE `$tabla`;");
@@ -40,6 +55,8 @@ if ($id) {
         $tipoColumna = strtolower((string)$fila['Type']);
         $clave2 = ucfirst($normalizarTexto(str_replace('_', ' ', $clave)));
 
+            // Recorre cada columna de la tabla y genera el campo correspondiente
+
         // ID
         if ($fila['Extra'] === 'auto_increment') {
             if ($id) {
@@ -47,6 +64,8 @@ if ($id) {
             }
             continue;
         }
+
+            // Si el campo es auto_increment, lo oculta o lo ignora en el formulario
 
         // SELECT SECCIÓN (añadido id='select-seccion')
         elseif ($clave === 'seccion') {
@@ -67,6 +86,8 @@ if ($id) {
                 continue;
             }
 
+                // Si es el campo 'seccion' de educandos, lo muestra como select deshabilitado
+
             echo "
                 <div class='control_formulario'>
                     <label>$clave2</label>
@@ -80,6 +101,8 @@ if ($id) {
                 </div>
             ";
         }
+
+            // Si es el campo 'seccion' de otra tabla, muestra un select editable
 
         // SECCIONES MÚLTIPLES
         elseif ($clave === 'secciones') {
@@ -96,6 +119,8 @@ if ($id) {
             ";
         }
 
+            // Si el campo es 'secciones', muestra checkboxes para varias secciones
+
         // ID USUARIO
         elseif ($clave === "id_usuario") {
             $sql2 = "SELECT id, nombre, apellidos, rol FROM usuarios";
@@ -111,6 +136,8 @@ if ($id) {
             echo "</select></div>";
         }
 
+            // Si el campo es 'id_usuario', muestra un select con los usuarios de rol usuario
+
         // FECHAS
         elseif ($clave === "fecha_hora_inicio" || $clave === "fecha_hora_fin") {
             echo "
@@ -124,6 +151,8 @@ if ($id) {
             ";
         }
 
+            // Si el campo es fecha/hora, muestra un input datetime-local
+
         // FECHA DE REGISTRO (solo fecha)
         elseif ($clave === 'fecha_registro') {
             echo "
@@ -133,6 +162,8 @@ if ($id) {
                 </div>
             ";
         }
+
+            // Si el campo es 'fecha_registro', muestra un input date
 
         // AÑO (VACÍO, JS lo rellena)
         elseif ($clave === "anio") {
@@ -145,6 +176,8 @@ if ($id) {
                 </div>
             ';
         }
+
+            // Si el campo es 'anio', muestra un select vacío que se rellena por JS
 
         // PERMISOS (checkboxes de bits, igual que en la tabla)
         elseif ($clave === 'permisos') {
@@ -161,11 +194,15 @@ if ($id) {
             ";
         }
 
+            // Si el campo es 'permisos', muestra checkboxes para cada bit de permiso
+
         // CHECKBOXES LISTA DE ESPERA (agrupados y ordenados)
         elseif ($esListaEspera && in_array($clave, $camposCheckboxListaEspera, true)) {
             if ($clave !== 'hermano_en_grupo') {
                 continue;
             }
+
+                // Si es la tabla lista_espera, muestra checkboxes agrupados para relación con el grupo
 
             $checkedHermano = ((int)($valores['hermano_en_grupo'] ?? 0) === 1) ? 'checked' : '';
             $checkedRelacion = ((int)($valores['relacion_con_miembro'] ?? 0) === 1) ? 'checked' : '';
@@ -213,6 +250,8 @@ if ($id) {
             ";
         }
 
+            // Si es el campo 'cambio_contraseña' de usuarios, muestra un checkbox booleano
+
         // BOOLEAN / TINYINT(1)
         elseif (preg_match('/^(tinyint\(1\)|boolean|bool)/', $tipoColumna)) {
             $checked = ((int)($valores[$clave] ?? 0) === 1) ? 'checked' : '';
@@ -227,6 +266,8 @@ if ($id) {
             ";
         }
 
+            // Si el campo es booleano, muestra un checkbox
+
         // DATE
         elseif ($tipoColumna === 'date') {
             echo "
@@ -236,6 +277,8 @@ if ($id) {
                 </div>
             ";
         }
+
+            // Si el campo es date, muestra un input date
 
         // TEXT/LONGTEXT
         elseif (str_contains($tipoColumna, 'text')) {
@@ -247,6 +290,8 @@ if ($id) {
                 </div>
             ";
         }
+
+            // Si el campo es text/longtext, muestra un textarea
 
         // SELECTS NORMALES
         elseif ($clave === "circular") {
@@ -261,6 +306,8 @@ if ($id) {
                 </div>";
         }
 
+            // Si el campo es 'circular', muestra un select sí/no
+
         elseif ($clave === "rol") {
             $sel = $valores['rol'] ?? '';
             echo "
@@ -272,6 +319,8 @@ if ($id) {
                 </select>
             </div>";
         }
+
+            // Si el campo es 'rol', muestra un select usuario/admin
 
         elseif ($clave === "tipo") {
             $sel = $valores['tipo'] ?? '';
@@ -287,6 +336,8 @@ if ($id) {
                 </select>
             </div>";
         }
+
+            // Si el campo es 'tipo', muestra un select con los tipos de evento
 
         // CAMPOS NORMALES
         else {
@@ -313,6 +364,8 @@ if ($id) {
                 . ">
             </div>";
         }
+
+            // Para cualquier otro campo, muestra un input de tipo adecuado (text, email, tel, password)
     }
 ?>
     <div class="control_formulario botones-form">
@@ -321,7 +374,11 @@ if ($id) {
     </div>
 </form>
 
+    <!-- Botones de acción: guardar o cancelar -->
+
 <link rel="stylesheet" href="css/estilo.css">
+
+<!-- Estilos del formulario -->
 
 <!-- ============================
      SCRIPTS (UNIFICADOS Y CORREGIDOS)
@@ -381,3 +438,6 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 });
 </script>
+
+// Script: autocompleta la sección scout según el año de nacimiento seleccionado
+// Genera dinámicamente las opciones de año y sincroniza la sección al cambiar

@@ -3,17 +3,27 @@
      ============================================================
      Muestra filtros de orden, chips de sección (educandos),
      tabla de datos con permisos inline y acciones editar/eliminar.
+<!--
+ * Este archivo muestra una tabla CRUD para cualquier tabla permitida.
+ * Permite filtrar, ordenar, editar y eliminar registros.
+ * Incluye lógica especial para sincronizar secciones de educandos y ocultar columnas sensibles.
 -->
 <?php
 // conexion_bd.php ya carga config.php (con las constantes PERM_*)
 include_once "../../inc/conexion_bd.php";
 
+// Incluye la conexión a la base de datos y constantes globales
+
 // Necesitamos el token CSRF para los enlaces de eliminar
 if (session_status() === PHP_SESSION_NONE) session_start();
 $csrfToken = generarTokenCSRF();
 
+// Asegura que la sesión esté iniciada y genera el token CSRF para acciones seguras
+
 // Mostrar mensaje flash si existe (ej: "Registro eliminado correctamente")
 mostrarFlash();
+
+// Muestra mensajes flash de éxito o error si existen en la sesión
 
 // Recogemos parámetros
 $ordenarPor    = $_GET['ordenar_por'] ?? 'id';
@@ -21,8 +31,12 @@ $direccion     = $_GET['direccion'] ?? 'ASC';
 $tabla         = $_GET['tabla'] ?? 'educandos';
 $seccionFiltro = $_GET['seccion'] ?? null;
 
+// Recoge los parámetros de orden, dirección, tabla y filtro de sección
+
 $tabla = preg_replace('/[^a-zA-Z0-9_]/', '', $tabla);
 $direccion = strtoupper($direccion) === 'DESC' ? 'DESC' : 'ASC';
+
+// Sanitiza el nombre de la tabla y la dirección de orden
 
 if ($tabla === 'educandos') {
     $cursoScoutActual = obtenerCursoScoutActual();
@@ -33,14 +47,20 @@ if ($tabla === 'educandos') {
     }
 }
 
+// Si la tabla es 'educandos', sincroniza las secciones según el curso scout actual
+
 $normalizarEtiqueta = static function (string $texto): string {
     return str_ireplace(['nino', 'ninio'], 'niño', $texto);
 };
+
+// Función para normalizar etiquetas de columnas
 
 $columnasOcultasOrden = [
     'email2', 'telefono2', 'nombre2', 'apellidos2',
     'apellidos', 'id_usuario', 'permisos', 'cambio_contraseña', 'id', 'contraseña'
 ];
+
+// Columnas que se ocultan en la ordenación y en la tabla por privacidad o irrelevancia
 
 $columnasOcultasTabla = [
     'email2', 'telefono2', 'nombre2', 'apellidos2',
@@ -61,6 +81,8 @@ if ($tabla === 'lista_espera') {
     $columnasOcultasTabla[] = 'explicacion_relacion';
 }
 
+// Si la tabla es lista_espera, añade columnas específicas a ocultar
+
 $ordenColumnasListaEspera = [
     'nombre_nino',
     'fecha_nacimiento',
@@ -73,6 +95,8 @@ $ordenColumnasListaEspera = [
     'familia_antiguo_scouter',
     'estuvo_en_grupo'
 ];
+
+// Orden específico de columnas para la tabla lista_espera
 
 $etiquetasListaEspera = [
     'nombre_nino' => 'Niño',
@@ -87,6 +111,8 @@ $etiquetasListaEspera = [
     'fecha_registro' => 'Fecha de registro'
 ];
 
+// Etiquetas personalizadas para las columnas de lista_espera
+
 if ($tabla === "avisos") {
     echo '<div class="avisos-botones-wrap" style="margin-bottom:18px;display:flex;gap:12px;justify-content:center;">';
     echo '<button type="button" class="btn-avisos-calendario">Calendario</button>';
@@ -98,6 +124,10 @@ if ($tabla === "avisos") {
         const btnTabla = document.querySelector(".btn-avisos-tabla");
         const calendario = document.querySelector(".admin-calendario, .calendario-trimestre");
         const tabla = document.querySelector("table");
+
+    // Alterna entre vista de calendario y tabla en la sección de avisos
+
+    // Lógica de botones para cambiar entre vista de calendario y tabla en avisos
         const filtros = document.querySelector(".tabla-controles");
         if (calendario) calendario.style.display = "none";
         if (tabla) tabla.style.display = "";
@@ -153,8 +183,12 @@ if ($tabla === "usuarios") {
     </script>';
 }
 
+// Alterna entre vista de familias y tabla en la sección de usuarios
+
 $opcionesOrden = [];
 $columnas_result = $conexion->query("SHOW COLUMNS FROM `{$tabla}`");
+
+// Obtiene las columnas de la tabla para construir las opciones de ordenación
 
 if ($columnas_result) {
     while ($col = $columnas_result->fetch_assoc()) {
@@ -163,6 +197,8 @@ if ($columnas_result) {
         if (in_array($col['Field'], $columnasOcultasOrden, true)) {
             continue;
         }
+
+        // Omite columnas ocultas en la ordenación
 
         $nombre = $col['Field'];
         $label = ucfirst($normalizarEtiqueta(str_replace('_', ' ', $nombre)));
@@ -179,9 +215,13 @@ if ($columnas_result) {
     }
 }
 
+        // Construye el array de opciones de ordenación para los botones
+
 if (!array_key_exists($ordenarPor, $opcionesOrden)) {
     $ordenarPor = array_key_exists('id', $opcionesOrden) ? 'id' : array_key_first($opcionesOrden);
 }
+
+// Si el campo de orden no existe, usa 'id' o el primero disponible
 ?>
 
 <!-- Filtros y ordenación -->
@@ -205,6 +245,8 @@ if (!array_key_exists($ordenarPor, $opcionesOrden)) {
     <a href="?operacion=insertar&amp;tabla=<?= htmlspecialchars($tabla) ?>&seccion=<?= htmlspecialchars($seccionFiltro) ?>&ordenar_por=<?= htmlspecialchars($ordenarPor) ?>&direccion=<?= htmlspecialchars($direccion) ?>" 
          class="boton_insertar">+</a>
 </div>
+
+<!-- Botones para ordenar columnas y añadir nuevo registro -->
 
 <?php if ($tabla === 'educandos'): ?>
 <?php
@@ -245,8 +287,12 @@ if (!array_key_exists($ordenarPor, $opcionesOrden)) {
 </div>
 <?php endif; ?>
 
+<!-- Chips para filtrar por sección y botón para sincronizar secciones scout -->
+
 <table class="<?= $tabla === 'lista_espera' ? 'tabla-lista-espera' : '' ?>">
 <?php
+
+// Renderiza la tabla principal con cabecera dinámica según la tabla
 
 $resultado = $conexion->query("SELECT * FROM `{$tabla}` LIMIT 1;");
 $pintoCabecera = false;
@@ -255,6 +301,8 @@ $totalColumnasCabecera = 0;
 if ($resultado && $resultado->num_rows > 0) {
     $filaEjemplo = $resultado->fetch_assoc();
     echo "<tr>";
+
+    // Renderiza la cabecera de la tabla según el tipo de tabla y columnas
 
     if ($tabla === 'lista_espera') {
         foreach ($ordenColumnasListaEspera as $clave) {
@@ -280,6 +328,8 @@ if ($resultado && $resultado->num_rows > 0) {
         }
     }
 
+        // Añade columnas especiales según la tabla
+
     if ($tabla === "educandos") {
         echo "<th>WatsApp</th>";
         echo "<th>Irse solo</th>";
@@ -289,22 +339,30 @@ if ($resultado && $resultado->num_rows > 0) {
         $totalColumnasCabecera += 5;
     }
 
+        // Columnas de permisos y enlaces extra para educandos
+
     if ($tabla === 'lista_espera') {
         echo "<th>Puntuación</th>";
         echo "<th>Detalles</th>";
         $totalColumnasCabecera++;
     }
 
+        // Columnas de puntuación y detalles para lista_espera
+
     if ($tabla === "usuarios") {
         echo "<th>Hij@s</th>";
         $totalColumnasCabecera++;
     }
+
+        // Columna de hijos para usuarios
 
     echo "<th>Editar</th><th>Eliminar</th>";
     $totalColumnasCabecera += 2;
     echo "</tr>";
     $pintoCabecera = true;
 }
+
+// Añade columnas de acción para editar y eliminar
 
 // Orden especial sección
 if ($ordenarPor === 'seccion') {
@@ -320,6 +378,8 @@ if ($seccionFiltro !== null && $seccionFiltro !== '') {
     $sqlListado = "SELECT * FROM `{$tabla}` ORDER BY {$orderBy};";
 }
 
+// Construye la consulta SQL principal según el filtro de sección
+
 $resultadoListado = $conexion->query($sqlListado);
 
 $coloresSeccion = [
@@ -332,6 +392,8 @@ $coloresSeccion = [
 
 if ($resultadoListado) {
     while ($fila = $resultadoListado->fetch_assoc()) {
+
+    // Recorre cada fila de la tabla y renderiza las celdas según el tipo de tabla
 
         $puntuacion = 0;
         $claseFila = "";
@@ -350,6 +412,8 @@ if ($resultadoListado) {
             $direccionDetalle = trim((string)($fila['direccion_contacto'] ?? ''));
             $tieneDetalle = ($comentariosDetalle !== '' || $explicacionDetalle !== '');
 
+                // Extrae detalles adicionales para mostrar en la fila expandible
+
             foreach ($ordenColumnasListaEspera as $clave) {
                 if (!array_key_exists($clave, $fila)) {
                     continue;
@@ -357,11 +421,15 @@ if ($resultadoListado) {
 
                 $valor = $fila[$clave];
 
+                    // Renderiza cada celda según el tipo de campo y aplica formato especial
+
                 if ($clave === 'nombre_nino') {
                     $apellidosNinio = trim((string)($fila['apellidos_nino'] ?? ''));
                     $nombreNinio = trim((string)($fila['nombre_nino'] ?? ''));
                     $valor = trim($nombreNinio . ' ' . $apellidosNinio);
                 }
+
+                    // Une nombre y apellidos del niño
 
                 if ($clave === 'fecha_nacimiento' && !empty($valor)) {
                     $timestampNacimiento = strtotime((string)$valor);
@@ -369,6 +437,8 @@ if ($resultadoListado) {
                         $valor = date('d/m/Y', $timestampNacimiento);
                     }
                 }
+
+                    // Formatea la fecha de nacimiento
 
                 if ($clave === 'fecha_registro' && !empty($valor)) {
                     $timestampRegistro = strtotime((string)$valor);
@@ -378,6 +448,8 @@ if ($resultadoListado) {
                         $fechaRegistroObj = DateTime::createFromFormat('U', $timestampRegistro);
                     }
                 }
+
+                    // Formatea la fecha de registro y prepara para cálculo de rondas
 
                 if (in_array($clave, ['hermano_en_grupo', 'relacion_con_miembro', 'familia_antiguo_scouter', 'estuvo_en_grupo'], true)) {
                     $checked = ((int)$valor === 1) ? 'checked' : '';
@@ -407,6 +479,8 @@ if ($resultadoListado) {
                     continue;
                 }
 
+                    // Renderiza checkboxes para los campos booleanos y calcula puntuación
+
                 $valorCelda = htmlspecialchars((string)($valor ?: '-'));
                 if (!in_array($clave, ['correo_contacto'], true)) {
                     $valorCelda = ucfirst($valorCelda);
@@ -415,8 +489,12 @@ if ($resultadoListado) {
                 echo "<td>" . $valorCelda . "</td>";
             }
 
+                // Renderiza el resto de celdas normalmente
+
 
             echo "<td><button type='button' class='btn-detalle-lista sin-icono-auto' data-detalle-id='" . (int)$fila['id'] . "' aria-expanded='false' title='Ver detalle'>⏬</button></td>";
+
+                // Botón para expandir detalles de la fila
 
         } else {
             foreach ($fila as $clave => $valor) {
@@ -440,11 +518,15 @@ if ($resultadoListado) {
                 }
                 echo "<td>" . $valorCelda . "</td>";
             }
+
+                // Renderiza celdas para tablas normales, con formato especial para nombre y fechas
         }
 
         if ($tabla === 'usuarios') {
             echo "<td><button type='button' class='btn-detalle-lista sin-icono-auto' data-detalle-id='" . (int)$fila['id'] . "' aria-expanded='false' title='Ver detalle'>⏬</button></td>";
         }
+
+            // Botón para expandir detalles de usuario
 
         if ($tabla === "educandos") {
 
@@ -462,9 +544,13 @@ if ($resultadoListado) {
             echo '<td><a href="info_educandos.php?id_educando=' . (int)$fila['id'] . '">Info</a></td>';
         }
 
+            // Renderiza checkboxes de permisos y enlace a info para educandos
+
           echo '<td><a href="?operacion=actualizar&amp;tabla=' . urlencode($tabla) . '&amp;id=' . (int)$fila['id']
               . '&amp;seccion=' . urlencode((string)($seccionFiltro ?? ''))
               . '&amp;ordenar_por=' . urlencode($ordenarPor) . '&amp;direccion=' . urlencode($direccion) . '"></a></td>';
+
+        // Enlace para editar el registro
 
         // Enlace de eliminar con CSRF token y confirmación JS
         $urlEliminar = 'contrl/procesaeliminar.php?tabla=' . urlencode($tabla)
@@ -477,6 +563,8 @@ if ($resultadoListado) {
               . ' onclick="return confirm(\'¿Seguro que quieres eliminar este registro?\')"'
               . '></a></td>';
 
+            // Enlace para eliminar el registro con confirmación y CSRF
+
         echo "</tr>";
 
         if ($tabla === 'usuarios') {
@@ -484,8 +572,12 @@ if ($resultadoListado) {
             echo "<td colspan='" . (int)$totalColumnasCabecera + 1 . "'>";
             echo "<section class='usuarios-hijos'>";
 
+                // Fila expandible con el listado de hijos para usuarios
+
             $sqlEducandos = "SELECT nombre, apellidos, seccion FROM educandos WHERE id_usuario = " . (int)$fila['id'] . " ORDER BY nombre ASC;";
             $resultadoEducandos = $conexion->query($sqlEducandos);
+
+                // Consulta los hijos del usuario
 
             if ($resultadoEducandos && $resultadoEducandos->num_rows > 0) {
                 echo "<p><strong>Hij@s:</strong></p>";
@@ -499,6 +591,8 @@ if ($resultadoListado) {
             } else {
                 echo "<p><strong>Hij@s:</strong> -</p>";
             }
+
+                // Renderiza la lista de hijos o un guion si no tiene
 
             echo "</section>";
             echo "</td>";
@@ -515,17 +609,25 @@ if ($resultadoListado) {
 
             echo "<section class='detalle-izquierda'>";
 
+                // Fila expandible con detalles de lista de espera
+
             if ($explicacionDetalle !== '') {
                 echo "<p><strong>Explicación de la relación:</strong> " . nl2br(htmlspecialchars($explicacionDetalle)) . "</p>";
             }
+
+                // Muestra explicación de la relación si existe
 
             if ($comentariosDetalle !== '') {
                 echo "<p><strong>Comentarios:</strong> " . nl2br(htmlspecialchars($comentariosDetalle)) . "</p>";
             }
 
+                // Muestra comentarios si existen
+
             if ($direccionDetalle !== '') {
                 echo "<p><strong>Dirección:</strong> " . nl2br(htmlspecialchars($direccionDetalle)) . "</p>";
             }
+
+                // Muestra dirección si existe
 
             echo "</section>";
 
@@ -551,6 +653,8 @@ if ($resultadoListado) {
                 $puntuacionBase += 1;
             }
 
+                // Calcula y muestra el desglose de puntuación base
+
             // Desglose de rondas
             require_once __DIR__ . '/../../tools/utils.php';
             $fechaRegistro = isset($fila['fecha_registro']) ? $fila['fecha_registro'] : null;
@@ -564,11 +668,15 @@ if ($resultadoListado) {
                 $desglose[] = "Ronda {$rondaYearStart}-{$rondaYearEnd}: +{$i}";
             }
 
+                // Añade puntos por cada ronda de espera
+
             echo '<ul class="desglose-puntuacion">';
             foreach ($desglose as $item) {
                 echo '<li>' . htmlspecialchars($item) . '</li>';
             }
             echo '</ul>';
+
+                // Lista visual del desglose de puntuación
 
             echo "</section>";
             echo "</div>";
@@ -579,6 +687,8 @@ if ($resultadoListado) {
         if ($tabla === "avisos") {
             echo "<tr><td colspan='100%'><a href='asistencia_documentacion.php?id_aviso=" . (int)$fila['id'] . "&ordenar_por=" . htmlspecialchars($_GET['ordenar_por'] ?? 'id') . "&direccion=" . htmlspecialchars($_GET['direccion'] ?? 'ASC') . "'>Ver asistencia y documentación</a></td></tr>";
         }
+
+            // Enlace para ver asistencia y documentación en avisos
     }
 }
 ?>
@@ -592,23 +702,29 @@ if ($tabla === "avisos") {
     echo "</div>";
 }
 
+// Incluye el calendario en la vista de avisos
+
 if ($tabla === "usuarios") {
     echo "<div class='admin-familias' style='display: none;'>";
     global $conexion;
     include_once __DIR__ . "/../../inc/familias.php";
     echo "</div>";
 }
+
+// Incluye la vista de familias en la sección de usuarios
 ?>
 
 
 
 <!--
--
     JavaScript de tabla admin
     =========================
     - Toggle de permisos por fetch (actualización instantánea).
     - Mostrar/ocultar detalle extendido en filas de lista de espera.
--->
+//
+// JavaScript de la tabla admin:
+// - Toggle de permisos por fetch (actualización instantánea).
+// - Mostrar/ocultar detalle extendido en filas de lista de espera.
 <script>
 // Cada checkbox representa un bit de permiso (1,2,4,8).
 // El backend hace XOR para activar/desactivar ese bit sin recargar.
@@ -631,6 +747,8 @@ document.querySelectorAll(".permiso-check").forEach(function(checkbox){
 
 });
 
+// Cuando se cambia un checkbox de permiso, envía la actualización por AJAX al backend
+
 // Expande o contrae fila de detalle para campos largos (explicación/comentarios).
 document.querySelectorAll('.btn-detalle-lista').forEach(function(boton) {
     boton.addEventListener('click', function() {
@@ -644,6 +762,8 @@ document.querySelectorAll('.btn-detalle-lista').forEach(function(boton) {
         this.textContent = visible ? '⏬' : '⏫';
     });
 });
+
+// Expande o contrae la fila de detalle al pulsar el botón correspondiente
 
 </script>
 
@@ -665,4 +785,6 @@ document.addEventListener('click', function (e) {
         window.scrollTo(0, parseInt(y, 10));
     }
 })();
+
+// Guarda y restaura la posición de scroll al navegar entre formularios y la tabla
 </script>

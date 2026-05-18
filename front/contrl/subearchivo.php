@@ -1,13 +1,26 @@
 <?php
+
 /**
  * subearchivo.php — Gestiona la subida de archivos (documentos y circulares)
- * ===========================================================================
+ * ---------------------------------------------------------------------------
  * Recibe ficheros desde formularios de avisos y documentación de educandos,
  * valida el archivo, lo mueve a almacenamiento final y mantiene copia temporal
  * para procesado cuando aplica.
  * Para "1-Ficha de inscripción" convierte PDF a PNG y calcula permisos de
  * forma automática mediante análisis por coordenadas y densidad de píxeles.
+ *
+ * Recibe: POST con archivo y metadatos
+ * Devuelve: Mensaje de éxito o error
  */
+// --- INICIO BLOQUE DE PROTECCIÓN Y VALIDACIÓN DE SESIÓN ---
+// Solo usuarios autenticados pueden subir archivos
+// --- FIN BLOQUE DE PROTECCIÓN Y VALIDACIÓN DE SESIÓN ---
+// --- INICIO BLOQUE DE VALIDACIÓN DEL ARCHIVO SUBIDO ---
+// Valida que el archivo exista, no tenga errores y cumpla tamaño y extensión
+// --- FIN BLOQUE DE VALIDACIÓN DEL ARCHIVO SUBIDO ---
+// --- INICIO BLOQUE DE NORMALIZACIÓN Y UTILIDADES ---
+// Funciones auxiliares para normalizar texto y buscar educando
+// --- FIN BLOQUE DE NORMALIZACIÓN Y UTILIDADES ---
 
 ini_set('display_errors', 1);
 ini_set('display_startup_errors', 1);
@@ -437,103 +450,6 @@ function calcularPermisosDesdeCoordenadasPlantilla($rutaPng) {
     return $permisos;
 }
 
-// Método OCR antiguo por texto cercano (se mantiene por compatibilidad).
-function calcularPermisosDesdeImagen($rutaPng) {
-    if (!class_exists('Imagick')) {
-        return 0;
-    }
-
-    $palabras = obtenerPalabrasTesseract($rutaPng);
-    if (empty($palabras)) {
-        return 0;
-    }
-
-    $mapa = [
-        PERM_WHATSAPP => ['whatsapp', 'wassap', 'watsap', 'watsapp'],
-        PERM_SOLO => ['solo', 'irse'],
-        PERM_FOTOS => ['imagen', 'imagenes', 'fotografia', 'fotos'],
-        PERM_COCHE => ['vehiculo', 'vehiculoprivado', 'coche', 'privado']
-    ];
-
-    try {
-        $imagen = new Imagick($rutaPng);
-    } catch (Throwable $e) {
-        return 0;
-    }
-
-    $imgW = (int)$imagen->getImageWidth();
-    $imgH = (int)$imagen->getImageHeight();
-    $permisos = 0;
-
-    foreach ($mapa as $valorPermiso => $claves) {
-        $encontrada = null;
-
-        foreach ($palabras as $p) {
-            foreach ($claves as $clave) {
-                if (strpos($p['texto_norm'], $clave) !== false) {
-                    $encontrada = $p;
-                    break 2;
-                }
-            }
-        }
-
-        if (!$encontrada) {
-            continue;
-        }
-
-        $siToken = null;
-        $noToken = null;
-        $margenY = max(25, $encontrada['height'] * 2);
-
-        foreach ($palabras as $p2) {
-            if ($p2['left'] <= $encontrada['left']) {
-                continue;
-            }
-
-            if (abs($p2['top'] - $encontrada['top']) > $margenY) {
-                continue;
-            }
-
-            $txt = $p2['texto_norm'];
-            if (($txt === 'si' || $txt === 'sí') && ($siToken === null || $p2['left'] < $siToken['left'])) {
-                $siToken = $p2;
-            }
-
-            if ($txt === 'no' && ($noToken === null || $p2['left'] < $noToken['left'])) {
-                $noToken = $p2;
-            }
-        }
-
-        $siMarcado = false;
-        $noMarcado = false;
-
-        if ($siToken !== null) {
-            $xSi = max(0, $siToken['left'] - 55);
-            $ySi = max(0, $siToken['top'] - 10);
-            $wSi = min(45, $imgW - $xSi);
-            $hSi = min(max($siToken['height'] + 20, 35), $imgH - $ySi);
-            $siMarcado = esRegionMarcada($imagen, $xSi, $ySi, $wSi, $hSi);
-        }
-
-        if ($noToken !== null) {
-            $xNo = max(0, $noToken['left'] - 55);
-            $yNo = max(0, $noToken['top'] - 10);
-            $wNo = min(45, $imgW - $xNo);
-            $hNo = min(max($noToken['height'] + 20, 35), $imgH - $yNo);
-            $noMarcado = esRegionMarcada($imagen, $xNo, $yNo, $wNo, $hNo);
-        }
-
-        // Regla de negocio: vacío o ambiguo => NO.
-        if ($siMarcado && !$noMarcado) {
-            $permisos += $valorPermiso;
-        }
-    }
-
-    $imagen->clear();
-    $imagen->destroy();
-
-    return $permisos;
-}
 
 // Validar que se recibió un archivo sin errores
 if (!isset($_FILES['archivo']) || $_FILES['archivo']['error'] != 0) {

@@ -1,8 +1,22 @@
-<?php 
+<?php
 /**
  * inicio.php — Página de inicio (landing tras login)
+ * --------------------------------------------------
  * Muestra el carrusel de fotos, calendario trimestral e info de contacto.
+ *
+ * Recibe: Sesión iniciada
+ * Devuelve: HTML con carrusel, calendario e info
  */
+// --- INICIO BLOQUE DE INCLUSIÓN DE CABECERA ---
+// Incluye cabecera y recursos comunes
+// --- FIN BLOQUE DE INCLUSIÓN DE CABECERA ---
+// --- INICIO BLOQUE DE CARGA DE IMÁGENES Y CARRUSEL ---
+// Carga las imágenes del carrusel y renderiza la galería
+// --- FIN BLOQUE DE CARGA DE IMÁGENES Y CARRUSEL ---
+// --- INICIO BLOQUE DE CALENDARIO E INFO ---
+// Incluye calendario y muestra info adicional
+// --- FIN BLOQUE DE CALENDARIO E INFO ---
+
 include("../inc/header.php")
 ?>
 
