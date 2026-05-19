@@ -1,6 +1,7 @@
 
 # PRIORITARIO
 - Que se pueda ver de quien es padre el usuario
+- Conexion entre lista de esepra y educandos
 
 
 # SECUNDARIO
@@ -15,6 +16,7 @@
 # TERCIARIO
 - Añadir comprobaciones para evitar errores fatales o warnings
 - Formulario para restablecer contraseña y contraseña necesaria para modificar el perfil
+- Poder modificar als edades de cada seccion
 
 
 # CONSULTAS AL GRUPO
